@@ -1,0 +1,193 @@
+"""Reglas de negocio. Versionadas en git a propósito.
+
+Nada de acá es secreto ni depende del entorno. Son decisiones auditables:
+cuentas, tarifas, ventanas de conciliación. Que vivan en git significa que un
+cambio de tasa queda en el historial con su justificación, y que dos corridas
+del mismo commit sobre la misma data dan el mismo resultado.
+
+Si esto estuviera en el .env, "¿por qué en marzo la comisión era otra?" sería
+irrespondible.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import date
+from decimal import ROUND_DOWN, Decimal
+
+from .domain.ledger import Account
+from .domain.money import Money
+
+# ─── Cuentas ────────────────────────────────────────────────────────────────
+
+WOMPI = Account(
+    id="wompi",
+    name="Cuenta Wompi (Anayap SAS)",
+    currency="COP",
+    role="channel",
+)
+
+BANCOLOMBIA = Account(
+    id="bancolombia",
+    name="Bancolombia — cuenta corriente",
+    currency="COP",
+    role="bank",
+)
+
+ACCOUNTS = (WOMPI, BANCOLOMBIA)
+
+# ─── Zona horaria ───────────────────────────────────────────────────────────
+
+#: Toda fecha contable (`Movement.occurred_on`) se deriva en esta zona.
+#:
+#: No es un detalle: verificado contra el epoch embebido en los IDs de Wompi,
+#: la columna `fecha` del CSV viene en COT (UTC−5). Hay transacciones a las
+#: 21:22 COT, que en UTC caen al día siguiente. Agrupar por fecha UTC manda
+#: esas ventas al batch equivocado y el día entero deja de conciliar.
+TIMEZONE = "America/Bogota"
+
+#: Calendario de días hábiles. Wompi liquida solo en hábiles: hay reportes de
+#: transacciones sábado y domingo, pero ningún desembolso de fin de semana.
+BUSINESS_CALENDAR = "CO"
+
+
+# ─── Tarifas de Wompi ───────────────────────────────────────────────────────
+
+
+@dataclass(frozen=True, slots=True)
+class FeeSchedule:
+    """Tarifario vigente en un período.
+
+    ⚠️ Esto es una regla de VALIDACIÓN, no la fuente de verdad.
+
+    Los montos de comisión, IVA y retención vienen DECLARADOS en el CSV de
+    desembolsos de Wompi, y esos son los que se ingieren. El tarifario sirve
+    para detectar anomalías: una fila que se desvía es otro medio de pago, otra
+    tarifa negociada, o un error de parseo. El sistema lo reporta en vez de
+    corregirlo silenciosamente.
+
+    Invertir esta relación —calcular las comisiones en vez de leerlas— haría
+    que el sistema no pueda descubrir nunca que se equivocó.
+    """
+
+    #: Desde cuándo aplica. Las tarifas cambian; los datos históricos no.
+    effective_from: date
+    effective_to: date | None
+    payment_method: str
+
+    #: comisión = trunc₂(rate × monto + fixed)
+    commission_rate: Decimal
+    commission_fixed: Money
+    #: iva = trunc₂(iva_rate × comisión_SIN_truncar)
+    iva_rate: Decimal
+    #: retefuente = trunc₂(retefuente_rate × monto)
+    retefuente_rate: Decimal
+
+    def commission_exact(self, gross: Money) -> Decimal:
+        """Comisión sin truncar, en unidades menores.
+
+        Se expone porque el IVA se calcula sobre este valor, no sobre la
+        comisión ya truncada. Verificado: usar la truncada falla en 2 de 9
+        filas por un centavo.
+        """
+        return Decimal(gross.amount) * self.commission_rate + Decimal(self.commission_fixed.amount)
+
+    def commission(self, gross: Money) -> Money:
+        return Money(_trunc(self.commission_exact(gross)), gross.currency)
+
+    def iva(self, gross: Money) -> Money:
+        return Money(_trunc(self.commission_exact(gross) * self.iva_rate), gross.currency)
+
+    def retefuente(self, gross: Money) -> Money:
+        return Money(_trunc(Decimal(gross.amount) * self.retefuente_rate), gross.currency)
+
+    def expected_net(self, gross: Money) -> Money:
+        return gross - self.commission(gross) - self.iva(gross) - self.retefuente(gross)
+
+    def covers(self, day: date) -> bool:
+        return self.effective_from <= day and (self.effective_to is None or day <= self.effective_to)
+
+
+def _trunc(value: Decimal) -> int:
+    """Wompi trunca, no redondea. `7068.4775 → 7068.47`.
+
+    Redondear desvía en 8 de 9 filas de la muestra."""
+    return int(value.to_integral_value(rounding=ROUND_DOWN))
+
+
+#: Derivado empíricamente de 9 transacciones en 4 reportes de desembolso
+#: (14-04, 15-04, 27-04 y 04-05 de 2026). Las tres fórmulas dan exacto al
+#: centavo en las 9 filas. Ver docs/adr/0005-tarifario-wompi.md para la
+#: derivación completa.
+#:
+#: Todas las filas de la muestra son `medio de pago = CARD`. Otros medios
+#: (NEQUI, PSE, transferencia) muy probablemente tengan otra tarifa: por eso
+#: el tarifario está indexado por `payment_method` y una fila con un medio
+#: desconocido se marca como no validable en vez de asumirse.
+WOMPI_FEES = (
+    FeeSchedule(
+        effective_from=date(2026, 1, 1),
+        effective_to=None,
+        payment_method="CARD",
+        commission_rate=Decimal("0.0235"),
+        commission_fixed=Money(40_000),  # $400,00 COP
+        iva_rate=Decimal("0.19"),
+        retefuente_rate=Decimal("0.015"),
+    ),
+)
+
+
+def fee_schedule_for(payment_method: str, day: date) -> FeeSchedule | None:
+    """Tarifario aplicable, o `None` si no conocemos uno.
+
+    `None` no es un error: significa que no podemos validar esa fila. El
+    movimiento se ingiere igual con sus montos declarados y se marca como
+    no verificado.
+    """
+    return next(
+        (f for f in WOMPI_FEES if f.payment_method == payment_method and f.covers(day)),
+        None,
+    )
+
+
+# ─── Ventanas de conciliación ───────────────────────────────────────────────
+
+
+@dataclass(frozen=True, slots=True)
+class FlowWindow:
+    """Cuántos días hábiles después del desembolso buscar el crédito bancario.
+
+    NO es una restricción dura: es generación de candidatos. El monto decide
+    cuál matchea.
+
+    El rango va más allá de T+1 por evidencia concreta: una transacción del
+    miércoles 29-04 21:22 apareció en el desembolso del lunes 04-05, dos días
+    hábiles después de lo esperado (hipótesis: corte horario nocturno + el
+    viernes 01-05 fue festivo). Con una ventana rígida de T+1, esa transacción
+    no conciliaba nunca.
+    """
+
+    min_business_days: int = 0
+    max_business_days: int = 3
+
+
+FLOW_WINDOW = FlowWindow()
+
+#: Diferencia máxima tolerada al comparar un desembolso contra un crédito
+#: bancario. Arranca en cero: la identidad del CSV cierra al centavo, así que
+#: cualquier diferencia es información, no ruido. Si el banco resulta redondear,
+#: se sube con justificación.
+FLOW_AMOUNT_TOLERANCE = Money(0)
+
+
+# ─── Mapeo al plan de cuentas de Odoo ───────────────────────────────────────
+
+#: Del enunciado. Las columnas del CSV de desembolsos mapean 1:1, lo que hace
+#: que la conciliación contra el ERP compare cosas comparables.
+ODOO_ACCOUNTS = {
+    "sales": "420500",        # Otras Ventas          ← columna `monto`
+    "iva_commission": "240810",  # IVA Descontable    ← `iva comisión`
+    "commission": "530505",   # Gastos Bancarios      ← `comisión`
+    "withholding": "236500",  # Retención en la Fuente← `retefuente`/`reteica`/`reteiva`
+    "bank": "111001",         # Banco                 ← `total desembolsado`
+}
