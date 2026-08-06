@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 242 tests, 106/136,
+Este archivo y el README afirman cantidades concretas: 320 tests, 106/214,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -64,14 +64,15 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 242
+pytest                                        # 320
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 136 — pipeline sobre fixtures
+pytest -m integration                         # 214 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
 conciliacion sources --offline
 conciliacion show wompi
+conciliacion reconcile                        # flujo canal -> banco, 2 salidas
 ```
 
 `--offline` omite las fuentes de red y reprocesa desde `data/raw/`.
@@ -351,10 +352,25 @@ src/conciliacion/
 
 ## Estado
 
-**Fase 1 completa.** Modelo, ingesta, persistencia, CLI, 9 ADRs, extensibilidad
-medida. 242 tests.
+**Fase 1 completa.** Modelo, ingesta, persistencia, CLI, extensibilidad medida.
 
-**Fase 2 (flujo canal→banco): no empezada.** Tiene todo lo que necesita:
+**Fase 2 (flujo canal→banco): COMPLETA.** Motor, persistencia, CLI, API, vista y
+ADR-0010. Sobre los datos del challenge: 55 conciliados, 3 créditos huérfanos, 1
+fuera de cobertura; las cuentas cierran por ambos lados sin residuo.
+
+Decisiones que conviene no revertir sin leer ADR-0010:
+
+- **El primer salto (venta → desembolso) NO se busca**: el canal declara el
+  `disbursement_id`. No hay subset-sum, y es deliberado: la ambigüedad que
+  advierte el enunciado no aplica por esta vía.
+- **`UNMATCHED_SETTLEMENT` ≠ `OUT_OF_COVERAGE`.** Se ven idénticos y significan
+  lo contrario. `is_problem` es `False` para el segundo.
+- **`disputed_amount` ≠ `unexplained_total`.** El segundo incluye el redondeo de
+  matches exitosos. Mezclarlos hace que el veredicto no coincida con el detalle.
+- **La cobertura es un parámetro**, no una derivación. Derivarla del rango de
+  movimientos es conservador pero inutilizable en ledgers chicos.
+
+Lo que quedó apoyando la fase:
 - `disbursement_id` declarado por Wompi en cada transacción ⇒ agrupar pagos en su
   liquidación es un `GROUP BY`, no una búsqueda de subconjuntos. **La ambigüedad
   que advierte el enunciado no aplica por esta vía.**
