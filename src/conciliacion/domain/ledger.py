@@ -86,8 +86,18 @@ class Ledger:
     # -- consultas que usa el motor de conciliación -----------------------
 
     def balance(self, up_to: date | None = None) -> Money:
+        """Saldo de la cuenta. Solo cuentan los movimientos aprobados.
+
+        Un pago rechazado está en el ledger —hace falta para explicar por qué
+        esa venta no llegó al banco— pero nunca movió plata. Sumarlo infla el
+        saldo y rompe el cierre en cero de la cuenta del canal.
+        """
         return Money.sum(
-            (m.amount for m in self._movements if up_to is None or m.occurred_on <= up_to),
+            (
+                m.amount
+                for m in self._movements
+                if m.counts_for_reconciliation and (up_to is None or m.occurred_on <= up_to)
+            ),
             self.currency,
         )
 

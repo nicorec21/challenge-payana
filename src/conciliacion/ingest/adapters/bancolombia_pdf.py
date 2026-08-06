@@ -128,11 +128,11 @@ class BancolombiaPdfAdapter:
 
         _verify(header, summary, rows, record.locator)
 
-        for row in rows:
-            yield self._to_movement(record, header, row)
+        for position, row in enumerate(rows):
+            yield self._to_movement(record, header, row, position)
 
     def _to_movement(
-        self, record: RawRecord, header: StatementHeader, row: _Row
+        self, record: RawRecord, header: StatementHeader, row: _Row, position: int
     ) -> Movement:
         return Movement(
             ledger_id=self.ledger_id,
@@ -149,6 +149,17 @@ class BancolombiaPdfAdapter:
                 "cuenta": header.account_number,
                 "periodo": header.period_id,
                 "pagina": row.page,
+                # Posición en el extracto. El ledger ordena por (fecha, id)
+                # —determinista, ver ADR-0001— pero ese no es el orden del
+                # documento, y la cadena de saldos solo existe en orden de
+                # documento. Sin esto, un extracto persistido no se puede
+                # reconstruir ni re-verificar, y el reporte no puede mostrarlo
+                # como lo muestra el banco.
+                #
+                # No entra en la clave de idempotencia: un ordinal se corre
+                # entero si el banco reemite el PDF con una línea más. Para eso
+                # está el saldo (ver `_synthetic_id`).
+                "orden": position,
             },
             raw_ref=f"{record.locator}#pagina={row.page},y={row.y}",
         )

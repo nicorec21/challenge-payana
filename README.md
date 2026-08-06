@@ -18,6 +18,47 @@ pip install -e ".[dev]"
 pytest
 ```
 
+Ingesta sin credenciales ni red, sobre los datos versionados en `data/raw/`:
+
+```bash
+conciliacion ingest bancolombia --offline
+```
+
+Para las fuentes de API hace falta `.env` (copiar de `.env.example`):
+
+```bash
+conciliacion ingest wompi
+```
+
+Qué fuentes hay registradas y con qué connector/adapter:
+
+```bash
+conciliacion sources
+```
+
+Estado de un ledger ya persistido:
+
+```bash
+conciliacion show wompi
+```
+
+La CLI es el punto de entrada del pipeline, no la interfaz de usuario: dispara
+la ingesta y regenera las salidas. Correr `ingest` dos veces no duplica nada.
+
+### Datos y secretos
+
+| Ruta | ¿Va a git? | Qué es |
+|---|---|---|
+| `.env` | no | credenciales |
+| `.env.example` | sí | plantilla |
+| `data/raw/` | sí | evidencia: lo que el sistema ingirió |
+| `data/out/` | no | salidas generadas, descartables |
+| `conciliacion.db` | no | base regenerable desde `data/raw/` |
+
+`data/raw/` se versiona para que el repositorio corra recién clonado. Los
+payloads de la API se archivan **ya redactados**: la allowlist descarta datos de
+titulares de tarjeta antes de que toquen disco ([ADR-0006](docs/adr/0006-allowlist-de-pii.md)).
+
 ## Organización
 
 ```
@@ -68,6 +109,10 @@ distintas sobre el mismo hecho. Ver [ADR-0004](docs/adr/0004-explanation-como-ob
 | [0002](docs/adr/0002-connector-vs-adapter.md) | Connector ⟂ Adapter: N+M clases, no N×M |
 | [0003](docs/adr/0003-sqlite-como-persistencia.md) | SQLite stdlib sin ORM; crudos en archivos |
 | [0004](docs/adr/0004-explanation-como-objeto-de-dominio.md) | La explicación es estructura, no texto |
+| [0005](docs/adr/0005-tarifario-wompi.md) | El tarifario valida, no es fuente. `DECLARED` 9/9 vs `INFERRED` 47/55 |
+| [0006](docs/adr/0006-allowlist-de-pii.md) | Allowlist de campos en el borde: falla cerrada |
+| [0007](docs/adr/0007-adapter-extracto-bancolombia.md) | PDF por coordenadas, clave sintética con saldo, autovalidación |
+| [0008](docs/adr/0008-reparto-disjunto-entre-fuentes.md) | Tres fuentes, `MovementKind` disjuntos, el ledger cierra en cero |
 
 ## Cómo leer la salida
 
