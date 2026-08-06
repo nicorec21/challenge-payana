@@ -245,6 +245,44 @@ def bank_hints_for(ledger_id: str) -> tuple[str, ...]:
     return BANK_CHANNEL_HINTS.get(ledger_id, ())
 
 
+# ─── Libros contables en Odoo ───────────────────────────────────────────────
+
+#: Cuenta del plan que representa cada ledger en el ERP.
+#:
+#: **Por cuenta, no por diario.** Las líneas de `1110001` aparecen en tres
+#: diarios distintos (Wompi Tarjetas, Bancolombia y Miscellaneous); tomar el
+#: diario como libro perdería 13 de 53 líneas, incluidos los 11 giros al banco.
+#: Ver ADR-0011.
+#:
+#: `1110001` funciona como cuenta puente: la venta la debita, el giro al banco
+#: la acredita. Por eso el giro aparece una sola vez en el ERP.
+ODOO_LEDGER_ACCOUNTS = {
+    "wompi": "1110001",       # Wompi Tarjetas  (asset_cash)
+    "bancolombia": "111001",  # Bank            (asset_cash)
+}
+
+#: Sufijo de los ledgers que espejan el ERP. `wompi` ↔ `wompi_erp`.
+ERP_SUFFIX = "_erp"
+
+
+def erp_ledger_id(ledger_id: str) -> str:
+    return f"{ledger_id}{ERP_SUFFIX}"
+
+
+def erp_accounts() -> tuple[Account, ...]:
+    """Cuentas espejo del ERP, una por ledger con libro contable."""
+    return tuple(
+        Account(
+            id=erp_ledger_id(base.id),
+            name=f"{base.name} — libro en Odoo",
+            currency=base.currency,
+            role="erp",
+        )
+        for base in ACCOUNTS
+        if base.id in ODOO_LEDGER_ACCOUNTS
+    )
+
+
 # ─── Mapeo al plan de cuentas de Odoo ───────────────────────────────────────
 
 #: Del enunciado. Las columnas del CSV de desembolsos mapean 1:1, lo que hace

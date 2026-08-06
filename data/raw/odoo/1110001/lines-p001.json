@@ -1,0 +1,1168 @@
+[
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 19715313.89,
+    "date": "2026-01-02",
+    "debit": 0.0,
+    "id": 3307,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1345,
+      "BNK8/2026/00001 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00001",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-03",
+    "debit": 195700.0,
+    "id": 3284,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1335,
+      "WMP/2026/00033 (QP8MAWU0O8ZZXPLOI1G7O)"
+    ],
+    "move_name": "WMP/2026/00033",
+    "name": "QP8MAWU0O8ZZXPLOI1G7O",
+    "parent_state": "posted",
+    "ref": "QP8MAWU0O8ZZXPLOI1G7O"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-04",
+    "debit": 4842430.0,
+    "id": 3286,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1336,
+      "WMP/2026/00034 (MDZJXKUVMTXUR5WKLD7XQ)"
+    ],
+    "move_name": "WMP/2026/00034",
+    "name": "MDZJXKUVMTXUR5WKLD7XQ",
+    "parent_state": "posted",
+    "ref": "MDZJXKUVMTXUR5WKLD7XQ"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-05",
+    "debit": 242050.0,
+    "id": 3276,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1331,
+      "WMP/2026/00029 (6VBXN1JTP5B1INB9HEP0H)"
+    ],
+    "move_name": "WMP/2026/00029",
+    "name": "6VBXN1JTP5B1INB9HEP0H",
+    "parent_state": "posted",
+    "ref": "6VBXN1JTP5B1INB9HEP0H"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-05",
+    "debit": 161813.0,
+    "id": 3278,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1332,
+      "WMP/2026/00030 (6H275XNYFBKQF5BY83R9ZD)"
+    ],
+    "move_name": "WMP/2026/00030",
+    "name": "6H275XNYFBKQF5BY83R9ZD",
+    "parent_state": "posted",
+    "ref": "6H275XNYFBKQF5BY83R9ZD"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-05",
+    "debit": 3605000.0,
+    "id": 3280,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1333,
+      "WMP/2026/00031 (339ITGA6UW76BY0LK5PTRN)"
+    ],
+    "move_name": "WMP/2026/00031",
+    "name": "339ITGA6UW76BY0LK5PTRN",
+    "parent_state": "posted",
+    "ref": "339ITGA6UW76BY0LK5PTRN"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-05",
+    "debit": 8896877.0,
+    "id": 3282,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1334,
+      "WMP/2026/00032 (5JKXR8U2GU500U01IIY4OA3)"
+    ],
+    "move_name": "WMP/2026/00032",
+    "name": "5JKXR8U2GU500U01IIY4OA3",
+    "parent_state": "posted",
+    "ref": "5JKXR8U2GU500U01IIY4OA3"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 257940.85,
+    "date": "2026-01-06",
+    "debit": 0.0,
+    "id": 3309,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1348,
+      "BNK8/2026/00002 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00002",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-10",
+    "debit": 156597.0,
+    "id": 3274,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1330,
+      "WMP/2026/00028 (WFSJ1AXTTOMUKB4OQEM7)"
+    ],
+    "move_name": "WMP/2026/00028",
+    "name": "WFSJ1AXTTOMUKB4OQEM7",
+    "parent_state": "posted",
+    "ref": "WFSJ1AXTTOMUKB4OQEM7"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-12",
+    "debit": 229175.0,
+    "id": 3272,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1329,
+      "WMP/2026/00027 (3WI6DOQN36RK4N07U73FSB)"
+    ],
+    "move_name": "WMP/2026/00027",
+    "name": "3WI6DOQN36RK4N07U73FSB",
+    "parent_state": "posted",
+    "ref": "3WI6DOQN36RK4N07U73FSB"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-14",
+    "debit": 170612.0,
+    "id": 3264,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1325,
+      "WMP/2026/00023 (VR3AW45ZTKPQ6DQ0O4YX7E)"
+    ],
+    "move_name": "WMP/2026/00023",
+    "name": "VR3AW45ZTKPQ6DQ0O4YX7E",
+    "parent_state": "posted",
+    "ref": "VR3AW45ZTKPQ6DQ0O4YX7E"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-14",
+    "debit": 212180.0,
+    "id": 3266,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1326,
+      "WMP/2026/00024 (26SQ5ZS5M7SJHUANC8DRZ4)"
+    ],
+    "move_name": "WMP/2026/00024",
+    "name": "26SQ5ZS5M7SJHUANC8DRZ4",
+    "parent_state": "posted",
+    "ref": "26SQ5ZS5M7SJHUANC8DRZ4"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-15",
+    "debit": 209847.0,
+    "id": 3268,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1327,
+      "WMP/2026/00025 (34H3IIG5YT9HRP7WC0G12)"
+    ],
+    "move_name": "WMP/2026/00025",
+    "name": "34H3IIG5YT9HRP7WC0G12",
+    "parent_state": "posted",
+    "ref": "34H3IIG5YT9HRP7WC0G12"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-15",
+    "debit": 253483.0,
+    "id": 3270,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1328,
+      "WMP/2026/00026 (8Y9VG5QBPHIJM0AK8KVRTT)"
+    ],
+    "move_name": "WMP/2026/00026",
+    "name": "8Y9VG5QBPHIJM0AK8KVRTT",
+    "parent_state": "posted",
+    "ref": "8Y9VG5QBPHIJM0AK8KVRTT"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 2705039.6,
+    "date": "2026-01-19",
+    "debit": 0.0,
+    "id": 3311,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1349,
+      "BNK8/2026/00003 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00003",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-20",
+    "debit": 9013479.0,
+    "id": 3260,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1323,
+      "WMP/2026/00021 (LIE0Q83PHSBT4DAKEJAYNR)"
+    ],
+    "move_name": "WMP/2026/00021",
+    "name": "LIE0Q83PHSBT4DAKEJAYNR",
+    "parent_state": "posted",
+    "ref": "LIE0Q83PHSBT4DAKEJAYNR"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-20",
+    "debit": 746956.0,
+    "id": 3262,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1324,
+      "WMP/2026/00022 (A0R2BS8AQ2FV1N04QMI8G)"
+    ],
+    "move_name": "WMP/2026/00022",
+    "name": "A0R2BS8AQ2FV1N04QMI8G",
+    "parent_state": "posted",
+    "ref": "A0R2BS8AQ2FV1N04QMI8G"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 540836.41,
+    "date": "2026-01-20",
+    "debit": 0.0,
+    "id": 3313,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1350,
+      "BNK8/2026/00004 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00004",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-21",
+    "debit": 2496000.0,
+    "id": 3256,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1321,
+      "WMP/2026/00019 (ZI4KOI5NYRTC9NGSKTG)"
+    ],
+    "move_name": "WMP/2026/00019",
+    "name": "ZI4KOI5NYRTC9NGSKTG",
+    "parent_state": "posted",
+    "ref": "ZI4KOI5NYRTC9NGSKTG"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-21",
+    "debit": 7097187.0,
+    "id": 3258,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1322,
+      "WMP/2026/00020 (9YBE8U8LISL4VC4P8S6K2Y)"
+    ],
+    "move_name": "WMP/2026/00020",
+    "name": "9YBE8U8LISL4VC4P8S6K2Y",
+    "parent_state": "posted",
+    "ref": "9YBE8U8LISL4VC4P8S6K2Y"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 10054512.99,
+    "date": "2026-01-21",
+    "debit": 0.0,
+    "id": 3315,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1351,
+      "BNK8/2026/00005 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00005",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-22",
+    "debit": 332690.0,
+    "id": 3252,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1319,
+      "WMP/2026/00017 (VPCN3J827MST2XAZBNCZH)"
+    ],
+    "move_name": "WMP/2026/00017",
+    "name": "VPCN3J827MST2XAZBNCZH",
+    "parent_state": "posted",
+    "ref": "VPCN3J827MST2XAZBNCZH"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-23",
+    "debit": 436926.0,
+    "id": 3254,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1320,
+      "WMP/2026/00018 (Q0EW8T4NC1FIVHVYFDFZ9)"
+    ],
+    "move_name": "WMP/2026/00018",
+    "name": "Q0EW8T4NC1FIVHVYFDFZ9",
+    "parent_state": "posted",
+    "ref": "Q0EW8T4NC1FIVHVYFDFZ9"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-28",
+    "debit": 121849.0,
+    "id": 3250,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1318,
+      "WMP/2026/00016 (3K2BHMCMBLV510VU1A80B)"
+    ],
+    "move_name": "WMP/2026/00016",
+    "name": "3K2BHMCMBLV510VU1A80B",
+    "parent_state": "posted",
+    "ref": "3K2BHMCMBLV510VU1A80B"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 116137.77,
+    "date": "2026-01-29",
+    "debit": 0.0,
+    "id": 3317,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1352,
+      "BNK8/2026/00006 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00006",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-30",
+    "debit": 18245592.0,
+    "id": 3248,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1317,
+      "WMP/2026/00015 (9OUBKR0GZWM1ET24XOKEYW)"
+    ],
+    "move_name": "WMP/2026/00015",
+    "name": "9OUBKR0GZWM1ET24XOKEYW",
+    "parent_state": "posted",
+    "ref": "9OUBKR0GZWM1ET24XOKEYW"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-31",
+    "debit": 173113.0,
+    "id": 3244,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1315,
+      "WMP/2026/00013 (67FGK0QL508O9HWO70ERM)"
+    ],
+    "move_name": "WMP/2026/00013",
+    "name": "67FGK0QL508O9HWO70ERM",
+    "parent_state": "posted",
+    "ref": "67FGK0QL508O9HWO70ERM"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-31",
+    "debit": 242050.0,
+    "id": 3246,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1316,
+      "WMP/2026/00014 (PYR4PEPN8QCCH0UIXVIE2)"
+    ],
+    "move_name": "WMP/2026/00014",
+    "name": "PYR4PEPN8QCCH0UIXVIE2",
+    "parent_state": "posted",
+    "ref": "PYR4PEPN8QCCH0UIXVIE2"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 257359.77,
+    "date": "2026-02-02",
+    "debit": 0.0,
+    "id": 3319,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1353,
+      "BNK8/2026/00007 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00007",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 9898251.19,
+    "date": "2026-02-03",
+    "debit": 0.0,
+    "id": 3321,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1354,
+      "BNK8/2026/00008 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00008",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-06",
+    "debit": 622635.0,
+    "id": 3240,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1313,
+      "WMP/2026/00011 (ZQ5MUXCECSBDTDXQ6334)"
+    ],
+    "move_name": "WMP/2026/00011",
+    "name": "ZQ5MUXCECSBDTDXQ6334",
+    "parent_state": "posted",
+    "ref": "ZQ5MUXCECSBDTDXQ6334"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-06",
+    "debit": 2630071.0,
+    "id": 3242,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1314,
+      "WMP/2026/00012 (9UZYEPHTUV6K4QQ9LW3JG)"
+    ],
+    "move_name": "WMP/2026/00012",
+    "name": "9UZYEPHTUV6K4QQ9LW3JG",
+    "parent_state": "posted",
+    "ref": "9UZYEPHTUV6K4QQ9LW3JG"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-10",
+    "debit": 180971.0,
+    "id": 3238,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1312,
+      "WMP/2026/00010 (EBYA6EF312NAZ983KTJEZL)"
+    ],
+    "move_name": "WMP/2026/00010",
+    "name": "EBYA6EF312NAZ983KTJEZL",
+    "parent_state": "posted",
+    "ref": "EBYA6EF312NAZ983KTJEZL"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-11",
+    "debit": 527886.0,
+    "id": 3236,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1311,
+      "WMP/2026/00009 (UOI7ABUX7OSXMCT2220EN)"
+    ],
+    "move_name": "WMP/2026/00009",
+    "name": "UOI7ABUX7OSXMCT2220EN",
+    "parent_state": "posted",
+    "ref": "UOI7ABUX7OSXMCT2220EN"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-12",
+    "debit": 14049974.0,
+    "id": 3234,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1310,
+      "WMP/2026/00008 (EOWTT6P7AJ4XO1YOY1ZIYD)"
+    ],
+    "move_name": "WMP/2026/00008",
+    "name": "EOWTT6P7AJ4XO1YOY1ZIYD",
+    "parent_state": "posted",
+    "ref": "EOWTT6P7AJ4XO1YOY1ZIYD"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-17",
+    "debit": 1435200.0,
+    "id": 3232,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1309,
+      "WMP/2026/00007 (08HMNW837O59SXMAXD1XM7Q)"
+    ],
+    "move_name": "WMP/2026/00007",
+    "name": "08HMNW837O59SXMAXD1XM7Q",
+    "parent_state": "posted",
+    "ref": "08HMNW837O59SXMAXD1XM7Q"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-03",
+    "debit": 1039188.0,
+    "id": 3288,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1337,
+      "WMP/2026/00035 (YLXCFMXYRCP4YLF9K80P)"
+    ],
+    "move_name": "WMP/2026/00035",
+    "name": "YLXCFMXYRCP4YLF9K80P",
+    "parent_state": "posted",
+    "ref": "YLXCFMXYRCP4YLF9K80P"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 5627962.31,
+    "date": "2026-03-04",
+    "debit": 0.0,
+    "id": 3323,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1355,
+      "BNK8/2026/00009 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00009",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-05",
+    "debit": 387383.0,
+    "id": 3296,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1341,
+      "WMP/2026/00039 (XVUHKBI0DDK1VCFD3UHRRC)"
+    ],
+    "move_name": "WMP/2026/00039",
+    "name": "XVUHKBI0DDK1VCFD3UHRRC",
+    "parent_state": "posted",
+    "ref": "XVUHKBI0DDK1VCFD3UHRRC"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-05",
+    "debit": 3605000.0,
+    "id": 3298,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1342,
+      "WMP/2026/00040 (8KOT4IJUQZFSG3EJMKFA4)"
+    ],
+    "move_name": "WMP/2026/00040",
+    "name": "8KOT4IJUQZFSG3EJMKFA4",
+    "parent_state": "posted",
+    "ref": "8KOT4IJUQZFSG3EJMKFA4"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-11",
+    "debit": 436926.0,
+    "id": 3294,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1340,
+      "WMP/2026/00038 (IVZC94MXDYGEL3CUIIYCS6)"
+    ],
+    "move_name": "WMP/2026/00038",
+    "name": "IVZC94MXDYGEL3CUIIYCS6",
+    "parent_state": "posted",
+    "ref": "IVZC94MXDYGEL3CUIIYCS6"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-18",
+    "debit": 347625.0,
+    "id": 3290,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1338,
+      "WMP/2026/00036 (L1I58D2RPB8D01EE3L5Q84)"
+    ],
+    "move_name": "WMP/2026/00036",
+    "name": "L1I58D2RPB8D01EE3L5Q84",
+    "parent_state": "posted",
+    "ref": "L1I58D2RPB8D01EE3L5Q84"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-18",
+    "debit": 212180.0,
+    "id": 3292,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1339,
+      "WMP/2026/00037 (MKZ3XF5SWWE8RK1PKA1JTC)"
+    ],
+    "move_name": "WMP/2026/00037",
+    "name": "MKZ3XF5SWWE8RK1PKA1JTC",
+    "parent_state": "posted",
+    "ref": "MKZ3XF5SWWE8RK1PKA1JTC"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 332213.3,
+    "date": "2026-03-19",
+    "debit": 0.0,
+    "id": 3325,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1356,
+      "BNK8/2026/00010 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00010",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 1327369.53,
+    "date": "2026-04-01",
+    "debit": 0.0,
+    "id": 3327,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1357,
+      "BNK8/2026/00011 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00011",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-08",
+    "debit": 4842430.0,
+    "id": 3230,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1308,
+      "WMP/2026/00006 (L4RTPINMSZBZL9M57XV4VH)"
+    ],
+    "move_name": "WMP/2026/00006",
+    "name": "L4RTPINMSZBZL9M57XV4VH",
+    "parent_state": "posted",
+    "ref": "L4RTPINMSZBZL9M57XV4VH"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-11",
+    "debit": 3605000.0,
+    "id": 3228,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1307,
+      "WMP/2026/00005 (RGW20A2BCXSU83MUNQDP6)"
+    ],
+    "move_name": "WMP/2026/00005",
+    "name": "RGW20A2BCXSU83MUNQDP6",
+    "parent_state": "posted",
+    "ref": "RGW20A2BCXSU83MUNQDP6"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-14",
+    "debit": 339282.0,
+    "id": 3222,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1304,
+      "WMP/2026/00002 (YTQPJ1J1J48G0R4Q2M4RN)"
+    ],
+    "move_name": "WMP/2026/00002",
+    "name": "YTQPJ1J1J48G0R4Q2M4RN",
+    "parent_state": "posted",
+    "ref": "YTQPJ1J1J48G0R4Q2M4RN"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-14",
+    "debit": 117729.0,
+    "id": 3224,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1305,
+      "WMP/2026/00003 (I7CU20L4I8416WTEWM2P)"
+    ],
+    "move_name": "WMP/2026/00003",
+    "name": "I7CU20L4I8416WTEWM2P",
+    "parent_state": "posted",
+    "ref": "I7CU20L4I8416WTEWM2P"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-14",
+    "debit": 229175.0,
+    "id": 3226,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1306,
+      "WMP/2026/00004 (8S9N47EJUYUW8GQEH38ZB)"
+    ],
+    "move_name": "WMP/2026/00004",
+    "name": "8S9N47EJUYUW8GQEH38ZB",
+    "parent_state": "posted",
+    "ref": "8S9N47EJUYUW8GQEH38ZB"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-24",
+    "debit": 243698.0,
+    "id": 3220,
+    "journal_id": [
+      48,
+      "Wompi Tarjetas"
+    ],
+    "move_id": [
+      1303,
+      "WMP/2026/00001 (TKFGJOKOQFHWVIGU71QQQ)"
+    ],
+    "move_name": "WMP/2026/00001",
+    "name": "TKFGJOKOQFHWVIGU71QQQ",
+    "parent_state": "posted",
+    "ref": "TKFGJOKOQFHWVIGU71QQQ"
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-05-26",
+    "debit": 100.0,
+    "id": 3202,
+    "journal_id": [
+      13,
+      "Miscellaneous Operations"
+    ],
+    "move_id": [
+      1297,
+      ""
+    ],
+    "move_name": false,
+    "name": false,
+    "parent_state": "cancel",
+    "ref": false
+  },
+  {
+    "account_id": [
+      919,
+      "1110001 Wompi Tarjetas"
+    ],
+    "credit": 0.0,
+    "date": "2026-05-26",
+    "debit": 0.0,
+    "id": 3208,
+    "journal_id": [
+      13,
+      "Miscellaneous Operations"
+    ],
+    "move_id": [
+      1297,
+      ""
+    ],
+    "move_name": false,
+    "name": false,
+    "parent_state": "cancel",
+    "ref": false
+  }
+]

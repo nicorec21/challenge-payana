@@ -136,6 +136,13 @@ class Money:
     def __str__(self) -> str:
         return self.format()
 
+    def __format__(self, spec: str) -> str:
+        """Permite alinear montos en f-strings: `f"{monto:>22}"`.
+
+        Sin esto, cualquier spec de formato levanta TypeError y un reporte que
+        arma columnas se rompe recién en ejecución."""
+        return format(self.format(), spec)
+
 
 def _normalize_separators(text: str) -> str:
     """Decide cuál de `.` y `,` es el separador decimal y devuelve algo que

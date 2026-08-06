@@ -1,0 +1,354 @@
+[
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2025-11-19",
+    "debit": 0.0,
+    "id": 2243,
+    "journal_id": [
+      13,
+      "Miscellaneous Operations"
+    ],
+    "move_id": [
+      954,
+      "Borrador de asiento"
+    ],
+    "move_name": false,
+    "name": false,
+    "parent_state": "draft",
+    "ref": false
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 20000.0,
+    "date": "2025-12-29",
+    "debit": 0.0,
+    "id": 2607,
+    "journal_id": [
+      13,
+      "Miscellaneous Operations"
+    ],
+    "move_id": [
+      1084,
+      "MISC/2025/12/0001"
+    ],
+    "move_name": "MISC/2025/12/0001",
+    "name": "Write-Off",
+    "parent_state": "posted",
+    "ref": false
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2025-12-29",
+    "debit": 100000.0,
+    "id": 2612,
+    "journal_id": [
+      13,
+      "Miscellaneous Operations"
+    ],
+    "move_id": [
+      1086,
+      "MISC/2025/12/0002"
+    ],
+    "move_name": "MISC/2025/12/0002",
+    "name": "Write-Off",
+    "parent_state": "posted",
+    "ref": false
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-02",
+    "debit": 19715313.89,
+    "id": 3306,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1345,
+      "BNK8/2026/00001 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00001",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-06",
+    "debit": 257940.85,
+    "id": 3308,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1348,
+      "BNK8/2026/00002 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00002",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-19",
+    "debit": 2705039.6,
+    "id": 3310,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1349,
+      "BNK8/2026/00003 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00003",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-20",
+    "debit": 540836.41,
+    "id": 3312,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1350,
+      "BNK8/2026/00004 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00004",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-21",
+    "debit": 10054512.99,
+    "id": 3314,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1351,
+      "BNK8/2026/00005 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00005",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-01-29",
+    "debit": 116137.77,
+    "id": 3316,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1352,
+      "BNK8/2026/00006 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00006",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-02",
+    "debit": 257359.77,
+    "id": 3318,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1353,
+      "BNK8/2026/00007 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00007",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-02-03",
+    "debit": 9898251.19,
+    "id": 3320,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1354,
+      "BNK8/2026/00008 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00008",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-04",
+    "debit": 5627962.31,
+    "id": 3322,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1355,
+      "BNK8/2026/00009 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00009",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-03-19",
+    "debit": 332213.3,
+    "id": 3324,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1356,
+      "BNK8/2026/00010 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00010",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-01",
+    "debit": 1327369.53,
+    "id": 3326,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1357,
+      "BNK8/2026/00011 (Acreditación Wompi)"
+    ],
+    "move_name": "BNK8/2026/00011",
+    "name": "Acreditación Wompi",
+    "parent_state": "posted",
+    "ref": "Acreditación Wompi"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-04-20",
+    "debit": 10000.0,
+    "id": 3157,
+    "journal_id": [
+      12,
+      "Vendor Bills"
+    ],
+    "move_id": [
+      1279,
+      "BILL 212 (1231211)"
+    ],
+    "move_name": "BILL 212",
+    "name": "suelo",
+    "parent_state": "posted",
+    "ref": "1231211"
+  },
+  {
+    "account_id": [
+      429,
+      "111001 Bank"
+    ],
+    "credit": 0.0,
+    "date": "2026-06-11",
+    "debit": 36890.0,
+    "id": 3425,
+    "journal_id": [
+      49,
+      "Bancolombia"
+    ],
+    "move_id": [
+      1394,
+      "BNK8/2026/00012"
+    ],
+    "move_name": "BNK8/2026/00012",
+    "name": "akjshdjkasd",
+    "parent_state": "posted",
+    "ref": false
+  }
+]
