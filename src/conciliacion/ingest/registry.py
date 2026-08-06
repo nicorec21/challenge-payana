@@ -6,8 +6,8 @@ sumar el POS?": un `SourceSpec` más, registrado acá. El pipeline no cambia.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass, field
-from typing import Iterator
 
 from ..domain.ledger import Account, Ledger
 from ..domain.movement import Movement

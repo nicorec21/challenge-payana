@@ -33,9 +33,9 @@ from __future__ import annotations
 import csv
 import io
 import re
+from collections.abc import Iterator
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
-from typing import Iterator
+from datetime import UTC, date, datetime, timedelta, timezone
 
 from ...domain.money import Money
 from ...domain.movement import Movement, MovementKind, MovementStatus
@@ -196,7 +196,7 @@ def _parse_datetime(raw: str, transaction_id: str, locator: str) -> datetime:
 
     parts = transaction_id.split("-")
     if len(parts) >= 2 and parts[1].isdigit():
-        from_epoch = datetime.fromtimestamp(int(parts[1]), tz=timezone.utc).astimezone(_COT)
+        from_epoch = datetime.fromtimestamp(int(parts[1]), tz=UTC).astimezone(_COT)
         if from_epoch.replace(second=0, microsecond=0) != declared:
             raise IngestionError(
                 f"La fecha '{raw.strip()}' no coincide con el epoch del ID "

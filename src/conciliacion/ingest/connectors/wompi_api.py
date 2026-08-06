@@ -30,9 +30,10 @@ Ver ADR-0006.
 from __future__ import annotations
 
 import json
-from datetime import date, datetime, timezone
+from collections.abc import Iterator, Mapping, Sequence
+from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Any, Iterator, Mapping, Sequence
+from typing import Any
 
 import httpx
 
@@ -146,7 +147,7 @@ class WompiApiConnector:
 
         client = self._client or httpx.Client(timeout=30.0)
         owns_client = self._client is None
-        fetched_at = datetime.now(timezone.utc)
+        fetched_at = datetime.now(UTC)
 
         try:
             for page, items in self._pages(client, window.start, window.end):

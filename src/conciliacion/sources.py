@@ -11,8 +11,6 @@ falló. Ver ADR-0002.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from .config import ACCOUNTS
 from .ingest.adapters.bancolombia_pdf import BancolombiaPdfAdapter
 from .ingest.adapters.wompi_api import (

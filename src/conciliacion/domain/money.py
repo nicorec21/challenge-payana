@@ -7,9 +7,9 @@ indistinguibles de las comisiones reales que justamente queremos inferir.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
-from typing import Iterable
 
 #: Unidades menores por unidad de moneda. COP se opera en pesos enteros pero
 #: el ERP puede exponer decimales, así que guardamos centavos.

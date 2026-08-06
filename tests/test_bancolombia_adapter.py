@@ -5,7 +5,7 @@ test que lee el directorio de runtime se rompe cuando alguien baja un archivo
 más.
 """
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -13,8 +13,8 @@ import pytest
 from conciliacion.domain import Money, MovementKind
 from conciliacion.ingest.adapters.bancolombia_pdf import (
     BancolombiaPdfAdapter,
-    StatementIntegrityError,
     StatementHeader,
+    StatementIntegrityError,
     StatementSummary,
     _Row,
     _verify,
@@ -29,7 +29,7 @@ def record(name: str) -> RawRecord:
     return RawRecord(
         locator=f"tests/fixtures/bancolombia/{name}",
         payload=path.read_bytes(),
-        fetched_at=datetime.now(timezone.utc),
+        fetched_at=datetime.now(UTC),
         metadata={"filename": name},
     )
 
@@ -169,7 +169,8 @@ class TestIntegridad:
         """Invariante del extracto, verificado desde los movimientos ya
         normalizados: no solo parseó, parseó bien."""
         saldos = [Money.parse(m.metadata["saldo"]) for m in abril]
-        for anterior, actual, mov in zip(saldos, saldos[1:], abril[1:]):
+        # strict=False a propósito: `saldos` tiene un elemento más que los pares.
+        for anterior, actual, mov in zip(saldos, saldos[1:], abril[1:], strict=False):
             assert anterior + mov.amount == actual
 
     def test_cadena_rota_es_rechazada(self):

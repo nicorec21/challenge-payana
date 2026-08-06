@@ -227,7 +227,7 @@ class TestCsvDesembolso:
             for tx, grupo in por_tx.items():
                 bruto = Money.parse(grupo[0].metadata["declared_gross"])
                 neto = Money.parse(grupo[0].metadata["declared_net"])
-                descuentos = Money.sum((abs(m.amount) for m in grupo))
+                descuentos = Money.sum(abs(m.amount) for m in grupo)
                 assert bruto - descuentos == neto, tx
 
     def test_fila_que_no_cierra_es_rechazada(self, adapter):

@@ -38,9 +38,9 @@ import hashlib
 import io
 import re
 from collections import defaultdict
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import date
-from typing import Iterator
 
 import pdfplumber
 
@@ -111,7 +111,7 @@ class BancolombiaPdfAdapter:
         Se lee solo la primera página: barato, y alcanza para descartar."""
         if not isinstance(record.payload, (bytes, bytearray)):
             return False
-        if not record.payload[:5] == b"%PDF-":
+        if record.payload[:5] != b"%PDF-":
             return False
         try:
             with pdfplumber.open(io.BytesIO(record.payload)) as pdf:
@@ -357,8 +357,8 @@ def _verify(
         )
 
     # 3. suma de movimientos vs totales declarados
-    abonos = Money.sum((r.valor for r in rows if r.valor.amount > 0))
-    cargos = abs(Money.sum((r.valor for r in rows if r.valor.amount < 0)))
+    abonos = Money.sum(r.valor for r in rows if r.valor.amount > 0)
+    cargos = abs(Money.sum(r.valor for r in rows if r.valor.amount < 0))
     if abonos != summary.total_abonos:
         raise StatementIntegrityError(
             f"TOTAL ABONOS declarado {summary.total_abonos} != sumado {abonos}", locator

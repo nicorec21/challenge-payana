@@ -1,6 +1,6 @@
 """Repositorio SQLite: roundtrip fiel e idempotencia garantizada por el motor."""
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -22,14 +22,14 @@ def repo(tmp_path):
 
 
 def mov(external_id="TX-1", **kw) -> Movement:
-    base = dict(
-        ledger_id="wompi",
-        source_id="wompi_api_transactions",
-        external_id=external_id,
-        occurred_on=date(2026, 4, 14),
-        amount=Money(22_917_500),
-        kind=MovementKind.PAYMENT,
-    )
+    base = {
+        "ledger_id": "wompi",
+        "source_id": "wompi_api_transactions",
+        "external_id": external_id,
+        "occurred_on": date(2026, 4, 14),
+        "amount": Money(22_917_500),
+        "kind": MovementKind.PAYMENT,
+    }
     return Movement(**{**base, **kw})
 
 
@@ -52,7 +52,7 @@ class TestRoundtripDeMovimientos:
     def test_preserva_todos_los_campos(self, repo):
         repo.save_account(WOMPI)
         original = mov(
-            occurred_at=datetime(2026, 4, 14, 13, 44, tzinfo=timezone.utc),
+            occurred_at=datetime(2026, 4, 14, 13, 44, tzinfo=UTC),
             status=MovementStatus.DECLINED,
             description="Pago Wompi CARD",
             reference="8s9n47ejuyuw8gqeh38zb",
@@ -111,14 +111,13 @@ class TestIdempotencia:
         """Una ingesta interrumpida no deja el ledger a medias."""
         repo.save_account(WOMPI)
         repo.save_movements([mov("A")])
-        with pytest.raises(RuntimeError):
-            with repo.transaction() as conn:
-                conn.execute(
-                    "INSERT INTO movement (id, ledger_id, source_id, external_id, "
-                    "occurred_on, amount, currency, kind, status) "
-                    "VALUES ('x','wompi','s','B','2026-01-01',1,'COP','payment','approved')"
-                )
-                raise RuntimeError("boom")
+        with pytest.raises(RuntimeError), repo.transaction() as conn:
+            conn.execute(
+                "INSERT INTO movement (id, ledger_id, source_id, external_id, "
+                "occurred_on, amount, currency, kind, status) "
+                "VALUES ('x','wompi','s','B','2026-01-01',1,'COP','payment','approved')"
+            )
+            raise RuntimeError("boom")
         assert repo.count("wompi") == 1
 
 
@@ -204,7 +203,8 @@ class TestLedgerCompleto:
 
         en_orden = sorted(movs, key=lambda m: m.metadata["orden"])
         saldos = [Money.parse(m.metadata["saldo"]) for m in en_orden]
-        for anterior, actual, m in zip(saldos, saldos[1:], en_orden[1:]):
+        # strict=False a propósito: `saldos` tiene un elemento más que los pares.
+        for anterior, actual, m in zip(saldos, saldos[1:], en_orden[1:], strict=False):
             assert anterior + m.amount == actual
 
     def test_el_orden_del_documento_es_distinto_del_orden_del_ledger(self, tmp_path):

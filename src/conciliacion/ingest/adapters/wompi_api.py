@@ -22,8 +22,9 @@ es información contable real y no un artefacto del modelo.
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
 from datetime import datetime
-from typing import Any, Iterator, Mapping
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from ...config import TIMEZONE

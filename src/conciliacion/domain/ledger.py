@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Iterable, Iterator
 
 from .money import Money
 from .movement import Movement, MovementKind, MovementStatus

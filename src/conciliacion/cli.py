@@ -8,19 +8,34 @@ formateo.
 
 from __future__ import annotations
 
+import sys
 from datetime import date
-from typing import Optional
 
 import typer
 
 from .config import ACCOUNTS
 from .domain.money import Money
-from .domain.movement import MovementKind
 from .ingest.ports import FetchWindow
 from .ingest.registry import ingest_all
 from .settings import load_settings
 from .sources import build_registry
 from .storage.sqlite_repo import SqliteRepository
+
+
+def _forzar_utf8() -> None:
+    """La salida lleva acentos, símbolos de moneda y flechas.
+
+    En una consola de Windows con codepage heredado (cp1252), imprimir "→" o
+    "—" aborta el proceso con `UnicodeEncodeError`. Sin esto, correr la
+    herramienta exigiría configurar la terminal primero — y CI en Ubuntu nunca
+    lo detectaría porque ahí el default ya es UTF-8.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+_forzar_utf8()
 
 app = typer.Typer(
     add_completion=False,
@@ -71,8 +86,8 @@ def ingest(
 @app.command()
 def show(
     ledger: str = typer.Argument(..., help=f"Ledger a inspeccionar: {' | '.join(LEDGERS)}"),
-    desde: Optional[str] = typer.Option(None, help="Filtrar desde (YYYY-MM-DD)."),
-    hasta: Optional[str] = typer.Option(None, help="Filtrar hasta (YYYY-MM-DD)."),
+    desde: str | None = typer.Option(None, help="Filtrar desde (YYYY-MM-DD)."),
+    hasta: str | None = typer.Option(None, help="Filtrar hasta (YYYY-MM-DD)."),
 ) -> None:
     """Muestra el estado de un ledger ya persistido."""
     settings = load_settings()
@@ -85,7 +100,7 @@ def show(
             )
         except KeyError:
             typer.secho(f"No hay datos de '{ledger}'. Corré primero: ingest {ledger}", fg="red")
-            raise typer.Exit(1)
+            raise typer.Exit(1) from None
 
     typer.secho(f"{built.account.name} ({built.id})", bold=True)
     _print_summary(built)
@@ -115,6 +130,7 @@ def sources(
 def _print_summary(built) -> None:
     from collections import Counter
 
+    typer.echo(f"  movimientos {len(built)}")
     rango = built.date_range
     if rango:
         typer.echo(f"  período   {rango[0]} → {rango[1]}")
