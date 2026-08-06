@@ -21,8 +21,20 @@ export function Sistema() {
                     <code>{l.id}</code> · {l.role === "bank" ? "cuenta bancaria" : "canal"}
                   </div>
 
+                  {/*
+                    `balance()` suma los movimientos ingeridos. Eso es el saldo
+                    real solo si se ingirió desde la apertura de la cuenta.
+                    Para el banco tenemos una tajada de 4 meses, así que es
+                    FLUJO NETO del período, no saldo. Llamarlo "saldo" invitaría
+                    a compararlo contra el extracto y no coincide.
+                  */}
                   <div className={`kpi ${l.balance.cents < 0 ? "neg" : "pos"}`}>
                     {l.balance.formatted}
+                  </div>
+                  <div className="meta">
+                    {l.role === "bank"
+                      ? "flujo neto del período ingerido"
+                      : "saldo — plata cobrada y todavía no girada"}
                   </div>
                   <div className="meta">
                     {l.movement_count} movimientos
