@@ -11,14 +11,16 @@ falló. Ver ADR-0002.
 
 from __future__ import annotations
 
-from .config import ACCOUNTS
+from .config import ACCOUNTS, ODOO_LEDGER_ACCOUNTS, erp_accounts, erp_ledger_id
 from .ingest.adapters.bancolombia_pdf import BancolombiaPdfAdapter
+from .ingest.adapters.odoo_ledger import OdooLedgerAdapter
 from .ingest.adapters.wompi_api import (
     WompiApiDisbursementsAdapter,
     WompiApiTransactionsAdapter,
 )
 from .ingest.adapters.wompi_disbursement_csv import WompiDisbursementCsvAdapter
 from .ingest.connectors.local_file import LocalFileConnector
+from .ingest.connectors.odoo_rpc import OdooRpcConnector
 from .ingest.connectors.wompi_api import WompiApiConnector
 from .ingest.registry import SourceRegistry, SourceSpec
 from .settings import Settings
@@ -33,6 +35,8 @@ def build_registry(settings: Settings, *, offline: bool = False) -> SourceRegist
     """
     registry = SourceRegistry()
     for account in ACCOUNTS:
+        registry.register_account(account)
+    for account in erp_accounts():
         registry.register_account(account)
 
     raw = settings.raw_data_dir
@@ -78,5 +82,21 @@ def build_registry(settings: Settings, *, offline: bool = False) -> SourceRegist
             adapters=(WompiApiDisbursementsAdapter(),),
         )
     )
+
+    # ── Odoo: el libro contable de cada ledger ────────────────────────────
+    #
+    # Se define por CUENTA, no por diario: las líneas de 1110001 aparecen en
+    # tres diarios distintos y tomar el diario perdería los giros al banco.
+    odoo_archive = raw / "odoo"
+    for base_id, account_code in ODOO_LEDGER_ACCOUNTS.items():
+        registry.register_source(
+            SourceSpec(
+                name=f"odoo_libro_{base_id}",
+                connector=OdooRpcConnector(
+                    account_code, settings.odoo, archive_dir=odoo_archive
+                ),
+                adapters=(OdooLedgerAdapter(erp_ledger_id(base_id), account_code),),
+            )
+        )
 
     return registry

@@ -206,10 +206,81 @@ def settlement_policy_for(ledger_id: str) -> SettlementPolicy:
     return SETTLEMENT_POLICIES.get(ledger_id, SettlementPolicy(settlement_lag_business_days=1))
 
 #: Diferencia máxima tolerada al comparar un desembolso contra un crédito
-#: bancario. Arranca en cero: la identidad del CSV cierra al centavo, así que
-#: cualquier diferencia es información, no ruido. Si el banco resulta redondear,
-#: se sube con justificación.
+#: bancario. Cero a propósito: los 10 casos verificados coinciden al centavo,
+#: así que cualquier diferencia es información, no ruido. Si el banco resultara
+#: redondear, se sube con justificación.
 FLOW_AMOUNT_TOLERANCE = Money(0)
+
+#: Residuo aceptable **por transacción** cuando los descuentos se infieren en
+#: vez de leerse.
+#:
+#: No es un número elegido a ojo: es el error medido de la fórmula. Contrastada
+#: contra los 55 desembolsos con cobertura, predice el neto exacto en 47 y falla
+#: en 8 por exactamente $0,01 (el canal trunca en una etapa distinta a la que
+#: modelamos). Con descuentos declarados la tolerancia es cero.
+#:
+#: Que este número exista y valga 1 centavo —en vez de un margen holgado que
+#: tape cualquier cosa— es lo que permite afirmar que un match inferido es
+#: confiable.
+INFERENCE_TOLERANCE_PER_TRANSACTION = Money(1)
+
+#: Pistas para acotar qué créditos bancarios vale la pena revisar cuando ningún
+#: giro los explica.
+#:
+#: ⚠️ Es una **heurística de alcance, nunca una llave de match**. La descripción
+#: del extracto cambió a mitad del período (`PAGO DE PROV WOMPI` → `PAGO DE TERC
+#: WOMPI` el 14/04/2026); usarla para matchear perdería 53 de 58 líneas.
+#:
+#: Sin acotar, el reporte de "créditos sin explicar" listaría los 368
+#: movimientos bancarios ajenos al canal (nómina, DIAN, seguros, servicios) y
+#: sería inservible para el CFO. El motor deja constancia de que la detección es
+#: heurística en la explicación de cada finding.
+BANK_CHANNEL_HINTS: dict[str, tuple[str, ...]] = {
+    "wompi": ("WOMPI",),
+    "pos": ("POS", "DATAFONO"),
+}
+
+
+def bank_hints_for(ledger_id: str) -> tuple[str, ...]:
+    return BANK_CHANNEL_HINTS.get(ledger_id, ())
+
+
+# ─── Libros contables en Odoo ───────────────────────────────────────────────
+
+#: Cuenta del plan que representa cada ledger en el ERP.
+#:
+#: **Por cuenta, no por diario.** Las líneas de `1110001` aparecen en tres
+#: diarios distintos (Wompi Tarjetas, Bancolombia y Miscellaneous); tomar el
+#: diario como libro perdería 13 de 53 líneas, incluidos los 11 giros al banco.
+#: Ver ADR-0011.
+#:
+#: `1110001` funciona como cuenta puente: la venta la debita, el giro al banco
+#: la acredita. Por eso el giro aparece una sola vez en el ERP.
+ODOO_LEDGER_ACCOUNTS = {
+    "wompi": "1110001",       # Wompi Tarjetas  (asset_cash)
+    "bancolombia": "111001",  # Bank            (asset_cash)
+}
+
+#: Sufijo de los ledgers que espejan el ERP. `wompi` ↔ `wompi_erp`.
+ERP_SUFFIX = "_erp"
+
+
+def erp_ledger_id(ledger_id: str) -> str:
+    return f"{ledger_id}{ERP_SUFFIX}"
+
+
+def erp_accounts() -> tuple[Account, ...]:
+    """Cuentas espejo del ERP, una por ledger con libro contable."""
+    return tuple(
+        Account(
+            id=erp_ledger_id(base.id),
+            name=f"{base.name} — libro en Odoo",
+            currency=base.currency,
+            role="erp",
+        )
+        for base in ACCOUNTS
+        if base.id in ODOO_LEDGER_ACCOUNTS
+    )
 
 
 # ─── Mapeo al plan de cuentas de Odoo ───────────────────────────────────────

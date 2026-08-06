@@ -22,8 +22,8 @@ La suite se divide en dos, y cada una responde algo distinto:
 
 ```bash
 pytest -m unit          # 106 — solo dominio, sin I/O. Milisegundos.
-pytest -m integration   # 136 — pipeline real sobre fixtures congelados.
-pytest                  # 242
+pytest -m integration   # 243 — pipeline real sobre fixtures congelados.
+pytest                  # 349
 ```
 
 **Ningún test toca la red.** No es una convención: `tests/conftest.py` bloquea la
@@ -54,6 +54,23 @@ Estado de un ledger ya persistido:
 conciliacion show wompi
 ```
 
+Conciliación de flujo canal → banco:
+
+```bash
+conciliacion reconcile
+```
+
+Conciliación contra el libro contable de Odoo:
+
+```bash
+conciliacion ingest wompi_erp --desde 2025-01-01 --hasta 2026-12-31
+conciliacion reconcile-erp wompi
+```
+
+Escribe las **dos salidas** en `data/out/`: el reporte legible para el CFO y el
+JSON estructurado. Se generan del mismo resultado — si salieran por caminos
+distintos podrían afirmar cosas distintas sobre el mismo hecho.
+
 La CLI es el punto de entrada del pipeline, no la interfaz de usuario: dispara
 la ingesta y regenera las salidas. Correr `ingest` dos veces no duplica nada.
 
@@ -82,6 +99,8 @@ Cuatro vistas, pensadas para **verificar**, no para decorar:
 | **Extracto** | el extracto en orden de documento, con el saldo del banco y el calculado lado a lado. Si coincide con el PDF, el parser está bien |
 | **Transacciones** | la descomposición de cada venta y de qué fuente sale cada pieza |
 | **Desembolsos** | el cierre `Σ (bruto − descuentos) == \|giro\|`, y el residual cuando falta desglose |
+| **Conciliación de flujo** | qué giros llegaron al banco, cuáles no, y cuáles no se pueden juzgar |
+| **Libro contable** | qué registra el ERP y qué no, línea por línea, con los dos identificadores |
 
 Cualquier fila abre un panel con el `raw_ref`: el puntero al byte del que salió
 ese movimiento, para poder ir al archivo original y verificarlo.
@@ -123,9 +142,14 @@ src/conciliacion/
 ├── reconcile/
 │   ├── calendar.py     Días hábiles Colombia (Ley Emiliani). Necesario para T+1.
 │   ├── flow/           Fase 2. Canal → banco
+│   │   ├── engine.py       el matcher; produce Explanation por conclusión
+│   │   └── findings.py     estados, cobertura, reporte
 │   └── erp/            Fase 3. Ledger → libro de Odoo
 ├── storage/        SQLite, un archivo, sin ORM
-├── report/         Un contrato, dos proyecciones: Markdown (CFO) y JSON (IA)
+├── report/         Un contrato, dos proyecciones
+│   ├── contract.py     la representación serializable; nadie más calcula
+│   ├── cfo.py          Markdown para el humano
+│   └── flow_views.py   proyección de la conciliación
 ├── api/            FastAPI delgada: sirve resultados guardados
 └── cli.py
 
@@ -190,10 +214,42 @@ se pueden romper y convenciones. Es el archivo a leer antes de tocar nada.
 | [0007](docs/adr/0007-adapter-extracto-bancolombia.md) | PDF por coordenadas, clave sintética con saldo, autovalidación |
 | [0008](docs/adr/0008-reparto-disjunto-entre-fuentes.md) | Tres fuentes, `MovementKind` disjuntos, el ledger cierra en cero |
 | [0009](docs/adr/0009-extensibilidad-demostrada-pos.md) | Costo de sumar el POS, medido: 0 líneas de dominio, cadencia = 1 línea de config |
+| [0010](docs/adr/0010-conciliacion-de-flujo.md) | Flujo: dos saltos, el primero declarado. "Falta plata" ≠ "falta data" |
+| [0011](docs/adr/0011-conciliacion-contra-el-erp.md) | ERP: el libro es otro ledger. Se define por cuenta, no por diario |
 
 ## Cómo leer la salida
 
-_(Pendiente: se completa con la salida real sobre los datos provistos.)_
+`conciliacion reconcile` produce, sobre los datos del challenge:
+
+```
+matched            55        exact     3
+out_of_coverage     1        high     52
+unmatched_bank      3        medium    4
+
+conciliado   $263.600.926,28
+en disputa       $894.105,90
+redondeo               $0,08
+```
+
+Las cuentas cierran por ambos lados sin residuo:
+
+- `55 conciliados + 3 huérfanos = 58` líneas de Wompi en el extracto
+- `55 conciliados + 1 fuera de cobertura = 56` desembolsos de la API
+
+**`out_of_coverage` no es un faltante.** Un giro sin crédito bancario y un giro
+cuyo extracto no bajamos se ven idénticos en los datos y significan lo
+contrario. El primero es una alerta; el segundo, una nota al pie. Mezclarlos
+haría que el CFO vea faltantes que no existen.
+
+**La confianza no es decorativa.** Los 3 `exact` son los desembolsos cuyo
+desglose declaró el canal; los 52 `high` usan la fórmula inferida, con un error
+medido de un centavo por venta. Esos centavos aparecen como `redondeo` —
+separados de lo que está realmente en disputa, para que el total del veredicto
+coincida con la suma del detalle.
+
+Cada conclusión trae qué movimientos relaciona, de dónde salió cada ajuste
+(declarado o estimado), qué ventana temporal consideró y qué alternativas
+descartó. Ver [ADR-0010](docs/adr/0010-conciliacion-de-flujo.md).
 
 ## Agregar una fuente nueva: el POS, medido
 

@@ -132,6 +132,110 @@ export interface DisbursementBreakdown {
   transaction_ids: string[];
 }
 
+export interface Adjustment {
+  kind: string;
+  amount: Money;
+  /** "declared" = el canal lo informó · "inferred" = lo calculó el sistema */
+  source: string;
+  note: string;
+}
+
+export interface Alternative {
+  description: string;
+  movement_ids: string[];
+  rejected_because: string;
+  residual: Money | null;
+}
+
+export interface Explanation {
+  rule_id: string;
+  summary: string;
+  confidence: string;
+  source_movement_ids: string[];
+  target_movement_ids: string[];
+  gross: Money | null;
+  net: Money | null;
+  adjustments: Adjustment[];
+  adjustments_total: Money | null;
+  is_balanced: boolean;
+  window: { start: string; end: string; rule: string } | null;
+  alternatives: Alternative[];
+  unexplained: Money | null;
+}
+
+export interface FlowFinding {
+  id: string;
+  status: string;
+  /** `out_of_coverage` NO lo es: informa una limitación del dato. */
+  is_problem: boolean;
+  occurred_on: string | null;
+  settlement_movement_id: string | null;
+  bank_movement_id: string | null;
+  transaction_ids: string[];
+  settlement_amount: Money | null;
+  bank_amount: Money | null;
+  difference: Money | null;
+  explanation: Explanation;
+}
+
+export interface FlowReport {
+  contract_version: string;
+  generated_at: string;
+  channel_ledger_id: string;
+  bank_ledger_id: string;
+  coverage: Record<string, { from: string; to: string } | null>;
+  counts: Record<string, number>;
+  by_confidence: Record<string, number>;
+  matched_amount: Money;
+  unexplained_total: Money;
+  /** Solo lo atribuible a los problemas. Es el número a mostrar. */
+  disputed_amount: Money;
+  /** Error acumulado de estimar comisiones. Un centavo por venta como máximo. */
+  rounding_amount: Money;
+  problem_count: number;
+  findings: FlowFinding[];
+}
+
+export interface ErpFinding {
+  id: string;
+  status: string;
+  is_problem: boolean;
+  occurred_on: string | null;
+  kind: string | null;
+  ledger_movement_id: string | null;
+  book_movement_id: string | null;
+  /** `account.move.line.id`, para abrir la línea en Odoo. */
+  erp_line_id: string | null;
+  /** `WMP/2026/00001`, como lo ve un contador. */
+  erp_move_name: string | null;
+  ledger_amount: Money | null;
+  book_amount: Money | null;
+  difference: Money | null;
+  explanation: Explanation;
+}
+
+export interface ErpGroup {
+  kind: string;
+  count: number;
+  total: Money;
+}
+
+export interface ErpReport {
+  contract_version: string;
+  generated_at: string;
+  ledger_id: string;
+  book_ledger_id: string;
+  /** Cuenta del plan que representa al ledger en Odoo. */
+  account_code: string;
+  counts: Record<string, number>;
+  /** Fracción de movimientos del ledger que el libro registra. */
+  coverage_ratio: number;
+  matched_amount: Money;
+  problem_count: number;
+  missing_in_erp_by_kind: ErpGroup[];
+  findings: ErpFinding[];
+}
+
 export interface Page<T> {
   total: number;
   limit: number;
@@ -196,6 +300,11 @@ export const api = {
       sin_liquidar: number;
       items: TransactionBreakdown[];
     }>(`/api/ledgers/${id}/transactions`),
+
+  flow: (canal = "wompi", banco = "bancolombia") =>
+    get<FlowReport>(`/api/reconciliation/flow?canal=${canal}&banco=${banco}`),
+
+  erp: (ledger: string) => get<ErpReport>(`/api/reconciliation/erp/${ledger}`),
 
   disbursements: (id: string) =>
     get<{
