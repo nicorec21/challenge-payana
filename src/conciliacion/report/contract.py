@@ -28,6 +28,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, date, datetime
 from typing import Any
 
+from ..domain.explanation import Explanation
 from ..domain.ledger import Ledger
 from ..domain.money import Money
 from ..domain.movement import Movement
@@ -262,6 +263,146 @@ class DisbursementBreakdown:
     closes_to_zero: bool
     deductions_complete: bool
     transaction_ids: list[str]
+
+
+@dataclass(frozen=True, slots=True)
+class AdjustmentView:
+    """Un componente de la diferencia entre bruto y neto.
+
+    `source` es el campo que más importa: distingue lo **observado** de lo
+    **supuesto**. Un consumidor que no lo mire puede tratar una comisión
+    inferida como si el canal la hubiera declarado, y no son lo mismo — medido
+    sobre estos datos, declarado acierta 9/9 al centavo e inferido 47/55 con
+    error de ±$0,01.
+    """
+
+    kind: str
+    amount: dict[str, Any]
+    #: "declared" | "inferred" | "allocated"
+    source: str
+    note: str
+
+
+@dataclass(frozen=True, slots=True)
+class AlternativeView:
+    """Una hipótesis que el motor evaluó y descartó.
+
+    Exponer lo descartado es lo que convierte un match en un argumento.
+    """
+
+    description: str
+    movement_ids: list[str]
+    rejected_because: str
+    residual: dict[str, Any] | None
+
+
+@dataclass(frozen=True, slots=True)
+class ExplanationView:
+    """El razonamiento detrás de una conclusión, serializado.
+
+    `rule_id` es estable y filtrable sin parsear prosa: un consumidor
+    programático puede pedir "todos los findings de la regla X" sin leer texto.
+    """
+
+    rule_id: str
+    summary: str
+    confidence: str
+    source_movement_ids: list[str]
+    target_movement_ids: list[str]
+    gross: dict[str, Any] | None
+    net: dict[str, Any] | None
+    adjustments: list[AdjustmentView]
+    adjustments_total: dict[str, Any] | None
+    #: `gross − ajustes == net`: si la explicación se sostiene sola.
+    is_balanced: bool
+    window: dict[str, str] | None
+    alternatives: list[AlternativeView]
+    #: Lo que ninguna regla explica. `null` cuando es cero.
+    unexplained: dict[str, Any] | None
+
+    @classmethod
+    def of(cls, e: Explanation) -> ExplanationView:
+        total = e.adjustments_total
+        return cls(
+            rule_id=e.rule_id,
+            summary=e.summary,
+            confidence=e.confidence.value,
+            source_movement_ids=list(e.source_movement_ids),
+            target_movement_ids=list(e.target_movement_ids),
+            gross=_money(e.gross) if e.gross else None,
+            net=_money(e.net) if e.net else None,
+            adjustments=[
+                AdjustmentView(
+                    kind=a.kind.value,
+                    amount=_money(a.amount),
+                    source=a.source.value,
+                    note=a.note,
+                )
+                for a in e.adjustments
+            ],
+            adjustments_total=_money(total) if total else None,
+            is_balanced=e.is_balanced,
+            window=(
+                {"start": e.window.start.isoformat(), "end": e.window.end.isoformat(),
+                 "rule": e.window.rule}
+                if e.window else None
+            ),
+            alternatives=[
+                AlternativeView(
+                    description=alt.description,
+                    movement_ids=list(alt.movement_ids),
+                    rejected_because=alt.rejected_because,
+                    residual=_money(alt.residual) if alt.residual else None,
+                )
+                for alt in e.alternatives
+            ],
+            unexplained=_money(e.unexplained) if e.unexplained else None,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class FlowFindingView:
+    """Una conclusión de la conciliación de flujo."""
+
+    id: str
+    status: str
+    #: Si exige acción de alguien. `out_of_coverage` no lo es: informa una
+    #: limitación del dato, no un problema de la plata.
+    is_problem: bool
+    occurred_on: str | None
+    settlement_movement_id: str | None
+    bank_movement_id: str | None
+    transaction_ids: list[str]
+    settlement_amount: dict[str, Any] | None
+    bank_amount: dict[str, Any] | None
+    difference: dict[str, Any] | None
+    explanation: ExplanationView
+
+
+@dataclass(frozen=True, slots=True)
+class FlowReportView:
+    """Resultado completo de una conciliación de flujo."""
+
+    contract_version: str
+    generated_at: str
+    channel_ledger_id: str
+    bank_ledger_id: str
+    coverage: dict[str, Any]
+    counts: dict[str, int]
+    by_confidence: dict[str, int]
+    matched_amount: dict[str, Any]
+    #: Todo lo que ninguna regla explica, incluidos los centavos de redondeo de
+    #: las conciliaciones que sí cerraron.
+    unexplained_total: dict[str, Any]
+    #: Solo lo atribuible a los casos problemáticos. Es el número que hay que
+    #: mostrar: `unexplained_total` incluye el redondeo de matches exitosos y no
+    #: coincide con la suma del detalle.
+    disputed_amount: dict[str, Any]
+    #: Diferencia entre los dos anteriores: el error acumulado de estimar
+    #: comisiones en vez de leerlas. Acotado a un centavo por venta.
+    rounding_amount: dict[str, Any]
+    problem_count: int
+    findings: list[FlowFindingView]
 
 
 @dataclass(frozen=True, slots=True)

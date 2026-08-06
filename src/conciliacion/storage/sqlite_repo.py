@@ -13,6 +13,7 @@ from collections.abc import Iterable, Iterator, Sequence
 from contextlib import contextmanager
 from datetime import date, datetime
 from pathlib import Path
+from typing import Any
 
 from ..domain.ledger import Account, Ledger
 from ..domain.money import Money
@@ -160,6 +161,115 @@ class SqliteRepository:
             "SELECT COUNT(*) FROM movement WHERE ledger_id = ?", (ledger_id,)
         ).fetchone()[0]
 
+    # -- corridas de conciliación -----------------------------------------
+
+    def save_flow_run(self, view: Any, *, run_id: str | None = None) -> str:
+        """Persiste una corrida de conciliación con todos sus findings.
+
+        Se guardan varias corridas a propósito: comparar el resultado antes y
+        después de cambiar una regla es la única forma de saber si el cambio
+        mejoró algo. El `id` del run es determinista sobre el período y los
+        ledgers, así que volver a correr sobre la misma data pisa la corrida
+        anterior en vez de acumular duplicados.
+
+        La `Explanation` va como JSON en una columna y los campos que se
+        consultan salen a columnas indexadas: su forma depende de la regla y va
+        a cambiar mientras se afinan (ADR-0003).
+        """
+        import json as _json
+
+        run_id = run_id or _flow_run_id(view)
+        with self.transaction() as conn:
+            conn.execute("DELETE FROM reconciliation_run WHERE id = ?", (run_id,))
+            conn.execute(
+                "INSERT INTO reconciliation_run (id, kind, started_at, finished_at, params, stats) "
+                "VALUES (?,?,?,?,?,?)",
+                (
+                    run_id,
+                    "flow",
+                    view.generated_at,
+                    view.generated_at,
+                    _json.dumps(
+                        {
+                            "channel": view.channel_ledger_id,
+                            "bank": view.bank_ledger_id,
+                            "coverage": view.coverage,
+                            "contract_version": view.contract_version,
+                        },
+                        ensure_ascii=False,
+                    ),
+                    _json.dumps(
+                        {
+                            "counts": view.counts,
+                            "by_confidence": view.by_confidence,
+                            "problem_count": view.problem_count,
+                            "matched_amount_cents": view.matched_amount["cents"],
+                            "unexplained_cents": view.unexplained_total["cents"],
+                        },
+                        ensure_ascii=False,
+                    ),
+                ),
+            )
+
+            from ..report.contract import to_dict
+
+            for f in view.findings:
+                e = f.explanation
+                conn.execute(
+                    "INSERT INTO finding (id, run_id, status, rule_id, confidence, "
+                    "gross, net, unexplained, currency, explanation) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        f.id, run_id, f.status, e.rule_id, e.confidence,
+                        e.gross["cents"] if e.gross else None,
+                        e.net["cents"] if e.net else None,
+                        e.unexplained["cents"] if e.unexplained else None,
+                        (e.gross or e.net or {}).get("currency", "COP"),
+                        _json.dumps(to_dict(e), ensure_ascii=False),
+                    ),
+                )
+                filas = [(f.id, mid, "source") for mid in e.source_movement_ids]
+                filas += [(f.id, mid, "target") for mid in e.target_movement_ids]
+                conn.executemany(
+                    "INSERT OR IGNORE INTO finding_movement (finding_id, movement_id, side) "
+                    "VALUES (?,?,?)",
+                    filas,
+                )
+        return run_id
+
+    def latest_flow_run(self) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT * FROM reconciliation_run WHERE kind = 'flow' "
+            "ORDER BY started_at DESC LIMIT 1"
+        ).fetchone()
+        return dict(row) if row else None
+
+    def findings_of(self, run_id: str, status: str | None = None) -> list[dict[str, Any]]:
+        import json as _json
+
+        sql = "SELECT * FROM finding WHERE run_id = ?"
+        params: list[Any] = [run_id]
+        if status:
+            sql += " AND status = ?"
+            params.append(status)
+        rows = self._conn.execute(sql + " ORDER BY id", params).fetchall()
+        return [{**dict(r), "explanation": _json.loads(r["explanation"])} for r in rows]
+
+    def findings_touching(self, movement_id: str) -> list[dict[str, Any]]:
+        """Qué conclusiones involucran a un movimiento.
+
+        Es `Trazar(Movimiento)` de las primitivas sugeridas: dado un pago,
+        devuelve dónde terminaron sus fondos.
+        """
+        import json as _json
+
+        rows = self._conn.execute(
+            "SELECT f.*, fm.side FROM finding f "
+            "JOIN finding_movement fm ON fm.finding_id = f.id "
+            "WHERE fm.movement_id = ? ORDER BY f.id",
+            (movement_id,),
+        ).fetchall()
+        return [{**dict(r), "explanation": _json.loads(r["explanation"])} for r in rows]
+
     def date_range(self, ledger_id: str) -> tuple[date, date] | None:
         row = self._conn.execute(
             "SELECT MIN(occurred_on), MAX(occurred_on) FROM movement WHERE ledger_id = ?",
@@ -215,3 +325,18 @@ def _to_account(row: sqlite3.Row) -> Account:
     return Account(
         id=row["id"], name=row["name"], currency=row["currency"], role=row["role"]
     )
+
+
+def _flow_run_id(view: Any) -> str:
+    """Id determinista de la corrida: mismos ledgers y mismo período = mismo id.
+
+    Así una re-corrida pisa el resultado anterior en vez de acumular filas, y
+    un finding se puede citar entre corridas."""
+    import hashlib
+
+    cov = view.coverage.get("overlap") or {}
+    material = "".join([
+        "flow", view.channel_ledger_id, view.bank_ledger_id,
+        str(cov.get("from")), str(cov.get("to")),
+    ])
+    return f"run_{hashlib.sha256(material.encode()).hexdigest()[:16]}"

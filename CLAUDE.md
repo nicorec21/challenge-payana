@@ -364,12 +364,87 @@ medida. 242 tests.
 - `IngestionReport.requested_window` para distinguir *"no llegó la plata"* de
   *"no tengo datos de ese período"* — que se ven idénticos y significan lo opuesto.
 
-**Fase 3 (ERP/Odoo): no empezada.** Decisión abierta y grande: Odoo es partida
-doble y el modelo es partida simple. Hay que decidir cómo colapsar un asiento en
-un movimiento (¿la línea de banco 111001? ¿el neto?). Merece su propio ADR.
+**Fase 3 (ERP/Odoo): no empezada, pero el ERP ya se exploró** (XML-RPC, solo
+lectura) y la decisión de modelado quedó resuelta. Ver abajo.
 
-Cuentas de Odoo: Ventas 420500 · IVA comisiones 240810 · Comisiones 530505 ·
-Retenciones 236500 · Banco 111001. Diarios: 48 = Wompi, 49 = Bancolombia.
+---
+
+## Odoo: lo que hay adentro
+
+Explorado, **nada implementado**. Odoo 18. Diarios: 48 = Wompi, 49 = Bancolombia.
+
+### La cuenta puente resuelve partida doble → partida simple
+
+```
+diario 48 "Wompi Tarjetas"  →  cuenta default 1110001 Wompi Tarjetas
+diario 49 "Bancolombia"     →  cuenta default 111001 Bank
+```
+
+Asiento de venta (48):          Asiento de acreditación (49):
+```
+1110001  DEBE   243.698,00      111001   DEBE   1.327.369,53
+420500   HABER  243.698,00      1110001  HABER  1.327.369,53
+```
+
+**`1110001 Wompi Tarjetas` ES el ledger `wompi` como cuenta contable.** El giro
+aparece **una sola vez** —en el diario 49, moviendo plata de la cuenta puente al
+banco—, así que no hay doble conteo entre diarios.
+
+**Regla de proyección**, sin casos especiales:
+
+```
+monto_con_signo = Σ (debit − credit) sobre las líneas cuya account_id sea la del ledger
+```
+
+Ambas cuentas son de tipo `bank`: debe = entrada, haber = salida. Es exactamente
+la convención de signos del modelo. Verificado:
+
+| Modelo | Odoo |
+|---|---|
+| `PAYMENT +243.698` (wompi) | 1110001 DEBE 243.698 |
+| `SETTLEMENT −1.327.369,53` (wompi) | 1110001 HABER 1.327.369,53 |
+| `BANK_CREDIT +1.327.369,53` (banco) | 111001 DEBE 1.327.369,53 |
+
+### `ref` es la llave de match del lado Wompi
+
+`account.move.ref` del diario 48 es la referencia de la transacción de Wompi
+**en mayúsculas** (`TKFGJOKOQFHWVIGU71QQQ` ↔ `tkfgjokoqfhwvigu71qqq`).
+40 de 40 matchean por ref, **ninguna con monto distinto**.
+
+Del lado banco `ref = "Acreditación Wompi"` en todas: descriptivo, no llave. Ahí
+hay que matchear por monto + fecha.
+
+### 🔴 Las cuentas del enunciado NO se usan
+
+Los diarios 48 y 49 solo tocan `1110001`, `420500`, `111001` (y una vez
+`111002 Suspense`). **Ni comisión, ni IVA, ni retención.** Y los códigos no se
+llaman como dice el enunciado:
+
+| Código | Nombre real | Líneas en todo Odoo |
+|---|---|---|
+| 530505 | **Currency Exchange Loss** (no "Gastos Bancarios") | 1 |
+| 236500 | Withheld at source | 1 |
+| 240810 | Discountable VAT | 286, fuera de estos diarios |
+
+El bruto entra a `1110001`, el neto sale, y la diferencia —las comisiones— queda
+como saldo permanente en la cuenta puente, sin llevarse nunca a gasto.
+
+Ambigüedad abierta: el enunciado dice *"las cuentas contables **a utilizar**
+son"*. Puede ser descripción (falsa) o instrucción de lo que habría que
+proponer. Probablemente lo segundo.
+
+### El ERP está incompleto — y eso es el entregable de Fase 3
+
+```
+115 ventas aprobadas  vs  40 asientos (diario 48)  →  75 sin registrar
+ 58 acreditaciones     vs  12 asientos (diario 49)  →  47 sin registrar
+```
+
+De las 40 que existen: coincidencia perfecta, cero diferencias de monto.
+
+El modelo es **más granular** que el ERP (separa PAYMENT / FEE / TAX /
+SETTLEMENT donde Odoo registra solo bruto y neto). Esa diferencia no es un
+problema del modelo: es una discrepancia a reportar.
 
 ---
 

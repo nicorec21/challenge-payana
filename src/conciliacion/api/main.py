@@ -16,6 +16,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 from ..config import ACCOUNTS
 from ..domain.ledger import Ledger
@@ -223,6 +224,67 @@ def disbursements(ledger_id: str) -> dict[str, Any]:
         "con_desglose_completo": sum(1 for d in items if d.deductions_complete),
         "items": [to_dict(d) for d in items],
     }
+
+
+@app.get("/api/reconciliation/flow")
+def flow(
+    canal: str = "wompi",
+    banco: str = "bancolombia",
+    desde: date | None = None,
+    hasta: date | None = None,
+) -> dict[str, Any]:
+    """Conciliación de flujo canal → banco.
+
+    Se calcula al vuelo sobre los ledgers persistidos. El volumen lo permite
+    (56 giros contra 426 movimientos bancarios) y evita servir un resultado
+    viejo después de reingerir. Si creciera, se sirve la última corrida
+    guardada en vez de recalcular.
+    """
+    from ..reconcile.flow.engine import reconcile_flow
+    from ..reconcile.flow.findings import Coverage
+    from ..report.flow_views import build_flow_report
+
+    canal_led, banco_led = _load(canal), _load(banco)
+
+    def recortar(rango):
+        if rango is None:
+            return None
+        inicio = max(rango[0], desde) if desde else rango[0]
+        fin = min(rango[1], hasta) if hasta else rango[1]
+        return (inicio, fin) if inicio <= fin else None
+
+    coverage = Coverage(
+        channel=recortar(canal_led.date_range), bank=recortar(banco_led.date_range)
+    )
+    report = reconcile_flow(canal_led, banco_led, coverage=coverage)
+    return to_dict(build_flow_report(report))
+
+
+@app.get("/api/reconciliation/flow/report.md", response_class=PlainTextResponse)
+def flow_markdown(canal: str = "wompi", banco: str = "bancolombia") -> str:
+    """El mismo resultado, renderizado para el CFO.
+
+    Misma fuente que el JSON: dos proyecciones, un solo cálculo.
+    """
+    from ..reconcile.flow.engine import reconcile_flow
+    from ..reconcile.flow.findings import Coverage
+    from ..report.cfo import render_flow_report
+
+    canal_led, banco_led = _load(canal), _load(banco)
+    coverage = Coverage(channel=canal_led.date_range, bank=banco_led.date_range)
+    return render_flow_report(reconcile_flow(canal_led, banco_led, coverage=coverage))
+
+
+@app.get("/api/movements/{movement_id}/trace")
+def trace(movement_id: str) -> dict[str, Any]:
+    """`Trazar(Movimiento)`: en qué conclusiones participa este movimiento.
+
+    Dado un pago, responde dónde terminaron sus fondos. Lee los findings ya
+    persistidos, así que devuelve la última corrida guardada.
+    """
+    with _repo() as repo:
+        findings = repo.findings_touching(movement_id)
+    return {"movement_id": movement_id, "findings": findings}
 
 
 @app.get("/api/kinds")

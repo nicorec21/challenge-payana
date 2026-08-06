@@ -206,10 +206,43 @@ def settlement_policy_for(ledger_id: str) -> SettlementPolicy:
     return SETTLEMENT_POLICIES.get(ledger_id, SettlementPolicy(settlement_lag_business_days=1))
 
 #: Diferencia máxima tolerada al comparar un desembolso contra un crédito
-#: bancario. Arranca en cero: la identidad del CSV cierra al centavo, así que
-#: cualquier diferencia es información, no ruido. Si el banco resulta redondear,
-#: se sube con justificación.
+#: bancario. Cero a propósito: los 10 casos verificados coinciden al centavo,
+#: así que cualquier diferencia es información, no ruido. Si el banco resultara
+#: redondear, se sube con justificación.
 FLOW_AMOUNT_TOLERANCE = Money(0)
+
+#: Residuo aceptable **por transacción** cuando los descuentos se infieren en
+#: vez de leerse.
+#:
+#: No es un número elegido a ojo: es el error medido de la fórmula. Contrastada
+#: contra los 55 desembolsos con cobertura, predice el neto exacto en 47 y falla
+#: en 8 por exactamente $0,01 (el canal trunca en una etapa distinta a la que
+#: modelamos). Con descuentos declarados la tolerancia es cero.
+#:
+#: Que este número exista y valga 1 centavo —en vez de un margen holgado que
+#: tape cualquier cosa— es lo que permite afirmar que un match inferido es
+#: confiable.
+INFERENCE_TOLERANCE_PER_TRANSACTION = Money(1)
+
+#: Pistas para acotar qué créditos bancarios vale la pena revisar cuando ningún
+#: giro los explica.
+#:
+#: ⚠️ Es una **heurística de alcance, nunca una llave de match**. La descripción
+#: del extracto cambió a mitad del período (`PAGO DE PROV WOMPI` → `PAGO DE TERC
+#: WOMPI` el 14/04/2026); usarla para matchear perdería 53 de 58 líneas.
+#:
+#: Sin acotar, el reporte de "créditos sin explicar" listaría los 368
+#: movimientos bancarios ajenos al canal (nómina, DIAN, seguros, servicios) y
+#: sería inservible para el CFO. El motor deja constancia de que la detección es
+#: heurística en la explicación de cada finding.
+BANK_CHANNEL_HINTS: dict[str, tuple[str, ...]] = {
+    "wompi": ("WOMPI",),
+    "pos": ("POS", "DATAFONO"),
+}
+
+
+def bank_hints_for(ledger_id: str) -> tuple[str, ...]:
+    return BANK_CHANNEL_HINTS.get(ledger_id, ())
 
 
 # ─── Mapeo al plan de cuentas de Odoo ───────────────────────────────────────

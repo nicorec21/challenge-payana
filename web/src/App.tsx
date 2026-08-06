@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "./api";
 import { Async, useAsync } from "./ui";
+import { Conciliacion } from "./views/Conciliacion";
 import { Desembolsos } from "./views/Desembolsos";
 import { Extracto } from "./views/Extracto";
 import { Movimientos } from "./views/Movimientos";
@@ -9,6 +10,7 @@ import { Transacciones } from "./views/Transacciones";
 
 type Vista =
   | { tipo: "sistema" }
+  | { tipo: "conciliacion" }
   | { tipo: "extracto"; ledger: string }
   | { tipo: "movimientos"; ledger: string }
   | { tipo: "transacciones"; ledger: string }
@@ -32,6 +34,12 @@ export function App() {
         <div className="nav">
           <button className={on({ tipo: "sistema" }) ? "on" : ""} onClick={() => setVista({ tipo: "sistema" })}>
             Sistema
+          </button>
+          <button
+            className={on({ tipo: "conciliacion" }) ? "on" : ""}
+            onClick={() => setVista({ tipo: "conciliacion" })}
+          >
+            Conciliación de flujo
           </button>
 
           <Async state={sistema}>
@@ -84,6 +92,7 @@ export function App() {
 
       <main className="main">
         {vista.tipo === "sistema" && <Sistema />}
+        {vista.tipo === "conciliacion" && <Conciliacion canal="wompi" banco="bancolombia" />}
         {vista.tipo === "extracto" && <Extracto ledgerId={vista.ledger} />}
         {vista.tipo === "movimientos" && <Movimientos ledgerId={vista.ledger} />}
         {vista.tipo === "transacciones" && <Transacciones ledgerId={vista.ledger} />}

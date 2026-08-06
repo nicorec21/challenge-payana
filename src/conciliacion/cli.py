@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import sys
 from datetime import date
+from pathlib import Path
 
 import typer
 
@@ -104,6 +105,83 @@ def show(
 
     typer.secho(f"{built.account.name} ({built.id})", bold=True)
     _print_summary(built)
+
+
+@app.command()
+def reconcile(
+    canal: str = typer.Argument("wompi", help="Ledger del canal."),
+    banco: str = typer.Argument("bancolombia", help="Ledger bancario."),
+    desde: str | None = typer.Option(None, help="Acota la cobertura (YYYY-MM-DD)."),
+    hasta: str | None = typer.Option(None, help="Acota la cobertura (YYYY-MM-DD)."),
+    salida: str | None = typer.Option(
+        None, "--salida", help="Directorio donde escribir el reporte. Default: data/out/."
+    ),
+) -> None:
+    """Concilia el flujo canal → banco y escribe las dos salidas.
+
+    Genera el reporte legible para el CFO y el JSON estructurado desde el mismo
+    resultado: si se generaran por caminos distintos, podrían afirmar cosas
+    distintas sobre el mismo hecho.
+    """
+    import json
+
+    from .reconcile.flow.engine import reconcile_flow
+    from .report.cfo import render_flow_report
+    from .report.contract import to_dict
+    from .report.flow_views import build_flow_report
+
+    settings = load_settings()
+    with SqliteRepository(settings.database_path) as repo:
+        try:
+            canal_led = repo.load_ledger(canal)
+            banco_led = repo.load_ledger(banco)
+        except KeyError as exc:
+            typer.secho(f"{exc}. Corré primero: conciliacion ingest <ledger>", fg="red")
+            raise typer.Exit(1) from None
+
+        cobertura = _coverage(canal_led, banco_led, desde, hasta)
+        report = reconcile_flow(canal_led, banco_led, coverage=cobertura)
+        view = build_flow_report(report)
+        run_id = repo.save_flow_run(view)
+
+    destino = Path(salida) if salida else settings.out_dir
+    destino.mkdir(parents=True, exist_ok=True)
+    md = destino / f"conciliacion-flujo-{canal}-{banco}.md"
+    js = destino / f"conciliacion-flujo-{canal}-{banco}.json"
+    md.write_text(render_flow_report(report), encoding="utf-8")
+    js.write_text(
+        json.dumps(to_dict(view), ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+    typer.secho(f"\n{canal} → {banco}   (corrida {run_id})", bold=True)
+    for estado, n in sorted(report.counts().items()):
+        color = "red" if estado in ("unmatched_settlement", "unmatched_bank") else None
+        typer.secho(f"  {estado:<24} {n:>4}", fg=color)
+    typer.echo(f"\n  conciliado    {report.matched_amount()}")
+    typer.echo(f"  sin explicar  {report.unexplained_total()}")
+    typer.secho(f"  a revisar     {len(report.problems)}", bold=True)
+    typer.echo(f"\n  CFO   {md}\n  IA    {js}")
+
+
+def _coverage(canal_led, banco_led, desde: str | None, hasta: str | None):
+    """Cobertura efectiva de cada fuente.
+
+    Se puede acotar a mano porque el rango de movimientos observados es una
+    aproximación conservadora: un mes sin movimientos es indistinguible de un
+    mes que nadie bajó. Ver `reconcile_flow`.
+    """
+    from .reconcile.flow.findings import Coverage
+
+    def recortar(rango):
+        if rango is None:
+            return None
+        inicio = max(rango[0], date.fromisoformat(desde)) if desde else rango[0]
+        fin = min(rango[1], date.fromisoformat(hasta)) if hasta else rango[1]
+        return (inicio, fin) if inicio <= fin else None
+
+    return Coverage(
+        channel=recortar(canal_led.date_range), bank=recortar(banco_led.date_range)
+    )
 
 
 @app.command()
