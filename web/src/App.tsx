@@ -3,6 +3,7 @@ import { api } from "./api";
 import { Async, useAsync } from "./ui";
 import { Conciliacion } from "./views/Conciliacion";
 import { Desembolsos } from "./views/Desembolsos";
+import { Erp } from "./views/Erp";
 import { Extracto } from "./views/Extracto";
 import { Movimientos } from "./views/Movimientos";
 import { Sistema } from "./views/Sistema";
@@ -11,6 +12,7 @@ import { Transacciones } from "./views/Transacciones";
 type Vista =
   | { tipo: "sistema" }
   | { tipo: "conciliacion" }
+  | { tipo: "erp"; ledger: string }
   | { tipo: "extracto"; ledger: string }
   | { tipo: "movimientos"; ledger: string }
   | { tipo: "transacciones"; ledger: string }
@@ -82,6 +84,15 @@ export function App() {
                     >
                       Movimientos
                     </button>
+                    {l.role !== "erp" && (
+                      <button
+                        className={on({ tipo: "erp", ledger: l.id }) ? "on" : ""}
+                        onClick={() => setVista({ tipo: "erp", ledger: l.id })}
+                        style={{ width: "100%" }}
+                      >
+                        Libro contable
+                      </button>
+                    )}
                   </div>
                 ))}
               </>
@@ -97,6 +108,7 @@ export function App() {
         {vista.tipo === "movimientos" && <Movimientos ledgerId={vista.ledger} />}
         {vista.tipo === "transacciones" && <Transacciones ledgerId={vista.ledger} />}
         {vista.tipo === "desembolsos" && <Desembolsos ledgerId={vista.ledger} />}
+        {vista.tipo === "erp" && <Erp ledger={vista.ledger} />}
       </main>
     </div>
   );

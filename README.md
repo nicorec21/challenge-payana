@@ -100,7 +100,7 @@ Cuatro vistas, pensadas para **verificar**, no para decorar:
 | **Transacciones** | la descomposición de cada venta y de qué fuente sale cada pieza |
 | **Desembolsos** | el cierre `Σ (bruto − descuentos) == \|giro\|`, y el residual cuando falta desglose |
 | **Conciliación de flujo** | qué giros llegaron al banco, cuáles no, y cuáles no se pueden juzgar |
-| **Conciliación ERP** | qué registra el libro contable y qué no, línea por línea |
+| **Libro contable** | qué registra el ERP y qué no, línea por línea, con los dos identificadores |
 
 Cualquier fila abre un panel con el `raw_ref`: el puntero al byte del que salió
 ese movimiento, para poder ir al archivo original y verificarlo.

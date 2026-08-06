@@ -196,6 +196,46 @@ export interface FlowReport {
   findings: FlowFinding[];
 }
 
+export interface ErpFinding {
+  id: string;
+  status: string;
+  is_problem: boolean;
+  occurred_on: string | null;
+  kind: string | null;
+  ledger_movement_id: string | null;
+  book_movement_id: string | null;
+  /** `account.move.line.id`, para abrir la línea en Odoo. */
+  erp_line_id: string | null;
+  /** `WMP/2026/00001`, como lo ve un contador. */
+  erp_move_name: string | null;
+  ledger_amount: Money | null;
+  book_amount: Money | null;
+  difference: Money | null;
+  explanation: Explanation;
+}
+
+export interface ErpGroup {
+  kind: string;
+  count: number;
+  total: Money;
+}
+
+export interface ErpReport {
+  contract_version: string;
+  generated_at: string;
+  ledger_id: string;
+  book_ledger_id: string;
+  /** Cuenta del plan que representa al ledger en Odoo. */
+  account_code: string;
+  counts: Record<string, number>;
+  /** Fracción de movimientos del ledger que el libro registra. */
+  coverage_ratio: number;
+  matched_amount: Money;
+  problem_count: number;
+  missing_in_erp_by_kind: ErpGroup[];
+  findings: ErpFinding[];
+}
+
 export interface Page<T> {
   total: number;
   limit: number;
@@ -263,6 +303,8 @@ export const api = {
 
   flow: (canal = "wompi", banco = "bancolombia") =>
     get<FlowReport>(`/api/reconciliation/flow?canal=${canal}&banco=${banco}`),
+
+  erp: (ledger: string) => get<ErpReport>(`/api/reconciliation/erp/${ledger}`),
 
   disbursements: (id: string) =>
     get<{
