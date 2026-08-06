@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 320 tests, 106/214,
+Este archivo y el README afirman cantidades concretas: 349 tests, 106/243,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -64,15 +64,17 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 320
+pytest                                        # 349
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 214 — pipeline sobre fixtures
+pytest -m integration                         # 243 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
 conciliacion sources --offline
 conciliacion show wompi
 conciliacion reconcile                        # flujo canal -> banco, 2 salidas
+conciliacion ingest wompi_erp --desde 2025-01-01 --hasta 2026-12-31
+conciliacion reconcile-erp wompi              # ledger vs libro de Odoo
 ```
 
 `--offline` omite las fuentes de red y reprocesa desde `data/raw/`.
@@ -380,8 +382,23 @@ Lo que quedó apoyando la fase:
 - `IngestionReport.requested_window` para distinguir *"no llegó la plata"* de
   *"no tengo datos de ese período"* — que se ven idénticos y significan lo opuesto.
 
-**Fase 3 (ERP/Odoo): no empezada, pero el ERP ya se exploró** (XML-RPC, solo
-lectura) y la decisión de modelado quedó resuelta. Ver abajo.
+**Fase 3 (ERP/Odoo): COMPLETA.** Connector XML-RPC, adapter, motor, CLI, API y
+ADR-0011. Resultado sobre los datos: el ERP registra el **24,7%** de los
+movimientos de Wompi y el **2,6%** de los del banco.
+
+Decisiones que conviene no revertir sin leer ADR-0011:
+
+- **El libro se define por CUENTA, no por diario.** Tomar el diario 48 como
+  libro de Wompi perdería 13 de 53 líneas, incluidos los 11 giros al banco.
+- **La llave de match se decide contando**, no con lista negra: una referencia
+  que se repite no identifica nada.
+- **Se recorre el LIBRO, no el ledger.** Una referencia identifica una
+  *transacción* (hasta 5 movimientos), no un movimiento. Al revés, la comisión
+  se lleva la línea de la venta — fue un bug real con 4 falsos positivos.
+- **`draft`/`cancel` son un estado propio** (`NOT_POSTED`), ni coincidencia ni
+  ausencia.
+
+Detalle de lo que hay adentro del ERP, abajo.
 
 ---
 

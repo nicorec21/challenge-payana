@@ -18,7 +18,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
-from ..config import ACCOUNTS
+from ..config import ACCOUNTS, erp_accounts
 from ..domain.ledger import Ledger
 from ..domain.movement import MovementKind
 from ..report.contract import (
@@ -99,7 +99,7 @@ def system() -> dict[str, Any]:
     ledgers: list[LedgerSummary] = []
     coverage: dict[str, dict[str, str | None]] = {}
     with _repo() as repo:
-        for account in ACCOUNTS:
+        for account in (*ACCOUNTS, *erp_accounts()):
             if repo.count(account.id) == 0:
                 continue
             ledger = repo.load_ledger(account.id)
@@ -285,6 +285,47 @@ def trace(movement_id: str) -> dict[str, Any]:
     with _repo() as repo:
         findings = repo.findings_touching(movement_id)
     return {"movement_id": movement_id, "findings": findings}
+
+
+@app.get("/api/reconciliation/erp/{ledger_id}")
+def erp(ledger_id: str) -> dict[str, Any]:
+    """Conciliación de un ledger contra su libro contable en Odoo.
+
+    Pregunta contable, distinta de la de flujo: no infiere de qué canal vino la
+    plata, compara cada ledger contra su libro formal línea por línea.
+    """
+    from ..config import ODOO_LEDGER_ACCOUNTS, erp_ledger_id
+    from ..reconcile.erp.engine import reconcile_erp
+    from ..report.erp_views import build_erp_report
+
+    account_code = ODOO_LEDGER_ACCOUNTS.get(ledger_id)
+    if account_code is None:
+        raise HTTPException(
+            404,
+            f"'{ledger_id}' no tiene libro contable declarado. "
+            f"Opciones: {', '.join(ODOO_LEDGER_ACCOUNTS)}",
+        )
+    report = reconcile_erp(
+        _load(ledger_id), _load(erp_ledger_id(ledger_id)), account_code=account_code
+    )
+    return to_dict(build_erp_report(report))
+
+
+@app.get("/api/reconciliation/erp/{ledger_id}/report.md", response_class=PlainTextResponse)
+def erp_markdown(ledger_id: str) -> str:
+    """El mismo resultado, renderizado para el CFO."""
+    from ..config import ODOO_LEDGER_ACCOUNTS, erp_ledger_id
+    from ..reconcile.erp.engine import reconcile_erp
+    from ..report.erp_cfo import render_erp_report
+
+    account_code = ODOO_LEDGER_ACCOUNTS.get(ledger_id)
+    if account_code is None:
+        raise HTTPException(404, f"'{ledger_id}' no tiene libro contable declarado")
+    return render_erp_report(
+        reconcile_erp(
+            _load(ledger_id), _load(erp_ledger_id(ledger_id)), account_code=account_code
+        )
+    )
 
 
 @app.get("/api/kinds")

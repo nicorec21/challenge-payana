@@ -446,3 +446,63 @@ def to_dict(obj: Any) -> Any:
 def now_iso() -> str:
 
     return datetime.now(UTC).isoformat()
+
+
+# ── conciliación contra el ERP ───────────────────────────────────────────────
+
+
+@dataclass(frozen=True, slots=True)
+class ErpFindingView:
+    """Una comparación línea a línea contra el libro contable.
+
+    En una coincidencia viajan **los dos identificadores** —el del movimiento y
+    el de la línea del ERP— más el nombre del asiento, que es como lo ve un
+    contador. Es lo que el enunciado pide explícitamente.
+    """
+
+    id: str
+    status: str
+    is_problem: bool
+    occurred_on: str | None
+    kind: str | None
+    ledger_movement_id: str | None
+    book_movement_id: str | None
+    #: `account.move.line.id`, para poder abrir la línea en Odoo.
+    erp_line_id: str | None
+    #: `WMP/2026/00001`.
+    erp_move_name: str | None
+    ledger_amount: dict[str, Any] | None
+    book_amount: dict[str, Any] | None
+    difference: dict[str, Any] | None
+    explanation: ExplanationView
+
+
+@dataclass(frozen=True, slots=True)
+class ErpGroupView:
+    """Faltantes agrupados por tipo de movimiento.
+
+    «El ERP no registra ninguna comisión» es una conclusión; 27 findings de
+    comisión suelta son ruido con la misma información.
+    """
+
+    kind: str
+    count: int
+    total: dict[str, Any]
+
+
+@dataclass(frozen=True, slots=True)
+class ErpReportView:
+    contract_version: str
+    generated_at: str
+    ledger_id: str
+    book_ledger_id: str
+    #: Cuenta del plan que representa al ledger en Odoo.
+    account_code: str
+    counts: dict[str, int]
+    #: Fracción de movimientos del ledger que el libro registra. Responde
+    #: "¿mi ERP refleja lo que pasó?" de un vistazo.
+    coverage_ratio: float
+    matched_amount: dict[str, Any]
+    problem_count: int
+    missing_in_erp_by_kind: list[ErpGroupView]
+    findings: list[ErpFindingView]

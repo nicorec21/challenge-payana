@@ -22,8 +22,8 @@ La suite se divide en dos, y cada una responde algo distinto:
 
 ```bash
 pytest -m unit          # 106 — solo dominio, sin I/O. Milisegundos.
-pytest -m integration   # 214 — pipeline real sobre fixtures congelados.
-pytest                  # 320
+pytest -m integration   # 243 — pipeline real sobre fixtures congelados.
+pytest                  # 349
 ```
 
 **Ningún test toca la red.** No es una convención: `tests/conftest.py` bloquea la
@@ -60,6 +60,13 @@ Conciliación de flujo canal → banco:
 conciliacion reconcile
 ```
 
+Conciliación contra el libro contable de Odoo:
+
+```bash
+conciliacion ingest wompi_erp --desde 2025-01-01 --hasta 2026-12-31
+conciliacion reconcile-erp wompi
+```
+
 Escribe las **dos salidas** en `data/out/`: el reporte legible para el CFO y el
 JSON estructurado. Se generan del mismo resultado — si salieran por caminos
 distintos podrían afirmar cosas distintas sobre el mismo hecho.
@@ -93,6 +100,7 @@ Cuatro vistas, pensadas para **verificar**, no para decorar:
 | **Transacciones** | la descomposición de cada venta y de qué fuente sale cada pieza |
 | **Desembolsos** | el cierre `Σ (bruto − descuentos) == \|giro\|`, y el residual cuando falta desglose |
 | **Conciliación de flujo** | qué giros llegaron al banco, cuáles no, y cuáles no se pueden juzgar |
+| **Conciliación ERP** | qué registra el libro contable y qué no, línea por línea |
 
 Cualquier fila abre un panel con el `raw_ref`: el puntero al byte del que salió
 ese movimiento, para poder ir al archivo original y verificarlo.
@@ -136,7 +144,7 @@ src/conciliacion/
 │   ├── flow/           Fase 2. Canal → banco
 │   │   ├── engine.py       el matcher; produce Explanation por conclusión
 │   │   └── findings.py     estados, cobertura, reporte
-│   └── erp/            Fase 3. Ledger → libro de Odoo (sin empezar)
+│   └── erp/            Fase 3. Ledger → libro de Odoo
 ├── storage/        SQLite, un archivo, sin ORM
 ├── report/         Un contrato, dos proyecciones
 │   ├── contract.py     la representación serializable; nadie más calcula
@@ -207,6 +215,7 @@ se pueden romper y convenciones. Es el archivo a leer antes de tocar nada.
 | [0008](docs/adr/0008-reparto-disjunto-entre-fuentes.md) | Tres fuentes, `MovementKind` disjuntos, el ledger cierra en cero |
 | [0009](docs/adr/0009-extensibilidad-demostrada-pos.md) | Costo de sumar el POS, medido: 0 líneas de dominio, cadencia = 1 línea de config |
 | [0010](docs/adr/0010-conciliacion-de-flujo.md) | Flujo: dos saltos, el primero declarado. "Falta plata" ≠ "falta data" |
+| [0011](docs/adr/0011-conciliacion-contra-el-erp.md) | ERP: el libro es otro ledger. Se define por cuenta, no por diario |
 
 ## Cómo leer la salida
 

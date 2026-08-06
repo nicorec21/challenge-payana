@@ -14,7 +14,7 @@ from pathlib import Path
 
 import typer
 
-from .config import ACCOUNTS
+from .config import ACCOUNTS, erp_accounts
 from .domain.money import Money
 from .ingest.ports import FetchWindow
 from .ingest.registry import ingest_all
@@ -43,7 +43,7 @@ app = typer.Typer(
     help="Conciliación contable Wompi ↔ Bancolombia ↔ Odoo (Alimentos Alcázar).",
 )
 
-LEDGERS = tuple(a.id for a in ACCOUNTS)
+LEDGERS = tuple(a.id for a in ACCOUNTS) + tuple(a.id for a in erp_accounts())
 
 
 @app.command()
@@ -182,6 +182,68 @@ def _coverage(canal_led, banco_led, desde: str | None, hasta: str | None):
     return Coverage(
         channel=recortar(canal_led.date_range), bank=recortar(banco_led.date_range)
     )
+
+
+@app.command(name="reconcile-erp")
+def reconcile_erp_cmd(
+    ledger: str = typer.Argument("wompi", help="Ledger a comparar contra su libro."),
+    salida: str | None = typer.Option(
+        None, "--salida", help="Directorio de salida. Default: data/out/."
+    ),
+) -> None:
+    """Concilia un ledger contra su libro contable en Odoo.
+
+    Pregunta contable, distinta de la de flujo: no infiere de qué canal vino la
+    plata, compara cada ledger contra su libro formal línea por línea.
+    """
+    import json
+
+    from .config import ODOO_LEDGER_ACCOUNTS, erp_ledger_id
+    from .reconcile.erp.engine import reconcile_erp
+    from .report.contract import to_dict
+    from .report.erp_cfo import render_erp_report
+    from .report.erp_views import build_erp_report
+
+    account_code = ODOO_LEDGER_ACCOUNTS.get(ledger)
+    if account_code is None:
+        typer.secho(
+            f"'{ledger}' no tiene libro contable declarado. "
+            f"Opciones: {', '.join(ODOO_LEDGER_ACCOUNTS)}",
+            fg="red",
+        )
+        raise typer.Exit(1)
+
+    settings = load_settings()
+    with SqliteRepository(settings.database_path) as repo:
+        try:
+            operativo = repo.load_ledger(ledger)
+            libro = repo.load_ledger(erp_ledger_id(ledger))
+        except KeyError as exc:
+            typer.secho(
+                f"{exc}. Corré primero: conciliacion ingest {ledger} && "
+                f"conciliacion ingest {erp_ledger_id(ledger)}",
+                fg="red",
+            )
+            raise typer.Exit(1) from None
+
+        report = reconcile_erp(operativo, libro, account_code=account_code)
+        view = build_erp_report(report)
+
+    destino = Path(salida) if salida else settings.out_dir
+    destino.mkdir(parents=True, exist_ok=True)
+    md = destino / f"conciliacion-erp-{ledger}.md"
+    js = destino / f"conciliacion-erp-{ledger}.json"
+    md.write_text(render_erp_report(report), encoding="utf-8")
+    js.write_text(json.dumps(to_dict(view), ensure_ascii=False, indent=2), encoding="utf-8")
+
+    typer.secho(f"\n{ledger} vs libro Odoo (cuenta {account_code})", bold=True)
+    for estado, n in sorted(report.counts().items()):
+        color = "red" if estado in ("amount_mismatch", "missing_in_ledger") else None
+        typer.secho(f"  {estado:<20} {n:>4}", fg=color)
+    typer.echo(f"\n  cobertura del ERP  {report.coverage_ratio():.1%}")
+    typer.echo(f"  monto conciliado   {report.matched_amount()}")
+    typer.secho(f"  a revisar          {len(report.problems)}", bold=True)
+    typer.echo(f"\n  CFO   {md}\n  IA    {js}")
 
 
 @app.command()
