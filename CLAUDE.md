@@ -84,9 +84,15 @@ la corrida por defecto.
 El marcado `unit`/`integration` es automático por módulo (`UNIT_MODULES` en
 `conftest.py`), no hay que acordarse de ponerlo.
 
-CI corre lint + unit + integration en 3.11 y 3.13, cobertura, y un job `smoke`
-que instala desde cero sin credenciales y verifica que la ingesta offline dé 426
-movimientos y que reingerir dé 0 nuevos.
+CI son **3 checks**: `test (3.11)`, `test (3.13)` —ruff + unit + integration +
+cobertura como steps— y `smoke`, que instala sin dependencias de desarrollo ni
+credenciales y verifica que la ingesta offline dé 426 movimientos y que
+reingerir dé 0 nuevos.
+
+Los steps no son jobs a propósito: la suite tarda ~9 s y un runner extra cuesta
+más setup del que ahorra. Si agregás verificaciones, agregá **steps**; un job
+nuevo solo se justifica si necesita un entorno distinto (como `smoke`, que
+instala sin `[dev]`).
 
 ---
 

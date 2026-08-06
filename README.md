@@ -119,11 +119,13 @@ distintas sobre el mismo hecho. Ver [ADR-0004](docs/adr/0004-explanation-como-ob
 
 | Job | Qué verifica |
 |---|---|
-| `lint` | ruff |
-| `unit` | dominio, en Python 3.11 y 3.13 |
-| `integration` | pipeline sobre fixtures, en 3.11 y 3.13 |
-| `coverage` | suite completa, sube `coverage.xml` |
+| `test (3.11)` · `test (3.13)` | ruff + unit + integration + cobertura |
 | `smoke` | **que el repo corra recién clonado** |
+
+Tres checks, no siete. `unit` e `integration` van como **steps** dentro del mismo
+job: la suite entera tarda ~9 s, así que un runner extra costaría más setup que
+los tests que ahorra, y como steps se conserva igual la señal de cuál rompió.
+`ruff` corre una sola vez — su resultado no depende de la versión de Python.
 
 El job `smoke` es el que más aporta: instala desde cero sin credenciales, corre
 la ingesta offline, verifica que salgan 426 movimientos, la vuelve a correr y
