@@ -36,6 +36,16 @@ BANCOLOMBIA = Account(
 
 ACCOUNTS = (WOMPI, BANCOLOMBIA)
 
+#: Fuera del alcance del challenge. Existe para la demostración de
+#: extensibilidad (ADR-0009) y no está en `ACCOUNTS`: su adapter es real y
+#: está testeado, pero su data es sintética y no se registra en `sources.py`.
+POS = Account(
+    id="pos",
+    name="POS bancario (demo de extensibilidad)",
+    currency="COP",
+    role="channel",
+)
+
 # ─── Zona horaria ───────────────────────────────────────────────────────────
 
 #: Toda fecha contable (`Movement.occurred_on`) se deriva en esta zona.
@@ -154,24 +164,46 @@ def fee_schedule_for(payment_method: str, day: date) -> FeeSchedule | None:
 
 
 @dataclass(frozen=True, slots=True)
-class FlowWindow:
-    """Cuántos días hábiles después del desembolso buscar el crédito bancario.
+class SettlementPolicy:
+    """Cómo liquida un canal, y qué ventana usar para buscarlo en el banco.
 
-    NO es una restricción dura: es generación de candidatos. El monto decide
-    cuál matchea.
+    Está indexado por canal a propósito: es lo que hace que sumar un canal con
+    otra cadencia sea **una entrada de configuración y no una regla nueva**. El
+    motor de conciliación opera sobre `role="channel"` genérico y lee esta
+    política; no sabe que existe Wompi.
 
-    El rango va más allá de T+1 por evidencia concreta: una transacción del
-    miércoles 29-04 21:22 apareció en el desembolso del lunes 04-05, dos días
-    hábiles después de lo esperado (hipótesis: corte horario nocturno + el
-    viernes 01-05 fue festivo). Con una ventana rígida de T+1, esa transacción
-    no conciliaba nunca.
+    La ventana NO es una restricción de igualdad: es generación de candidatos, y
+    el monto decide cuál matchea. Va más allá de T+1 por evidencia concreta —una
+    transacción del miércoles 29-04 21:22 apareció en el desembolso del lunes
+    04-05, dos días hábiles después de lo esperado (hipótesis: corte horario
+    nocturno más el viernes 01-05 festivo). Con una ventana rígida de T+1 esa
+    venta no conciliaba nunca.
     """
 
+    #: Días hábiles entre la venta y la liquidación declarada por el canal.
+    settlement_lag_business_days: int
+    #: Ventana, en días hábiles, para buscar el crédito en el banco a partir
+    #: de la fecha de liquidación.
     min_business_days: int = 0
     max_business_days: int = 3
+    #: El canal consolida las ventas del período en un único giro.
+    consolidates: bool = True
 
 
-FLOW_WINDOW = FlowWindow()
+SETTLEMENT_POLICIES: dict[str, SettlementPolicy] = {
+    # T+1 hábil, verificado: los 10 desembolsos de abril coinciden con 10
+    # créditos bancarios en monto y fecha exacta.
+    "wompi": SettlementPolicy(settlement_lag_business_days=1),
+    # POS bancario: T+2. Fuera del alcance del challenge; entrada de ejemplo
+    # que demuestra que una cadencia distinta no requiere código nuevo.
+    # Ver ADR-0009.
+    "pos": SettlementPolicy(settlement_lag_business_days=2),
+}
+
+
+def settlement_policy_for(ledger_id: str) -> SettlementPolicy:
+    """Política del canal. Sin entrada, se asume T+1 con ventana amplia."""
+    return SETTLEMENT_POLICIES.get(ledger_id, SettlementPolicy(settlement_lag_business_days=1))
 
 #: Diferencia máxima tolerada al comparar un desembolso contra un crédito
 #: bancario. Arranca en cero: la identidad del CSV cierra al centavo, así que

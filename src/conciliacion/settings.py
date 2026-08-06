@@ -9,6 +9,7 @@ garantiza.
 from __future__ import annotations
 
 import os
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -88,8 +89,11 @@ def load_settings(env_file: Path | None = None) -> Settings:
     (así CI puede inyectarlas sin archivo)."""
     load_dotenv(env_file or PROJECT_ROOT / ".env", override=False)
 
+    # `suppress` y no un chequeo previo: faltar credenciales de una fuente no
+    # es un error acá. Se puede correr la ingesta de archivos locales sin
+    # configurar Wompi ni Odoo. El error llega recién al usar `settings.wompi`.
     wompi: WompiSettings | None = None
-    try:
+    with suppress(RuntimeError):
         wompi = WompiSettings(
             public_key=_require("WOMPI_PUBLIC_KEY"),
             private_key=_require("WOMPI_PRIVATE_KEY"),
@@ -97,11 +101,9 @@ def load_settings(env_file: Path | None = None) -> Settings:
             api_base_url=os.getenv("WOMPI_API_BASE_URL", "https://production.wompi.co/v1"),
             events_secret=os.getenv("WOMPI_EVENTS_SECRET", ""),
         )
-    except RuntimeError:
-        pass
 
     odoo: OdooSettings | None = None
-    try:
+    with suppress(RuntimeError):
         odoo = OdooSettings(
             url=_require("ODOO_URL"),
             db=_require("ODOO_DB"),
@@ -111,8 +113,6 @@ def load_settings(env_file: Path | None = None) -> Settings:
             journal_wompi=int(os.getenv("ODOO_JOURNAL_WOMPI", "48")),
             journal_bancolombia=int(os.getenv("ODOO_JOURNAL_BANCOLOMBIA", "49")),
         )
-    except RuntimeError:
-        pass
 
     return Settings(
         raw_data_dir=_path("RAW_DATA_DIR", "data/raw"),

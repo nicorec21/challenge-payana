@@ -1,0 +1,506 @@
+[
+  {
+    "amount_in_cents": 30342952,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-05-04T17:38:30.791Z",
+    "id": 3201672,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-05-05T01:34:20.281Z"
+  },
+  {
+    "amount_in_cents": 69816078,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-27T15:18:17.823Z",
+    "id": 3179494,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-27T20:51:52.815Z"
+  },
+  {
+    "amount_in_cents": 71048712,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-23T13:43:42.572Z",
+    "id": 3167818,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-23T15:41:35.174Z"
+  },
+  {
+    "amount_in_cents": 61283346,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-20T17:03:51.919Z",
+    "id": 3153729,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-20T19:39:56.703Z"
+  },
+  {
+    "amount_in_cents": 92637311,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-15T13:27:43.992Z",
+    "id": 3136141,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-15T23:12:10.617Z"
+  },
+  {
+    "amount_in_cents": 80416363,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-14T13:32:42.087Z",
+    "id": 3131158,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-14T23:02:36.661Z"
+  },
+  {
+    "amount_in_cents": 344963518,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-13T16:44:53.919Z",
+    "id": 3126894,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-13T22:34:57.959Z"
+  },
+  {
+    "amount_in_cents": 463389901,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-09T13:32:37.495Z",
+    "id": 3115168,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-09T19:42:55.490Z"
+  },
+  {
+    "amount_in_cents": 114042649,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-08T14:28:27.437Z",
+    "id": 3110657,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-08T19:41:10.430Z"
+  },
+  {
+    "amount_in_cents": 48426510,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-06T13:13:54.181Z",
+    "id": 3100417,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-06T21:50:40.958Z"
+  },
+  {
+    "amount_in_cents": 132736953,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-04-01T14:53:10.820Z",
+    "id": 3094497,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-04-01T18:06:29.233Z"
+  },
+  {
+    "amount_in_cents": 18967443,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-31T14:18:37.508Z",
+    "id": 3089116,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-31T19:12:42.394Z"
+  },
+  {
+    "amount_in_cents": 34167647,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-30T13:38:34.232Z",
+    "id": 3083894,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-30T22:08:54.836Z"
+  },
+  {
+    "amount_in_cents": 73110229,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-26T14:58:43.045Z",
+    "id": 3074162,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-26T17:54:20.995Z"
+  },
+  {
+    "amount_in_cents": 57900488,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-25T13:43:10.405Z",
+    "id": 3068551,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-25T20:14:12.799Z"
+  },
+  {
+    "amount_in_cents": 21885251,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-24T14:28:25.028Z",
+    "id": 3063704,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-24T22:33:47.764Z"
+  },
+  {
+    "amount_in_cents": 20258769,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-20T14:48:35.009Z",
+    "id": 3058166,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-20T18:00:29.332Z"
+  },
+  {
+    "amount_in_cents": 33221330,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-19T14:08:50.039Z",
+    "id": 3053368,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-19T17:56:16.144Z"
+  },
+  {
+    "amount_in_cents": 103455736,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-16T17:53:38.836Z",
+    "id": 3040556,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-16T22:53:27.353Z"
+  },
+  {
+    "amount_in_cents": 41767748,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-12T13:22:34.025Z",
+    "id": 3029617,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-12T17:09:07.907Z"
+  },
+  {
+    "amount_in_cents": 37026310,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-09T14:08:29.172Z",
+    "id": 3014365,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-09T21:06:00.894Z"
+  },
+  {
+    "amount_in_cents": 344963518,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-06T13:58:15.102Z",
+    "id": 3009084,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-06T19:47:49.584Z"
+  },
+  {
+    "amount_in_cents": 33743775,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-05T14:53:00.748Z",
+    "id": 3004515,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-05T17:38:52.863Z"
+  },
+  {
+    "amount_in_cents": 562796231,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-04T20:48:42.604Z",
+    "id": 2999990,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-04T23:11:19.991Z"
+  },
+  {
+    "amount_in_cents": 95867147,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-03-02T19:03:27.099Z",
+    "id": 2989662,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-03-03T01:47:03.656Z"
+  },
+  {
+    "amount_in_cents": 198617841,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-27T16:03:22.267Z",
+    "id": 2983739,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-27T21:56:32.591Z"
+  },
+  {
+    "amount_in_cents": 1049509136,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-26T20:28:44.072Z",
+    "id": 2978142,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-27T00:43:33.705Z"
+  },
+  {
+    "amount_in_cents": 98801354,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-26T15:40:36.605Z",
+    "id": 2976238,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-26T23:27:56.024Z"
+  },
+  {
+    "amount_in_cents": 2814564523,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-24T15:58:12.546Z",
+    "id": 2960512,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-25T01:20:12.279Z"
+  },
+  {
+    "amount_in_cents": 46492021,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-20T14:13:32.485Z",
+    "id": 2952436,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-20T16:25:40.314Z"
+  },
+  {
+    "amount_in_cents": 62081582,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-19T14:12:59.419Z",
+    "id": 2948455,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-19T20:31:17.488Z"
+  },
+  {
+    "amount_in_cents": 176540445,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-18T14:13:38.207Z",
+    "id": 2943075,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-18T17:43:12.599Z"
+  },
+  {
+    "amount_in_cents": 113501377,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-17T15:22:36.852Z",
+    "id": 2940200,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-17T21:03:55.910Z"
+  },
+  {
+    "amount_in_cents": 3656127629,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-16T16:13:20.502Z",
+    "id": 2935242,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-17T00:39:48.889Z"
+  },
+  {
+    "amount_in_cents": 1546307892,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-13T14:22:58.556Z",
+    "id": 2928884,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-13T18:06:40.891Z"
+  },
+  {
+    "amount_in_cents": 369303467,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-12T13:43:33.296Z",
+    "id": 2924420,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-12T16:45:58.118Z"
+  },
+  {
+    "amount_in_cents": 17271959,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-11T14:12:44.755Z",
+    "id": 2920505,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-11T17:18:36.579Z"
+  },
+  {
+    "amount_in_cents": 311200152,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-09T15:43:05.943Z",
+    "id": 2911566,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-09T22:46:31.338Z"
+  },
+  {
+    "amount_in_cents": 283275208,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-05T14:33:30.344Z",
+    "id": 2901797,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-05T17:51:28.539Z"
+  },
+  {
+    "amount_in_cents": 1232409434,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-04T14:22:37.487Z",
+    "id": 2897613,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-04T22:38:24.279Z"
+  },
+  {
+    "amount_in_cents": 989825119,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-03T14:10:24.166Z",
+    "id": 2892624,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-03T21:47:56.451Z"
+  },
+  {
+    "amount_in_cents": 1785756770,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-02-02T16:33:28.239Z",
+    "id": 2888701,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-02-03T00:18:26.754Z"
+  },
+  {
+    "amount_in_cents": 11613777,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-29T14:53:22.347Z",
+    "id": 2879051,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-29T17:33:41.132Z"
+  },
+  {
+    "amount_in_cents": 114042649,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-27T14:53:40.996Z",
+    "id": 2871099,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-27T17:17:35.177Z"
+  },
+  {
+    "amount_in_cents": 803367833,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-26T15:08:19.824Z",
+    "id": 2866067,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-26T21:21:49.072Z"
+  },
+  {
+    "amount_in_cents": 1667396291,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-23T13:58:21.862Z",
+    "id": 2860008,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-23T18:24:02.123Z"
+  },
+  {
+    "amount_in_cents": 918006374,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-22T13:48:41.438Z",
+    "id": 2855594,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-22T17:47:10.716Z"
+  },
+  {
+    "amount_in_cents": 1005451299,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-21T15:32:34.178Z",
+    "id": 2853357,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-21T20:55:22.293Z"
+  },
+  {
+    "amount_in_cents": 54083641,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-20T15:03:44.312Z",
+    "id": 2849118,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-20T18:10:05.663Z"
+  },
+  {
+    "amount_in_cents": 270503960,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-19T14:13:11.259Z",
+    "id": 2843959,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-19T17:46:00.282Z"
+  },
+  {
+    "amount_in_cents": 44247105,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-16T14:03:27.189Z",
+    "id": 2836766,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-16T18:26:23.519Z"
+  },
+  {
+    "amount_in_cents": 36539335,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-15T13:43:25.035Z",
+    "id": 2833681,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-15T20:48:43.230Z"
+  },
+  {
+    "amount_in_cents": 36824534,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-13T13:53:44.583Z",
+    "id": 2825835,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-13T18:02:11.876Z"
+  },
+  {
+    "amount_in_cents": 1234934093,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-07T13:58:21.254Z",
+    "id": 2812194,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-07T17:57:27.736Z"
+  },
+  {
+    "amount_in_cents": 482071476,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-05T17:07:54.127Z",
+    "id": 2806088,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-05T23:27:47.730Z"
+  },
+  {
+    "amount_in_cents": 1971531389,
+    "bank_account_type": "SAVINGS",
+    "created_at": "2026-01-02T13:58:04.226Z",
+    "id": 2800150,
+    "merchant_id": 203607,
+    "status": "APPROVED",
+    "updated_at": "2026-01-02T18:18:28.844Z"
+  }
+]

@@ -15,9 +15,10 @@ Ver ADR-0002.
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Any, Iterator, Mapping, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from ..domain.movement import Movement
 

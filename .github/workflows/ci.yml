@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"   # los fixtures y mensajes llevan acentos
+
+jobs:
+  test:
+    name: Tests (${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Mínima soportada y actual. Si una falla, se ve cuál sin adivinar.
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: pip install -e ".[dev]"
+
+      # ruff no depende de la versión de Python: corre una sola vez.
+      - name: Lint
+        if: matrix.python == '3.13'
+        run: ruff check --output-format=github .
+
+      # Separados en steps y no en jobs: la suite entera tarda ~9s, así que un
+      # runner extra costaría más setup que los tests que ahorra. Como steps se
+      # conserva la señal de cuál rompió.
+      - name: Unit (solo dominio)
+        run: pytest -m unit -q
+
+      - name: Integration (pipeline sobre fixtures)
+        run: pytest -m integration -q
+
+      - name: Cobertura
+        if: matrix.python == '3.13'
+        run: pytest --cov --cov-report=term-missing
+
+  smoke:
+    name: Corre recién clonado
+    runs-on: ubuntu-latest
+    # Job aparte a propósito: instala SIN dependencias de desarrollo y sin
+    # credenciales, que es la situación de quien clona el repositorio. Si
+    # alguien introduce una dependencia oculta a `.env` o a la API de Wompi en
+    # el camino offline, los tests seguirían pasando y esto no.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -e .
+
+      - name: No hay .env en el repo
+        run: |
+          if [ -f .env ]; then
+            echo "::error::.env fue commiteado. Contiene credenciales."
+            exit 1
+          fi
+
+      - name: Ingesta offline de los extractos versionados
+        run: conciliacion ingest bancolombia --offline --strict
+
+      - name: El ledger persistido tiene lo que debe
+        run: |
+          conciliacion show bancolombia | tee salida.txt
+          grep -q "426" salida.txt || {
+            echo "::error::Se esperaban 426 movimientos en los 4 extractos."
+            exit 1
+          }
+
+      - name: Reingerir no duplica
+        run: |
+          conciliacion ingest bancolombia --offline --strict | tee segunda.txt
+          grep -q "(0 nuevos en la base)" segunda.txt || {
+            echo "::error::La segunda ingesta creó movimientos: se rompió la idempotencia."
+            exit 1
+          }
+
+      - name: Las fuentes se declaran sin credenciales
+        run: conciliacion sources --offline
