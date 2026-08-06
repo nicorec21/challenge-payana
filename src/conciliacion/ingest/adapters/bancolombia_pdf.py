@@ -38,9 +38,9 @@ import hashlib
 import io
 import re
 from collections import defaultdict
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import date
-from typing import Iterator
 
 import pdfplumber
 
@@ -111,7 +111,7 @@ class BancolombiaPdfAdapter:
         Se lee solo la primera página: barato, y alcanza para descartar."""
         if not isinstance(record.payload, (bytes, bytearray)):
             return False
-        if not record.payload[:5] == b"%PDF-":
+        if record.payload[:5] != b"%PDF-":
             return False
         try:
             with pdfplumber.open(io.BytesIO(record.payload)) as pdf:
@@ -128,11 +128,11 @@ class BancolombiaPdfAdapter:
 
         _verify(header, summary, rows, record.locator)
 
-        for row in rows:
-            yield self._to_movement(record, header, row)
+        for position, row in enumerate(rows):
+            yield self._to_movement(record, header, row, position)
 
     def _to_movement(
-        self, record: RawRecord, header: StatementHeader, row: _Row
+        self, record: RawRecord, header: StatementHeader, row: _Row, position: int
     ) -> Movement:
         return Movement(
             ledger_id=self.ledger_id,
@@ -149,6 +149,17 @@ class BancolombiaPdfAdapter:
                 "cuenta": header.account_number,
                 "periodo": header.period_id,
                 "pagina": row.page,
+                # Posición en el extracto. El ledger ordena por (fecha, id)
+                # —determinista, ver ADR-0001— pero ese no es el orden del
+                # documento, y la cadena de saldos solo existe en orden de
+                # documento. Sin esto, un extracto persistido no se puede
+                # reconstruir ni re-verificar, y el reporte no puede mostrarlo
+                # como lo muestra el banco.
+                #
+                # No entra en la clave de idempotencia: un ordinal se corre
+                # entero si el banco reemite el PDF con una línea más. Para eso
+                # está el saldo (ver `_synthetic_id`).
+                "orden": position,
             },
             raw_ref=f"{record.locator}#pagina={row.page},y={row.y}",
         )
@@ -346,8 +357,8 @@ def _verify(
         )
 
     # 3. suma de movimientos vs totales declarados
-    abonos = Money.sum((r.valor for r in rows if r.valor.amount > 0))
-    cargos = abs(Money.sum((r.valor for r in rows if r.valor.amount < 0)))
+    abonos = Money.sum(r.valor for r in rows if r.valor.amount > 0)
+    cargos = abs(Money.sum(r.valor for r in rows if r.valor.amount < 0))
     if abonos != summary.total_abonos:
         raise StatementIntegrityError(
             f"TOTAL ABONOS declarado {summary.total_abonos} != sumado {abonos}", locator

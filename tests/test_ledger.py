@@ -99,10 +99,17 @@ class TestConsultas:
         assert [m.id for m in a] == [m.id for m in b]
 
     def test_balance_es_suma_con_signo(self, poblado):
-        assert poblado.balance() == Money(100_00 + 200_00 + 150_00 - 10_00 + 999_00)
+        assert poblado.balance() == Money(100_00 + 200_00 + 150_00 - 10_00)
+
+    def test_balance_ignora_los_rechazados(self, poblado):
+        """TX-4 son $999 DECLINED. Está en el ledger porque hace falta para
+        explicar por qué esa venta no llegó al banco, pero nunca movió plata:
+        sumarla rompe el cierre en cero de la cuenta del canal."""
+        assert Money(999_00) not in [m.amount for m in poblado.approved()]
+        assert poblado.balance() == Money(440_00)
 
     def test_balance_hasta_fecha(self, poblado):
-        assert poblado.balance(up_to=date(2025, 3, 14)) == Money(100_00 + 200_00 - 10_00 + 999_00)
+        assert poblado.balance(up_to=date(2025, 3, 14)) == Money(100_00 + 200_00 - 10_00)
 
     def test_declinados_se_ingieren_pero_no_concilian(self, poblado):
         """Un pago rechazado tiene que estar en el ledger: explicar por qué NO

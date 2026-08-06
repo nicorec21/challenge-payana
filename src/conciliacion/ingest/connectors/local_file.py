@@ -11,9 +11,9 @@ testeables sin montar directorios.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from collections.abc import Iterator
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterator
 
 from ..ports import FetchWindow, RawRecord
 
@@ -57,7 +57,7 @@ class LocalFileConnector:
             yield RawRecord(
                 locator=self._locator(path),
                 payload=path.read_bytes(),
-                fetched_at=datetime.now(timezone.utc),
+                fetched_at=datetime.now(UTC),
                 metadata={
                     "filename": path.name,
                     "size_bytes": path.stat().st_size,

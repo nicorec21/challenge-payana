@@ -6,8 +6,8 @@ sumar el POS?": un `SourceSpec` más, registrado acá. El pipeline no cambia.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass, field
-from typing import Iterator
 
 from ..domain.ledger import Account, Ledger
 from ..domain.movement import Movement
@@ -56,6 +56,13 @@ class IngestionReport:
     duplicates: int = 0
     skipped: list[tuple[str, str]] = field(default_factory=list)
     adapters_used: dict[str, int] = field(default_factory=dict)
+    #: Ventana que se le pidió a la fuente. Distinto de "qué fechas trajo".
+    #:
+    #: Es lo que permite a la conciliación distinguir "no llegó la plata" de
+    #: "no tengo datos de ese período". Un diciembre sin movimientos puede ser
+    #: que no hubo ventas o que nadie bajó ese mes; sin la ventana pedida, los
+    #: dos casos son indistinguibles y el sistema reporta faltantes falsos.
+    requested_window: FetchWindow | None = None
 
     @property
     def ok(self) -> bool:
@@ -115,7 +122,9 @@ def ingest(
     y la ingesta sigue. Razón: en conciliación es preferible una corrida parcial
     con el faltante señalado que ninguna corrida. `strict=True` para tests y CI.
     """
-    report = IngestionReport(source_name=spec.name, ledger_id=ledger.id)
+    report = IngestionReport(
+        source_name=spec.name, ledger_id=ledger.id, requested_window=window
+    )
 
     for record in spec.connector.fetch(window):
         report.records_read += 1
