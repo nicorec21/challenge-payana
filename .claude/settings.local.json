@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(\\(Get-Command python -ErrorAction SilentlyContinue\\).Source; \\(Get-Command py -ErrorAction SilentlyContinue\\).Source; \\(Get-Command pdftotext -ErrorAction SilentlyContinue\\).Source; \\(Get-Command node -ErrorAction SilentlyContinue\\).Source)"
+    ]
+  }
+}

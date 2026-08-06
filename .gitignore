@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Base de datos generada por las corridas
+*.db
+*.db-journal
+*.db-wal
+
+# Salidas generadas
+data/out/
+
+# Secretos: las credenciales del challenge NO van al repo
+.env
+
+# Front
+web/node_modules/
+web/dist/
+
+.DS_Store
