@@ -108,6 +108,10 @@ class PosAsobancariaAdapter:
                 "status": MovementStatus.APPROVED,
                 "reference": d.reference,
                 "metadata": {
+                    # Declarado, no deducido del `external_id`: las vistas
+                    # agrupan por este campo y no deberían tener que conocer
+                    # cómo cada adapter arma sus identificadores.
+                    "transaction_id": d.reference,
                     "terminal": d.terminal,
                     "settled_on": d.settled_on.isoformat(),
                     "declared_gross": str(d.gross.units),
