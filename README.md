@@ -57,6 +57,41 @@ conciliacion show wompi
 La CLI es el punto de entrada del pipeline, no la interfaz de usuario: dispara
 la ingesta y regenera las salidas. Correr `ingest` dos veces no duplica nada.
 
+### Interfaz web
+
+Dos procesos. Primero la API, que sirve lo ya persistido:
+
+```bash
+uvicorn conciliacion.api.main:app --reload
+```
+
+Después el front, en otra terminal:
+
+```bash
+npm --prefix web install && npm --prefix web run dev
+```
+
+Abre en `http://localhost:5173`. Vite proxea `/api` al backend, así que el
+código del front pide rutas relativas y es el mismo en desarrollo y producción.
+
+Cuatro vistas, pensadas para **verificar**, no para decorar:
+
+| Vista | Qué permite comprobar |
+|---|---|
+| **Sistema** | ledgers, saldos, fuentes y cobertura de cada uno |
+| **Extracto** | el extracto en orden de documento, con el saldo del banco y el calculado lado a lado. Si coincide con el PDF, el parser está bien |
+| **Transacciones** | la descomposición de cada venta y de qué fuente sale cada pieza |
+| **Desembolsos** | el cierre `Σ (bruto − descuentos) == \|giro\|`, y el residual cuando falta desglose |
+
+Cualquier fila abre un panel con el `raw_ref`: el puntero al byte del que salió
+ese movimiento, para poder ir al archivo original y verificarlo.
+
+**El front no calcula ni formatea plata.** Renderiza el campo `formatted` que
+viene del backend; `cents` solo se usa para ordenar y colorear. Si formateara
+por su cuenta, la web y el CLI podrían mostrar el mismo monto distinto, y el
+sistema dejaría de tener una sola versión de la verdad
+([ADR-0004](docs/adr/0004-explanation-como-objeto-de-dominio.md)).
+
 ### Datos y secretos
 
 | Ruta | ¿Va a git? | Qué es |

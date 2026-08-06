@@ -215,6 +215,28 @@ llave de join.**
 **El año de las líneas del extracto sale del `HASTA`, nunca del `DESDE`.**
 Enero dice `DESDE: 2025/12/31 HASTA: 2026/01/31` y sus filas son de **2026**.
 
+**Los 4 extractos NO encadenan entre sí.** Cada uno es internamente consistente
+—los tres invariantes pasan— pero el cierre de un mes no es la apertura del
+siguiente:
+
+```
+2026-01 cierra  451.395.844,00
+2026-02 abre    457.662.321,55    salto  +6.266.477,55
+2026-03 abre    417.484.065,05    salto −201.370.697,42
+2026-04 abre    284.557.304,49    salto −149.523.727,17
+```
+
+No hay huecos de fecha entre períodos, así que es data sintética generada mes a
+mes sin encadenar. Dos consecuencias:
+
+- **No agregar un invariante de continuidad entre extractos**: fallaría sobre
+  los datos provistos y no indicaría un bug del sistema.
+- **`Ledger.balance()` del banco NO es un saldo de cuenta.** Es la suma de los
+  movimientos ingeridos, o sea el flujo neto del período. Coincide con el saldo
+  real solo si se ingirió desde la apertura de la cuenta. Para Wompi sí es un
+  saldo con sentido (plata cobrada y no girada); para el banco no. La interfaz
+  lo etiqueta distinto según el `role` por eso.
+
 **`pdftotext -layout` desalinea las columnas** VALOR/SALDO respecto de
 FECHA/DESCRIPCIÓN en estos PDF. Parece correcto de lejos y asigna montos a la
 línea equivocada. Se usa `pdfplumber` agrupando palabras por centro vertical.

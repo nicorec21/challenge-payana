@@ -40,23 +40,52 @@ class _RedBloqueada(RuntimeError):
     """Un test intentó salir a la red."""
 
 
+#: Direcciones que no son "salir a la red". El event loop de asyncio abre un
+#: self-pipe sobre loopback en Windows, y `TestClient` de Starlette lo necesita;
+#: bloquear la creación de sockets a secas rompería tests que nunca tocan la red.
+_LOCALES = frozenset({"127.0.0.1", "::1", "localhost", "0.0.0.0", ""})
+
+
+def _es_local(address: object) -> bool:
+    if isinstance(address, tuple) and address:
+        return str(address[0]) in _LOCALES
+    return isinstance(address, (str, bytes))  # sockets unix
+
+
 @pytest.fixture(autouse=True)
 def sin_red(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Bloquea la creación de sockets durante los tests.
+    """Bloquea las conexiones salientes durante los tests.
 
-    Las pruebas de la API de Wompi usan `httpx.MockTransport`, que no abre
-    sockets. Un test que necesite red de verdad debe marcarse explícitamente
-    con `@pytest.mark.network` y queda excluido de la corrida por defecto.
+    Se intercepta `connect`, no la creación del socket: lo que hay que impedir
+    es que un test le pegue a la API productiva de Wompi, no que se abra un
+    descriptor. Las pruebas de la API usan `httpx.MockTransport`, que no llega
+    a conectar.
+
+    Un test que necesite red de verdad debe marcarse con `@pytest.mark.network`
+    y queda excluido de la corrida por defecto.
     """
     if request.node.get_closest_marker("network"):
         return
 
-    def bloqueado(*args: object, **kwargs: object):
+    def _falla(address: object):
         raise _RedBloqueada(
-            "Este test intentó abrir una conexión de red. La suite corre sin red "
+            f"Este test intentó conectarse a {address!r}. La suite corre sin red "
             "a propósito: usá httpx.MockTransport o un fixture. Si de verdad "
             "necesitás red, marcá el test con @pytest.mark.network."
         )
 
-    monkeypatch.setattr(socket, "socket", bloqueado)
-    monkeypatch.setattr(socket, "create_connection", bloqueado)
+    original_connect = socket.socket.connect
+    original_create = socket.create_connection
+
+    def connect(self, address, *args, **kwargs):  # noqa: ANN001
+        if not _es_local(address):
+            _falla(address)
+        return original_connect(self, address, *args, **kwargs)
+
+    def create_connection(address, *args, **kwargs):  # noqa: ANN001
+        if not _es_local(address):
+            _falla(address)
+        return original_create(address, *args, **kwargs)
+
+    monkeypatch.setattr(socket.socket, "connect", connect)
+    monkeypatch.setattr(socket, "create_connection", create_connection)
