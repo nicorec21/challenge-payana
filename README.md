@@ -91,19 +91,33 @@ npm --prefix web install && npm --prefix web run dev
 Abre en `http://localhost:5173`. Vite proxea `/api` al backend, así que el
 código del front pide rutas relativas y es el mismo en desarrollo y producción.
 
-Cuatro vistas, pensadas para **verificar**, no para decorar:
+Las vistas están pensadas para **verificar**, no para decorar, y hay una por
+pregunta. Mezclar exploración con conciliación convierte las dos en un reporte
+que nadie lee:
 
-| Vista | Qué permite comprobar |
+| Vista | Qué pregunta contesta |
 |---|---|
-| **Sistema** | ledgers, saldos, fuentes y cobertura de cada uno |
-| **Extracto** | el extracto en orden de documento, con el saldo del banco y el calculado lado a lado. Si coincide con el PDF, el parser está bien |
-| **Transacciones** | la descomposición de cada venta y de qué fuente sale cada pieza |
-| **Desembolsos** | el cierre `Σ (bruto − descuentos) == \|giro\|`, y el residual cuando falta desglose |
-| **Conciliación de flujo** | qué giros llegaron al banco, cuáles no, y cuáles no se pueden juzgar |
-| **Libro contable** | qué registra el ERP y qué no, línea por línea, con los dos identificadores |
+| **Panorama** | ¿cómo viene todo? Veredicto, KPIs y estado de cada fuente |
+| **Fuentes de datos** | ¿qué trae cada origen, de dónde salió el dato y está verificado? Wompi, Bancolombia y Odoo con el mismo formato de tabla. **No** muestra la conciliación: el estado es un aviso de una palabra |
+| **Flujo · canal → banco** | ¿la plata que Wompi prometió llegó al banco? Una fila por conclusión del motor, con su confianza y su razonamiento completo |
+| **Libro · contra Odoo** | ¿el ERP refleja lo que pasó? Dos corridas —una por ledger, contra su propia cuenta del plan— porque la llave de match no es la misma. Lidera con la conclusión agrupada: del lado banco hay 431 hallazgos y 415 son el mismo |
 
-Cualquier fila abre un panel con el `raw_ref`: el puntero al byte del que salió
-ese movimiento, para poder ir al archivo original y verificarlo.
+En la vista de flujo hay dos niveles de profundidad, porque son dos preguntas
+distintas: el **acordeón** contesta de qué está hecho un giro (sus ventas), y el
+**panel lateral** contesta por qué el motor concluye lo que concluye —regla,
+ventana de búsqueda, cada ajuste con su origen (declarado vs. inferido),
+alternativas descartadas y el `raw_ref` del crédito bancario.
+
+En la del ERP el panel muestra **los dos identificadores** —el del movimiento
+del ledger y el de la línea de Odoo, con el nombre del asiento— que es lo que el
+enunciado pide para cada coincidencia. Cuando falta una punta, ese hueco es la
+discrepancia. Las dos vistas exponen su informe en Markdown para el CFO desde la
+misma barra de filtros; el JSON que consume el front es el mismo que consumiría
+una IA contadora.
+
+`raw_ref` es el puntero al byte del que salió el movimiento
+(`data/raw/bancolombia/Extracto_Abril.pdf#pagina=2,y=680`), para poder abrir el
+archivo original y verificarlo a mano.
 
 **El front no calcula ni formatea plata.** Renderiza el campo `formatted` que
 viene del backend; `cents` solo se usa para ordenar y colorear. Si formateara

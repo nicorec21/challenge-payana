@@ -236,6 +236,59 @@ export interface ErpReport {
   findings: ErpFinding[];
 }
 
+/** Una venta dentro del desembolso que la liquidó. */
+export interface SourceGroup {
+  /** `null` = ventas que ningún giro liquidó (rechazadas o con error). */
+  disbursement_id: string | null;
+  settled_on: string | null;
+  settlement: Money | null;
+  gross_total: Money;
+  declared_deductions: Money | null;
+  net_expected: Money | null;
+  residual: Money | null;
+  closes_to_zero: boolean;
+  deductions_complete: boolean;
+  transaction_count: number;
+  transactions: TransactionBreakdown[];
+}
+
+export interface SourceGroups {
+  ledger_id: string;
+  group_count: number;
+  transaction_count: number;
+  groups: SourceGroup[];
+}
+
+/** Una fila del panorama, común a las tres fuentes. */
+export interface PanoramaItem {
+  id: string;
+  label: string;
+  sublabel: string | null;
+  date: string | null;
+  amount: Money;
+  /** Qué adapters aportaron este dato. */
+  origins: string[];
+  /** conciliado | sin_conciliar | no_aplica | sin_datos */
+  reconciliation: string;
+  child_count: number | null;
+  extra: Record<string, unknown>;
+}
+
+export interface Panorama {
+  source_id: string;
+  name: string;
+  subtitle: string;
+  /** Cómo llama la fuente a sus filas: desembolsos, líneas, asientos. */
+  unit: string;
+  total: number;
+  counts: Record<string, number>;
+  filtered: number;
+  page: number;
+  size: number;
+  pages: number;
+  items: PanoramaItem[];
+}
+
 export interface Page<T> {
   total: number;
   limit: number;
@@ -303,6 +356,20 @@ export const api = {
 
   flow: (canal = "wompi", banco = "bancolombia") =>
     get<FlowReport>(`/api/reconciliation/flow?canal=${canal}&banco=${banco}`),
+
+  panorama: (
+    source: string,
+    o: { page?: number; size?: number; estado?: string; q?: string } = {},
+  ) => {
+    const p = new URLSearchParams();
+    for (const [k, v] of Object.entries(o)) {
+      if (v !== undefined && v !== "") p.set(k, String(v));
+    }
+    const qs = p.toString();
+    return get<Panorama>(`/api/panorama/${source}${qs ? `?${qs}` : ""}`);
+  },
+
+  groups: (ledger: string) => get<SourceGroups>(`/api/sources/${ledger}/groups`),
 
   erp: (ledger: string) => get<ErpReport>(`/api/reconciliation/erp/${ledger}`),
 

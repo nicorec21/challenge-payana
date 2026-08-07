@@ -259,3 +259,51 @@ def build_disbursement_breakdowns(ledger: Ledger) -> list[DisbursementBreakdown]
 
     salida.sort(key=lambda d: d.settled_on)
     return salida
+
+
+def build_source_groups(ledger: Ledger) -> list[dict]:
+    """Ventas del canal agrupadas por el desembolso que las liquidó.
+
+    Es la forma en que un operador piensa el canal: *"¿qué ventas componen este
+    giro?"*. El agrupamiento usa el `disbursement_id` que el canal declara, así
+    que no es una inferencia.
+
+    Las ventas sin desembolso van a un grupo aparte con `disbursement_id = None`:
+    son las rechazadas y las que fallaron, y están acá justamente para poder
+    responder por qué no llegaron al banco.
+    """
+    from .contract import _money
+
+    por_desembolso = {d.disbursement_id: d for d in build_disbursement_breakdowns(ledger)}
+    grupos: dict[str | None, list] = defaultdict(list)
+
+    for tx in build_transaction_breakdowns(ledger):
+        clave = str(tx.disbursement_id) if tx.disbursement_id is not None else None
+        grupos[clave].append(tx)
+
+    salida: list[dict] = []
+    for clave, transacciones in grupos.items():
+        resumen = por_desembolso.get(clave) if clave else None
+        salida.append({
+            "disbursement_id": clave,
+            "settled_on": resumen.settled_on if resumen else None,
+            "settlement": resumen.settlement if resumen else None,
+            "gross_total": (
+                resumen.gross_total if resumen
+                else _money(Money.sum(
+                    Money(t.gross["cents"]) for t in transacciones if t.gross
+                ))
+            ),
+            "declared_deductions": resumen.declared_deductions if resumen else None,
+            "net_expected": resumen.net_expected if resumen else None,
+            "residual": resumen.residual if resumen else None,
+            "closes_to_zero": resumen.closes_to_zero if resumen else False,
+            "deductions_complete": resumen.deductions_complete if resumen else False,
+            "transaction_count": len(transacciones),
+            "transactions": transacciones,
+        })
+
+    # Los liquidados primero por fecha; el grupo sin liquidar al final, que es
+    # donde el operador lo busca.
+    salida.sort(key=lambda g: (g["settled_on"] is None, g["settled_on"] or ""))
+    return salida

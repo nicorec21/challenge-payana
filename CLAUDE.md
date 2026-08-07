@@ -479,6 +479,41 @@ El modelo es **más granular** que el ERP (separa PAYMENT / FEE / TAX /
 SETTLEMENT donde Odoo registra solo bruto y neto). Esa diferencia no es un
 problema del modelo: es una discrepancia a reportar.
 
+### La instancia de Odoo es compartida y tiene basura de prueba
+
+Igual que la cuenta de Wompi. Sobre las cuentas `111001` y `1110001` hay
+asientos que **no son operación de Alimentos Alcázar**:
+
+```
+2025-11-19  (sin nombre)       Miscellaneous       $0,00     draft
+2025-12-29  MISC/2025/12/0001  Miscellaneous  -$20.000,00    "Write-Off"
+2025-12-29  MISC/2025/12/0002  Miscellaneous  $100.000,00    "Write-Off"
+2026-04-20  BILL 212           Vendor Bills    $10.000,00    "suelo"
+2026-06-11  BNK8/2026/00012    Bancolombia     $36.890,00    "akjshdjkasd"
+2026-05-26  (sin nombre) ×2    Miscellaneous  $0,00 y $100   cancel
+```
+
+Son los 4 `MISSING_IN_LEDGER` del banco y los 3 `NOT_POSTED` de los dos lados.
+**Los veredictos son correctos**: el ERP registra algo que ningún movimiento
+respalda, que es exactamente la discrepancia que el enunciado pide señalar. No
+hay que silenciarlos.
+
+**Los 2 `MISSING_IN_LEDGER` del lado Wompi NO son basura** —no los metas en la
+misma bolsa—. Son `BNK8/2026/00002` ($257.940,85 el 06/01) y `BNK8/2026/00007`
+($257.359,77 el 02/02): acreditaciones que Odoo registra y ningún giro de Wompi
+respalda. La Fase 2 señala **los mismos dos montos** como créditos bancarios
+huérfanos, por un camino completamente distinto. Dos motores independientes
+apuntando al mismo par es la señal más fuerte que produce el sistema.
+
+**Trampa asociada:** seis de esos siete —todos menos `BILL 212`— caen fuera del rango del ledger
+operativo, porque el libro se ingiere ancho a propósito (`--desde 2025-01-01
+--hasta 2026-12-31`) y los extractos son solo 4 PDF de ene–abr 2026. Es tentador
+leer eso como *"falta cobertura"* y marcarlos `OUT_OF_COVERAGE` —el estado existe
+en `ErpStatus` y **hoy no se emite nunca**—. **No lo hagas sin mirar cada línea:**
+sobre estos datos escondería hallazgos reales. El hueco del motor es real como
+propiedad general (ingerir solo abril inundaría de falsos positivos), pero acá no
+está produciendo ninguno.
+
 ---
 
 ## Decisiones (`docs/adr/`)

@@ -1,29 +1,24 @@
 import { useState } from "react";
-import { api } from "./api";
-import { Async, useAsync } from "./ui";
-import { Conciliacion } from "./views/Conciliacion";
-import { Desembolsos } from "./views/Desembolsos";
+import { Dashboard } from "./views/Dashboard";
 import { Erp } from "./views/Erp";
-import { Extracto } from "./views/Extracto";
-import { Movimientos } from "./views/Movimientos";
-import { Sistema } from "./views/Sistema";
-import { Transacciones } from "./views/Transacciones";
+import { Flujo } from "./views/Flujo";
+import { Fuentes } from "./views/Fuentes";
 
-type Vista =
-  | { tipo: "sistema" }
-  | { tipo: "conciliacion" }
-  | { tipo: "erp"; ledger: string }
-  | { tipo: "extracto"; ledger: string }
-  | { tipo: "movimientos"; ledger: string }
-  | { tipo: "transacciones"; ledger: string }
-  | { tipo: "desembolsos"; ledger: string };
+type Vista = "panorama" | "fuentes" | "flujo" | "erp";
+
+/**
+ * Las dos preguntas del enunciado son dos vistas distintas, y no se mezclan:
+ * «¿llegó la plata al banco?» (flujo) y «¿lo refleja el libro?» (ERP).
+ */
+const PAGINAS: { id: Vista; nombre: string }[] = [
+  { id: "panorama", nombre: "Panorama" },
+  { id: "fuentes", nombre: "Fuentes de datos" },
+  { id: "flujo", nombre: "Flujo · canal → banco" },
+  { id: "erp", nombre: "Libro · contra Odoo" },
+];
 
 export function App() {
-  const [vista, setVista] = useState<Vista>({ tipo: "sistema" });
-  const sistema = useAsync(() => api.system(), []);
-
-  const on = (v: Vista) =>
-    vista.tipo === v.tipo && (!("ledger" in v) || ("ledger" in vista && vista.ledger === v.ledger));
+  const [vista, setVista] = useState<Vista>("panorama");
 
   return (
     <div className="app">
@@ -34,81 +29,23 @@ export function App() {
         </div>
 
         <div className="nav">
-          <button className={on({ tipo: "sistema" }) ? "on" : ""} onClick={() => setVista({ tipo: "sistema" })}>
-            Sistema
-          </button>
-          <button
-            className={on({ tipo: "conciliacion" }) ? "on" : ""}
-            onClick={() => setVista({ tipo: "conciliacion" })}
-          >
-            Conciliación de flujo
-          </button>
-
-          <Async state={sistema}>
-            {(data) => (
-              <>
-                {data.ledgers.map((l) => (
-                  <div key={l.id}>
-                    <div className="nav-label">{l.name}</div>
-                    {l.role === "bank" && (
-                      <button
-                        className={on({ tipo: "extracto", ledger: l.id }) ? "on" : ""}
-                        onClick={() => setVista({ tipo: "extracto", ledger: l.id })}
-                        style={{ width: "100%" }}
-                      >
-                        Extracto
-                      </button>
-                    )}
-                    {l.role === "channel" && (
-                      <>
-                        <button
-                          className={on({ tipo: "transacciones", ledger: l.id }) ? "on" : ""}
-                          onClick={() => setVista({ tipo: "transacciones", ledger: l.id })}
-                          style={{ width: "100%" }}
-                        >
-                          Transacciones
-                        </button>
-                        <button
-                          className={on({ tipo: "desembolsos", ledger: l.id }) ? "on" : ""}
-                          onClick={() => setVista({ tipo: "desembolsos", ledger: l.id })}
-                          style={{ width: "100%" }}
-                        >
-                          Desembolsos
-                        </button>
-                      </>
-                    )}
-                    <button
-                      className={on({ tipo: "movimientos", ledger: l.id }) ? "on" : ""}
-                      onClick={() => setVista({ tipo: "movimientos", ledger: l.id })}
-                      style={{ width: "100%" }}
-                    >
-                      Movimientos
-                    </button>
-                    {l.role !== "erp" && (
-                      <button
-                        className={on({ tipo: "erp", ledger: l.id }) ? "on" : ""}
-                        onClick={() => setVista({ tipo: "erp", ledger: l.id })}
-                        style={{ width: "100%" }}
-                      >
-                        Libro contable
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </>
-            )}
-          </Async>
+          {PAGINAS.map((p) => (
+            <button
+              key={p.id}
+              className={vista === p.id ? "on" : ""}
+              onClick={() => setVista(p.id)}
+            >
+              {p.nombre}
+            </button>
+          ))}
         </div>
       </nav>
 
       <main className="main">
-        {vista.tipo === "sistema" && <Sistema />}
-        {vista.tipo === "conciliacion" && <Conciliacion canal="wompi" banco="bancolombia" />}
-        {vista.tipo === "extracto" && <Extracto ledgerId={vista.ledger} />}
-        {vista.tipo === "movimientos" && <Movimientos ledgerId={vista.ledger} />}
-        {vista.tipo === "transacciones" && <Transacciones ledgerId={vista.ledger} />}
-        {vista.tipo === "desembolsos" && <Desembolsos ledgerId={vista.ledger} />}
-        {vista.tipo === "erp" && <Erp ledger={vista.ledger} />}
+        {vista === "panorama" && <Dashboard />}
+        {vista === "fuentes" && <Fuentes />}
+        {vista === "flujo" && <Flujo />}
+        {vista === "erp" && <Erp />}
       </main>
     </div>
   );

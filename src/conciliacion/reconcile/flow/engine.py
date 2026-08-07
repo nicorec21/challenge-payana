@@ -435,7 +435,12 @@ def _register_adjustments(builder: ExplanationBuilder, batch: _Batch) -> None:
         for d in batch.deductions:
             kind = _adjustment_kind(d)
             por_tipo[kind] = por_tipo.get(kind, Money.zero(moneda)) + abs(d.amount)
-        for kind, monto in por_tipo.items():
+        # En el orden en que se aplican, no en el que llegaron del CSV: la
+        # escalera bruto → neto se lee como la fórmula, y dos corridas sobre la
+        # misma data producen el mismo informe.
+        for kind in AdjustmentKind:
+            if (monto := por_tipo.get(kind)) is None:
+                continue
             builder.adjust(
                 kind, monto, EvidenceSource.DECLARED,
                 note="declarado por el canal en el reporte de desembolso",
@@ -467,7 +472,13 @@ def _register_adjustments(builder: ExplanationBuilder, batch: _Batch) -> None:
         f"este desembolso"
     )
     builder.adjust(AdjustmentKind.COMMISSION, comision, EvidenceSource.INFERRED, note=nota)
-    builder.adjust(AdjustmentKind.TAX, iva, EvidenceSource.INFERRED, note="IVA sobre la comisión")
+    builder.adjust(
+        AdjustmentKind.TAX, iva, EvidenceSource.INFERRED,
+        note=(
+            f"{schedule.iva_rate:.0%} sobre la comisión sin truncar; calcularlo "
+            f"sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+        ),
+    )
     builder.adjust(
         AdjustmentKind.WITHHOLDING, retefuente, EvidenceSource.INFERRED,
         note=f"retención en la fuente ({schedule.retefuente_rate:.2%} del bruto)",
