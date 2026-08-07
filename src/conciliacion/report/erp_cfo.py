@@ -47,25 +47,39 @@ def _encabezado(r: ErpReport) -> str:
 
 
 def _veredicto(r: ErpReport) -> str:
-    cobertura = r.coverage_ratio()
-    conciliados = len(r.of(ErpStatus.MATCHED))
-    del_ledger = sum(1 for f in r.findings if f.ledger_movement_id)
+    # La cobertura va sobre lo **comparable**, no sobre todo. Un porcentaje que
+    # baja porque falta un asiento y porque no existe la cuenta donde asentarlo
+    # le pide al CFO una acción —registrar— que en el segundo caso no sirve.
+    cov = r.coverage()
+    cobertura = cov["ratio"]
+    conciliados = cov["matched"]
 
     if cobertura >= 0.99:
         titulo = "## ✅ El ERP refleja lo que pasó"
     elif cobertura >= 0.5:
-        titulo = f"## ⚠️ El ERP registra el {cobertura:.0%} de los movimientos"
+        titulo = f"## ⚠️ El ERP registra el {cobertura:.0%} de lo que puede registrar"
     else:
-        titulo = f"## 🔴 El ERP registra solo el {cobertura:.0%} de los movimientos"
+        titulo = f"## 🔴 El ERP registra solo el {cobertura:.0%} de lo que puede registrar"
 
     cuerpo = (
-        f"De **{del_ledger}** movimientos que ocurrieron, el libro contable "
-        f"registra **{conciliados}** por {r.matched_amount()}. "
+        f"De **{cov['comparable']}** movimientos que ocurrieron y tienen cuenta "
+        f"donde asentarse, el libro contable registra **{conciliados}** por "
+        f"{r.matched_amount()}. "
     )
 
-    faltan = len(r.of(ErpStatus.MISSING_IN_ERP))
+    faltan = len(r.of(ErpStatus.MISSING_IN_ERP)) - cov["unrepresentable"]
     if faltan:
         cuerpo += f"Faltan **{faltan}** por registrar. "
+
+    if cov["unrepresentable"]:
+        tipos = ", ".join(_ETIQUETA.get(k, k) for k in cov["unrepresentable_kinds"])
+        cuerpo += (
+            f"Aparte hay **{cov['unrepresentable']}** movimiento(s) "
+            f"({tipos.lower()}) por {cov['unrepresentable_total']} que **no tienen "
+            f"cuenta en el plan donde asentarse**: el bruto entra a la cuenta "
+            f"puente, el neto sale, y la diferencia queda ahí sin llevarse nunca "
+            f"a gasto. Eso no se resuelve registrando asientos. "
+        )
 
     sobran = len(r.of(ErpStatus.MISSING_IN_LEDGER))
     if sobran:
@@ -102,22 +116,48 @@ def _diferencias_de_monto(r: ErpReport) -> str:
 
 
 def _faltantes_en_el_erp(r: ErpReport) -> str:
+    """Agrupados por tipo, y separando **por qué** falta cada grupo.
+
+    Sin la columna «qué hacer», la tabla le pide al CFO que mande a registrar
+    149 asientos, y 27 de esos no se pueden registrar en ningún lado: no existe
+    la cuenta. Son dos problemas con dos destinatarios distintos.
+    """
     grupos = r.by_kind(ErpStatus.MISSING_IN_ERP)
     if not grupos:
         return ""
-    filas = "\n".join(
-        f"| {_ETIQUETA.get(kind, kind)} | {info['count']} | {info['total']} |"
-        for kind, info in grupos.items()
-    )
+    sin_cuenta = set(r.coverage()["unrepresentable_kinds"])
+
+    def fila(kind: str, info: dict) -> str:
+        que_hacer = (
+            "**no hay cuenta donde asentarlo**"
+            if kind in sin_cuenta
+            else "registrar el asiento"
+        )
+        return f"| {_ETIQUETA.get(kind, kind)} | {info['count']} | {info['total']} | {que_hacer} |"
+
+    filas = "\n".join(fila(k, i) for k, i in grupos.items())
     total = Money.sum(
-        f.ledger_amount for f in r.of(ErpStatus.MISSING_IN_ERP) if f.ledger_amount
+        f.ledger_amount
+        for f in r.of(ErpStatus.MISSING_IN_ERP)
+        if f.ledger_amount and (f.kind or "") not in sin_cuenta
+    )
+    nota = (
+        "\n\nLas filas marcadas *no hay cuenta donde asentarlo* no son un "
+        "descuido del contador: los diarios solo tocan la cuenta puente, ventas "
+        "y banco. **El enunciado nombra las cuentas `530505`, `236500` y "
+        "`240810`, y en este Odoo no se usan.** Corregirlo es una decisión de "
+        "plan de cuentas, no de registración.\n"
+        if sin_cuenta & set(grupos)
+        else "\n"
     )
     return (
         "## Movimientos que el ERP no registra\n\n"
         "Agrupados por tipo: importa más *qué clase* de hecho no se está "
         "contabilizando que la lista de casos.\n\n"
-        "| Tipo | Cantidad | Monto |\n|---|---:|---:|\n" + filas + "\n\n"
-        f"Neto sin registrar: **{total}**.\n"
+        "| Tipo | Cantidad | Monto | Qué hacer |\n|---|---:|---:|---|\n"
+        + filas
+        + f"\n\nNeto pendiente de registrar: **{total}**."
+        + nota
     )
 
 
