@@ -14,7 +14,17 @@ from __future__ import annotations
 
 import pytest
 
-pytest.importorskip("mcp", reason="el SDK de MCP está en el extra [mcp]")
+#: Se pregunta por **el módulo que se usa**, no por el paquete.
+#:
+#: `importorskip("mcp")` era demasiado grueso: con el SDK 2.x el paquete `mcp`
+#: importa igual pero `mcp.server.fastmcp` ya no existe, así que el guard pasaba
+#: y el módulo explotaba en la colección. Un error de colección **aborta la
+#: corrida entera**: la suite de unit —que no toca MCP ni de lejos— murió por
+#: una dependencia opcional.
+pytest.importorskip(
+    "mcp.server.fastmcp",
+    reason="requiere el SDK de MCP 1.x (extra [mcp]); la API cambió en 2.0",
+)
 
 from conciliacion.agent import tools  # noqa: E402
 from conciliacion.agent.mcp_server import mcp  # noqa: E402

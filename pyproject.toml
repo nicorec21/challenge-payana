@@ -14,7 +14,14 @@ dependencies = [
 api = ["fastapi>=0.115", "uvicorn>=0.30"]
 # Solo `agent/mcp_server.py` importa el SDK. `agent/tools.py` —donde vive toda
 # la lógica— es Python puro y se testea sin esto.
-mcp = ["mcp>=1.2"]
+#
+# El techo `<2` no es precaución genérica: 2.0.0 movió y renombró la API que
+# usamos (`mcp.server.fastmcp.FastMCP` → `mcp.server.mcpserver.MCPServer`, más
+# un paquete `mcp_types` aparte). Con `>=1.2` a secas, un `pip install` limpio
+# se trae 2.x y el import revienta —pasó en CI— mientras que en una máquina con
+# 1.x instalado desde antes sigue andando. Ese es el peor modo de falla posible:
+# verde local, rojo remoto, sin que nadie haya tocado el código.
+mcp = ["mcp>=1.2,<2"]
 # `dev` arrastra `api` a propósito: `tests/test_report_api.py` levanta la API
 # con `TestClient`, así que sin fastapi esos tests no fallan — *erroran* al
 # construir el fixture, y el que sigue el README (`pip install -e ".[dev]"`)
