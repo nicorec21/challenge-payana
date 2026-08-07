@@ -4,7 +4,7 @@
     {
       "name": "api",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "uvicorn", "conciliacion.api.main:app", "--port", "8000", "--reload"],
+      "runtimeArgs": ["-m", "uvicorn", "conciliacion.api.main:app", "--app-dir", "src", "--port", "8000", "--reload"],
       "port": 8000
     },
     {

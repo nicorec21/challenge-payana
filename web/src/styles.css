@@ -228,6 +228,8 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 }
 .chip:hover { border-color: #33405a; color: var(--txt-2); }
 .chip.on { background: var(--raised); border-color: var(--accent); color: var(--txt); }
+/* El chip también se usa como link (descargar el informe del CFO). */
+a.chip { display: inline-block; text-decoration: none; }
 
 .paginacion {
   display: flex; align-items: center; justify-content: space-between;
@@ -260,7 +262,19 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 
 .kv { display: grid; grid-template-columns: 170px 1fr; gap: 10px 16px; font-size: 13.5px; margin: 0; }
 .kv dt { color: var(--dim); }
-.kv dd { margin: 0; font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+/* `pre-wrap` porque varias listas de ids se pasan unidas por salto de línea. */
+.kv dd { margin: 0; font-family: var(--mono); font-size: 12.5px; word-break: break-all; white-space: pre-wrap; }
+
+/* Notas al pie de la escalera de ajustes: de dónde salió cada número. */
+.notas { margin: 12px 0 0; padding-left: 18px; color: var(--dim); font-size: 12.5px; line-height: 1.6; }
+.notas strong { color: var(--txt-2); font-weight: 560; }
+
+/* Una hipótesis que el motor evaluó y descartó, con su porqué. */
+.descartado {
+  border: 1px solid var(--line); border-left: 3px solid var(--warn);
+  border-radius: 9px; padding: 12px 14px; margin-bottom: 10px;
+  background: var(--panel-2); font-size: 13.5px;
+}
 
 pre {
   background: var(--bg); border: 1px solid var(--line); border-radius: 9px;
