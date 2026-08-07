@@ -22,8 +22,8 @@ La suite se divide en dos, y cada una responde algo distinto:
 
 ```bash
 pytest -m unit          # 106 — solo dominio, sin I/O. Milisegundos.
-pytest -m integration   # 245 — pipeline real sobre fixtures congelados.
-pytest                  # 351
+pytest -m integration   # 268 — pipeline real sobre fixtures congelados.
+pytest                  # 374
 ```
 
 **Ningún test toca la red.** No es una convención: `tests/conftest.py` bloquea la
@@ -185,6 +185,56 @@ salen **dos proyecciones**:
 
 Ninguna de las dos calcula nada: si divergieran, el sistema afirmaría dos cosas
 distintas sobre el mismo hecho. Ver [ADR-0004](docs/adr/0004-explanation-como-objeto-de-dominio.md).
+
+### La IA contadora, como usuario de verdad: servidor MCP
+
+El JSON del contrato alcanza para que un programa consuma el sistema, pero no
+para que un **agente** lo use bien. Los endpoints tienen forma de *recurso*:
+
+```
+/api/reconciliation/erp/bancolombia    434 KB   ~100.000 tokens
+```
+
+De esos 431 hallazgos, **415 dicen lo mismo con otro monto**. Un agente que solo
+quiere saber qué revisar se come el volcado entero y filtra de su lado.
+
+Las herramientas MCP tienen forma de *pregunta*. Resumen del lado del servidor y
+devuelven punteros para profundizar:
+
+| Herramienta | Qué pregunta contesta |
+|---|---|
+| `estado` | ¿cómo viene todo? Las dos conciliaciones en ~320 tokens |
+| `pendientes` | ¿qué hay que revisar? Solo lo accionable, agrupado por tipo |
+| `explicar` | ¿por qué el sistema concluye eso? Regla, confianza, ajustes, descartes |
+| `buscar` | ¿a qué movimiento corresponde este monto? Devuelve el `id` |
+| `evidencia` | ¿de qué byte del archivo salió? El `raw_ref` |
+
+```bash
+conciliacion-mcp
+```
+
+O declarándolo en el cliente:
+
+```json
+{ "mcpServers": { "conciliacion": { "command": "conciliacion-mcp" } } }
+```
+
+**Tres propiedades que las hacen algo más que un envoltorio del protocolo:**
+
+- **No calculan.** Cargan por `reconcile/run.py` y proyectan por `report/`: el
+  mismo camino que la web y el CLI. Un tercer camino haría que el agente y la
+  pantalla afirmen cosas distintas.
+- **Resumen, no volcan.** `pendientes()` devuelve **13 ítems** donde los motores
+  producen 568 hallazgos, porque *«el ERP no registra ninguna comisión»* es una
+  conclusión y no 27 hallazgos sueltos. De 100.000 tokens a ~2.200.
+- **Ninguna escribe.** Es una propiedad de seguridad: el sistema ingiere
+  descripciones de extractos y referencias de Odoo —texto que controla un
+  tercero, y ya apareció un `akjshdjkasd` ahí adentro—. Eso es **dato observado,
+  no instrucción**, y las descripciones de las herramientas lo dicen.
+
+Toda la lógica vive en `agent/tools.py`, que es Python puro y se testea sin
+levantar nada; `agent/mcp_server.py` solo registra funciones y escribe las
+descripciones que el agente lee para elegir.
 
 ## CI
 

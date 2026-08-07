@@ -21,6 +21,7 @@ from fastapi.responses import PlainTextResponse
 from ..config import ACCOUNTS, erp_accounts
 from ..domain.ledger import Ledger
 from ..domain.movement import MovementKind
+from ..reconcile.run import SinDatos
 from ..report.contract import (
     CONTRACT_VERSION,
     LedgerSummary,
@@ -69,11 +70,19 @@ def _load(ledger_id: str, start: date | None = None, end: date | None = None) ->
         try:
             return repo.load_ledger(ledger_id, start=start, end=end)
         except KeyError:
-            raise HTTPException(
-                404,
-                f"El ledger '{ledger_id}' no tiene datos. "
-                f"Corré: conciliacion ingest {ledger_id}",
-            ) from None
+            raise HTTPException(404, str(SinDatos(ledger_id))) from None
+
+
+def _run(fn, *args, **kwargs):
+    """Corre una conciliación traduciendo su error de dominio a un 404.
+
+    El motor no sabe que existe HTTP: informa qué falta y cómo conseguirlo, y
+    cada consumidor lo traduce a lo suyo.
+    """
+    try:
+        return fn(*args, **kwargs)
+    except LookupError as exc:
+        raise HTTPException(404, str(exc)) from None
 
 
 @app.get("/api/system")
@@ -240,23 +249,11 @@ def flow(
     viejo después de reingerir. Si creciera, se sirve la última corrida
     guardada en vez de recalcular.
     """
-    from ..reconcile.flow.engine import reconcile_flow
-    from ..reconcile.flow.findings import Coverage
+    from ..reconcile import run
     from ..report.flow_views import build_flow_report
 
-    canal_led, banco_led = _load(canal), _load(banco)
-
-    def recortar(rango):
-        if rango is None:
-            return None
-        inicio = max(rango[0], desde) if desde else rango[0]
-        fin = min(rango[1], hasta) if hasta else rango[1]
-        return (inicio, fin) if inicio <= fin else None
-
-    coverage = Coverage(
-        channel=recortar(canal_led.date_range), bank=recortar(banco_led.date_range)
-    )
-    report = reconcile_flow(canal_led, banco_led, coverage=coverage)
+    with _repo() as repo:
+        report = _run(run.flow, repo, canal, banco, desde=desde, hasta=hasta)
     return to_dict(build_flow_report(report))
 
 
@@ -266,13 +263,11 @@ def flow_markdown(canal: str = "wompi", banco: str = "bancolombia") -> str:
 
     Misma fuente que el JSON: dos proyecciones, un solo cálculo.
     """
-    from ..reconcile.flow.engine import reconcile_flow
-    from ..reconcile.flow.findings import Coverage
+    from ..reconcile import run
     from ..report.cfo import render_flow_report
 
-    canal_led, banco_led = _load(canal), _load(banco)
-    coverage = Coverage(channel=canal_led.date_range, bank=banco_led.date_range)
-    return render_flow_report(reconcile_flow(canal_led, banco_led, coverage=coverage))
+    with _repo() as repo:
+        return render_flow_report(_run(run.flow, repo, canal, banco))
 
 
 @app.get("/api/movements/{movement_id}/trace")
@@ -294,38 +289,21 @@ def erp(ledger_id: str) -> dict[str, Any]:
     Pregunta contable, distinta de la de flujo: no infiere de qué canal vino la
     plata, compara cada ledger contra su libro formal línea por línea.
     """
-    from ..config import ODOO_LEDGER_ACCOUNTS, erp_ledger_id
-    from ..reconcile.erp.engine import reconcile_erp
+    from ..reconcile import run
     from ..report.erp_views import build_erp_report
 
-    account_code = ODOO_LEDGER_ACCOUNTS.get(ledger_id)
-    if account_code is None:
-        raise HTTPException(
-            404,
-            f"'{ledger_id}' no tiene libro contable declarado. "
-            f"Opciones: {', '.join(ODOO_LEDGER_ACCOUNTS)}",
-        )
-    report = reconcile_erp(
-        _load(ledger_id), _load(erp_ledger_id(ledger_id)), account_code=account_code
-    )
-    return to_dict(build_erp_report(report))
+    with _repo() as repo:
+        return to_dict(build_erp_report(_run(run.erp, repo, ledger_id)))
 
 
 @app.get("/api/reconciliation/erp/{ledger_id}/report.md", response_class=PlainTextResponse)
 def erp_markdown(ledger_id: str) -> str:
     """El mismo resultado, renderizado para el CFO."""
-    from ..config import ODOO_LEDGER_ACCOUNTS, erp_ledger_id
-    from ..reconcile.erp.engine import reconcile_erp
+    from ..reconcile import run
     from ..report.erp_cfo import render_erp_report
 
-    account_code = ODOO_LEDGER_ACCOUNTS.get(ledger_id)
-    if account_code is None:
-        raise HTTPException(404, f"'{ledger_id}' no tiene libro contable declarado")
-    return render_erp_report(
-        reconcile_erp(
-            _load(ledger_id), _load(erp_ledger_id(ledger_id)), account_code=account_code
-        )
-    )
+    with _repo() as repo:
+        return render_erp_report(_run(run.erp, repo, ledger_id))
 
 
 @app.get("/api/panorama/{source_id}")
