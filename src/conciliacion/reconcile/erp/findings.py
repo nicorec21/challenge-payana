@@ -16,6 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 from enum import StrEnum
+from typing import Any
 
 from ...domain.explanation import Confidence, Explanation
 from ...domain.money import Money
@@ -145,12 +146,58 @@ class ErpReport:
         )
 
     def coverage_ratio(self) -> float:
-        """Qué fracción de los movimientos del ledger están en el libro.
+        """Qué fracción de **todos** los movimientos del ledger está en el libro.
 
-        Es el número que responde *"¿mi ERP refleja lo que pasó?"* de un vistazo.
+        Lectura de una línea para un tablero. Para decidir qué hacer usá
+        `coverage()`: este número baja por dos razones opuestas —falta el
+        asiento vs. no existe la cuenta— y no distingue cuál.
         """
+        return self.coverage()["overall_ratio"]
+
+    def coverage(self) -> dict[str, Any]:
+        """Cobertura del libro, separando lo comparable de lo que no lo es.
+
+        *"El ERP registra el 25%"* junta **"debería estar asentado y no lo
+        está"** con **"no existe la cuenta donde asentarlo"**. Se arreglan de
+        maneras opuestas —asentando vs. rediseñando el plan de cuentas— así que
+        un solo porcentaje que baja por las dos razones no le dice a nadie qué
+        hacer.
+
+        `unrepresentable` sale de `config.ERP_UNREPRESENTABLE_KINDS`, que es un
+        hecho verificado del plan contable, no una derivación de que el conteo
+        haya dado cero.
+        """
+        from ...config import erp_unrepresentable_kinds
+
+        sin_cuenta = erp_unrepresentable_kinds(self.ledger_id)
         del_ledger = [f for f in self.findings if f.ledger_movement_id]
-        if not del_ledger:
-            return 0.0
-        conciliados = sum(1 for f in del_ledger if f.status is ErpStatus.MATCHED)
-        return conciliados / len(del_ledger)
+        comparables = [f for f in del_ledger if (f.kind or "") not in sin_cuenta]
+        excluidos = [f for f in del_ledger if (f.kind or "") in sin_cuenta]
+        conciliados = sum(1 for f in comparables if f.status is ErpStatus.MATCHED)
+
+        return {
+            "matched": conciliados,
+            "comparable": len(comparables),
+            #: Fracción sobre lo que el plan de cuentas **puede** representar.
+            "ratio": conciliados / len(comparables) if comparables else 0.0,
+            "unrepresentable": len(excluidos),
+            "unrepresentable_kinds": sorted(sin_cuenta),
+            "unrepresentable_total": Money.sum(
+                (f.ledger_amount for f in excluidos if f.ledger_amount),
+                self.currency,
+            ),
+            #: El global de antes, para no perder la lectura de una línea.
+            "overall_ratio": (
+                sum(1 for f in del_ledger if f.status is ErpStatus.MATCHED)
+                / len(del_ledger)
+                if del_ledger
+                else 0.0
+            ),
+        }
+
+    @property
+    def currency(self) -> str:
+        for f in self.findings:
+            if (m := f.ledger_amount or f.book_amount) is not None:
+                return m.currency
+        return "COP"

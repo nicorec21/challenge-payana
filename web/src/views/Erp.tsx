@@ -130,7 +130,9 @@ export function Erp() {
                   <p className="sub">
                     Agrupado por tipo, porque es una conclusión y no{" "}
                     {r.counts.missing_in_erp} hallazgos sueltos con la misma
-                    información. Click en una fila para ver el detalle.
+                    información. Click en una fila para ver el detalle. Los
+                    marcados <strong>otra causa</strong> no faltan por descuido:
+                    no existe la cuenta donde asentarlos.
                   </p>
                   <div className="tabla">
                     <table>
@@ -149,29 +151,45 @@ export function Erp() {
                         </tr>
                       </thead>
                       <tbody>
-                        {r.missing_in_erp_by_kind.map((g) => (
-                          <tr
-                            key={g.kind}
-                            className="clickable"
-                            onClick={() =>
-                              limpiar(() => {
-                                setEstado("missing_in_erp");
-                                setKind(g.kind);
-                              })
-                            }
-                          >
-                            <td className="celda-principal">
-                              {KIND[g.kind] ?? g.kind}
-                            </td>
-                            <td className="num">{g.count}</td>
-                            <td className="num">
-                              <Amount value={g.total} />
-                            </td>
-                            <td className="dim" style={{ fontSize: 12 }}>
-                              ver detalle →
-                            </td>
-                          </tr>
-                        ))}
+                        {r.missing_in_erp_by_kind.map((g) => {
+                          //: Estos no faltan por descuido: no existe la cuenta.
+                          //: Mezclarlos con los otros hace que el total sugiera
+                          //: una acción —asentar— que no aplica.
+                          const sinCuenta =
+                            r.coverage.unrepresentable_kinds.includes(g.kind);
+                          return (
+                            <tr
+                              key={g.kind}
+                              className="clickable"
+                              onClick={() =>
+                                limpiar(() => {
+                                  setEstado("missing_in_erp");
+                                  setKind(g.kind);
+                                })
+                              }
+                            >
+                              <td className="celda-principal">
+                                {KIND[g.kind] ?? g.kind}
+                                {sinCuenta && (
+                                  <div className="celda-sub">
+                                    no hay cuenta en el plan donde asentarlo
+                                  </div>
+                                )}
+                              </td>
+                              <td className="num">{g.count}</td>
+                              <td className="num">
+                                <Amount value={g.total} />
+                              </td>
+                              <td style={{ fontSize: 12 }}>
+                                {sinCuenta ? (
+                                  <Badge tono="warn">otra causa</Badge>
+                                ) : (
+                                  <span className="dim">ver detalle →</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -298,8 +316,9 @@ export function Erp() {
 // ── encabezado ──────────────────────────────────────────────────────────────
 
 function Veredicto({ r }: { r: ErpReport }) {
-  const pct = Math.round(r.coverage_ratio * 100);
-  const faltan = r.counts.missing_in_erp ?? 0;
+  const c = r.coverage;
+  const pct = Math.round(c.ratio * 100);
+  const faltan = (r.counts.missing_in_erp ?? 0) - c.unrepresentable;
   const sobran = r.counts.missing_in_ledger ?? 0;
   const borradores = r.counts.not_posted ?? 0;
   const discrepan = r.counts.amount_mismatch ?? 0;
@@ -307,15 +326,24 @@ function Veredicto({ r }: { r: ErpReport }) {
   return (
     <div className={`banner ${pct >= 99 && r.problem_count === 0 ? "ok" : "bad"}`}>
       <strong>
-        El ERP registra el {pct}% de los movimientos de {r.ledger_id}.
+        El ERP registra el {pct}% de lo que puede registrar de {r.ledger_id}.
       </strong>{" "}
-      {r.counts.matched ?? 0} coinciden por {r.matched_amount.formatted}
+      {c.matched} de {c.comparable} coinciden por {r.matched_amount.formatted}
       {discrepan > 0 && (
         <>
           , y <strong>{discrepan} coinciden con otro monto</strong>
         </>
       )}
-      . Faltan {faltan} en el libro.
+      . Faltan {faltan} asientos que deberían estar.
+      {c.unrepresentable > 0 && (
+        <>
+          {" "}
+          Aparte hay {c.unrepresentable} movimiento(s) por{" "}
+          {c.unrepresentable_total.formatted} que{" "}
+          <strong>no tienen cuenta donde asentarse</strong>: eso no se arregla
+          registrando, se arregla rediseñando el plan de cuentas.
+        </>
+      )}
       {sobran > 0 && (
         <>
           {" "}
@@ -333,28 +361,62 @@ function Veredicto({ r }: { r: ErpReport }) {
   );
 }
 
+/**
+ * Los KPIs, con la cobertura **separada**.
+ *
+ * Un solo «25%» juntaba «debería estar asentado y no lo está» con «no existe la
+ * cuenta donde asentarlo». Se arreglan de maneras opuestas —asentando vs.
+ * rediseñando el plan de cuentas— así que un número que baja por las dos
+ * razones no le dice a nadie qué hacer.
+ */
 function Kpis({ r }: { r: ErpReport }) {
-  const pct = Math.round(r.coverage_ratio * 100);
+  const c = r.coverage;
+  const pct = Math.round(c.ratio * 100);
   return (
     <div className="cards">
       <div className="card">
-        <div className="meta">Cobertura del libro</div>
+        <div className="meta">Cobertura de lo comparable</div>
         <div className={`kpi ${pct >= 99 ? "pos" : pct >= 50 ? "" : "neg"}`}>
           {pct}%
         </div>
         <div className="meta">
-          de los movimientos reales está registrado en la cuenta {r.account_code}
+          {c.matched} de {c.comparable} hechos que el plan de cuentas sí puede
+          representar en la cuenta {r.account_code}
         </div>
       </div>
+
+      {c.unrepresentable > 0 ? (
+        <div className="card">
+          <div className="meta">Sin cuenta donde asentarse</div>
+          <div className="kpi warn">{c.unrepresentable}</div>
+          <div className="meta">
+            {c.unrepresentable_kinds.map((k) => KIND[k] ?? k).join(", ")} por{" "}
+            {c.unrepresentable_total.formatted}. No hay cuenta de gasto ni de
+            impuesto en estos diarios: no se arregla asentando
+          </div>
+        </div>
+      ) : (
+        <div className="card">
+          <div className="meta">Coincide, con los dos ids</div>
+          <div className="kpi pos">{r.counts.matched ?? 0}</div>
+          <div className="meta">{r.matched_amount.formatted}</div>
+        </div>
+      )}
+
       <div className="card">
-        <div className="meta">Coincide, con los dos ids</div>
-        <div className="kpi pos">{r.counts.matched ?? 0}</div>
-        <div className="meta">{r.matched_amount.formatted}</div>
-      </div>
-      <div className="card">
-        <div className="meta">Pasó y el ERP no lo tiene</div>
-        <div className="kpi neg">{r.counts.missing_in_erp ?? 0}</div>
-        <div className="meta">agrupado por tipo abajo</div>
+        <div className="meta">Falta el asiento</div>
+        {/*
+          Sin restar los que no tienen cuenta, esta tarjeta vuelve a mezclar lo
+          mismo que el porcentaje de al lado: 149 sugiere «asentá 149 cosas», y
+          27 de esas no se pueden asentar en ningún lado.
+        */}
+        <div className="kpi neg">
+          {(r.counts.missing_in_erp ?? 0) - c.unrepresentable}
+        </div>
+        <div className="meta">
+          hechos que sí van en la cuenta {r.account_code} y no están. Agrupados
+          por tipo abajo
+        </div>
       </div>
       <div className="card">
         <div className="meta">El ERP lo tiene y no pasó</div>

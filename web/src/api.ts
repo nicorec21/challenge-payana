@@ -228,8 +228,22 @@ export interface ErpReport {
   /** Cuenta del plan que representa al ledger en Odoo. */
   account_code: string;
   counts: Record<string, number>;
-  /** Fracción de movimientos del ledger que el libro registra. */
+  /** Fracción sobre TODOS los movimientos. Lectura de una línea. */
   coverage_ratio: number;
+  /**
+   * La misma cobertura, separando lo comparable de lo que el plan de cuentas
+   * no puede representar. Un `0%` en un tipo sin cuenta contable no se arregla
+   * asentando: se arregla rediseñando el plan.
+   */
+  coverage: {
+    matched: number;
+    comparable: number;
+    ratio: number;
+    unrepresentable: number;
+    unrepresentable_kinds: string[];
+    unrepresentable_total: Money;
+    overall_ratio: number;
+  };
   matched_amount: Money;
   problem_count: number;
   missing_in_erp_by_kind: ErpGroup[];

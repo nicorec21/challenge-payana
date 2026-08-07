@@ -17,6 +17,7 @@ from decimal import ROUND_DOWN, Decimal
 
 from .domain.ledger import Account
 from .domain.money import Money
+from .domain.movement import MovementKind
 
 # ─── Cuentas ────────────────────────────────────────────────────────────────
 
@@ -260,6 +261,32 @@ ODOO_LEDGER_ACCOUNTS = {
     "wompi": "1110001",       # Wompi Tarjetas  (asset_cash)
     "bancolombia": "111001",  # Bank            (asset_cash)
 }
+
+#: Tipos de movimiento que **el plan de cuentas no puede representar** sobre la
+#: cuenta del ledger, por más completo que esté el ERP.
+#:
+#: Verificado contra el Odoo real: los diarios 48 y 49 solo tocan `1110001`,
+#: `420500` y `111001`. **No hay cuenta de comisión, ni de IVA, ni de
+#: retención.** El bruto entra a la cuenta puente, el neto sale, y la diferencia
+#: —las comisiones— queda ahí como saldo permanente, sin llevarse nunca a gasto.
+#:
+#: Sin esta distinción, la cobertura del ERP mezcla dos cosas opuestas: *"esto
+#: debería estar asentado y no lo está"* (se arregla asentándolo) con *"no
+#: existe la cuenta donde asentarlo"* (se arregla rediseñando el plan). Un
+#: número que baja por las dos razones no dice qué hacer.
+#:
+#: Va acá y no derivado de los datos a propósito: que un tipo dé 0 coincidencias
+#: podría ser casualidad. Que **no exista la cuenta** es un hecho del plan
+#: contable, y afirmarlo requiere haberlo mirado.
+ERP_UNREPRESENTABLE_KINDS: dict[str, frozenset[str]] = {
+    "wompi": frozenset({MovementKind.FEE.value, MovementKind.TAX.value}),
+}
+
+
+def erp_unrepresentable_kinds(ledger_id: str) -> frozenset[str]:
+    """Qué tipos no tienen cuenta en el plan donde ser asentados."""
+    return ERP_UNREPRESENTABLE_KINDS.get(ledger_id, frozenset())
+
 
 #: Sufijo de los ledgers que espejan el ERP. `wompi` ↔ `wompi_erp`.
 ERP_SUFFIX = "_erp"

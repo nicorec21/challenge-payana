@@ -499,9 +499,13 @@ class ErpReportView:
     #: Cuenta del plan que representa al ledger en Odoo.
     account_code: str
     counts: dict[str, int]
-    #: Fracción de movimientos del ledger que el libro registra. Responde
-    #: "¿mi ERP refleja lo que pasó?" de un vistazo.
+    #: Fracción de movimientos del ledger que el libro registra, sobre **todos**
+    #: los movimientos. Lectura de una línea; para decidir qué hacer, `coverage`.
     coverage_ratio: float
+    #: La misma cobertura, separando lo que el plan de cuentas puede representar
+    #: de lo que no. Un `0%` en un tipo sin cuenta contable no se arregla
+    #: asentando asientos: se arregla rediseñando el plan.
+    coverage: dict[str, Any]
     matched_amount: dict[str, Any]
     problem_count: int
     missing_in_erp_by_kind: list[ErpGroupView]

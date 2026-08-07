@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 349 tests, 106/243,
+Este archivo y el README afirman cantidades concretas: 351 tests, 106/245,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -64,9 +64,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 349
+pytest                                        # 351
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 243 — pipeline sobre fixtures
+pytest -m integration                         # 245 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -461,6 +461,28 @@ llaman como dice el enunciado:
 
 El bruto entra a `1110001`, el neto sale, y la diferencia —las comisiones— queda
 como saldo permanente en la cuenta puente, sin llevarse nunca a gasto.
+
+**Consecuencia medible, y la razón de `ERP_UNREPRESENTABLE_KINDS` en
+`config.py`:** los `FEE` y `TAX` del ledger **nunca** van a aparecer en
+`1110001`, por más completo que esté el ERP. Un solo porcentaje de cobertura
+junta dos problemas que se arreglan al revés:
+
+```
+                     matched  total          se arregla…
+comparable              49     171   28,7%   asentando lo que falta
+sin cuenta donde ir      0      27           rediseñando el plan de cuentas
+                                             (−$127.131,96 en comisiones e IVA)
+global                  49     198   24,7%   ← no dice cuál de las dos
+```
+
+Por eso `ErpReport.coverage()` los separa y `coverage_ratio()` quedó como el
+global de una línea. **La exclusión sale de config, no de contar ceros**: que un
+tipo dé cero coincidencias puede ser casualidad; que no exista la cuenta es un
+hecho del plan contable y afirmarlo requiere haberlo mirado. Lo fijan
+`test_la_cobertura_separa_lo_que_no_tiene_cuenta_donde_asentarse` y
+`test_no_se_excluye_un_tipo_solo_porque_dio_cero`.
+
+Del lado `bancolombia` no hay tipos sin cuenta: su 2,6% es cobertura real.
 
 Ambigüedad abierta: el enunciado dice *"las cuentas contables **a utilizar**
 son"*. Puede ser descripción (falsa) o instrucción de lo que habría que

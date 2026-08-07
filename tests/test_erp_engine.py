@@ -332,6 +332,46 @@ class TestReporte:
         book = libro(linea(1, "2026-04-14", debit=100.0, ref="A"))
         assert reconcile_erp(led, book).coverage_ratio() == 0.25
 
+    def test_la_cobertura_separa_lo_que_no_tiene_cuenta_donde_asentarse(self):
+        """Un solo porcentaje junta dos problemas que se arreglan al revés.
+
+        «Falta el asiento» se arregla asentando; «no existe la cuenta donde
+        asentarlo» se arregla rediseñando el plan. Un número que baja por las
+        dos razones no le dice a nadie qué hacer.
+        """
+        led = ledger(
+            mov("T1", date(2026, 4, 14), "100", ref="a"),   # asentada
+            mov("T2", date(2026, 4, 14), "200", ref="b"),   # falta el asiento
+            mov("F1", date(2026, 4, 14), "-10", MovementKind.FEE),
+            mov("F2", date(2026, 4, 14), "-20", MovementKind.TAX),
+        )
+        book = libro(linea(1, "2026-04-14", debit=100.0, ref="A"))
+        cov = reconcile_erp(led, book).coverage()
+
+        assert cov["comparable"] == 2 and cov["matched"] == 1
+        assert cov["ratio"] == 0.5           # sobre lo que el plan puede representar
+        assert cov["overall_ratio"] == 0.25  # el global, que mezcla las dos causas
+        assert cov["unrepresentable"] == 2
+        assert cov["unrepresentable_total"] == Money.parse("-30")
+        assert cov["comparable"] + cov["unrepresentable"] == 4
+
+    def test_no_se_excluye_un_tipo_solo_porque_dio_cero(self):
+        """La exclusión sale de `config`, no de contar ceros.
+
+        Que un tipo no tenga ninguna coincidencia puede ser casualidad. Que
+        **no exista la cuenta** es un hecho del plan contable: afirmarlo
+        requiere haberlo mirado, no inferirlo del resultado.
+        """
+        led = ledger(
+            mov("S1", date(2026, 4, 14), "-100", MovementKind.SETTLEMENT),
+            mov("S2", date(2026, 4, 14), "-200", MovementKind.SETTLEMENT),
+        )
+        cov = reconcile_erp(led, libro()).coverage()
+
+        assert cov["unrepresentable"] == 0
+        assert cov["comparable"] == 2
+        assert cov["ratio"] == 0.0  # cero de verdad: faltan los asientos
+
     def test_los_rechazados_del_ledger_no_se_comparan(self):
         """Una venta rechazada no debería estar en el libro contable."""
         led = ledger(

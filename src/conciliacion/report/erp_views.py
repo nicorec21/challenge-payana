@@ -45,6 +45,7 @@ def build_erp_finding(f: ErpFinding) -> ErpFindingView:
 
 
 def build_erp_report(report: ErpReport) -> ErpReportView:
+    cov = report.coverage()
     return ErpReportView(
         contract_version=CONTRACT_VERSION,
         generated_at=now_iso(),
@@ -52,7 +53,13 @@ def build_erp_report(report: ErpReport) -> ErpReportView:
         book_ledger_id=report.book_ledger_id,
         account_code=report.account_code,
         counts=report.counts(),
-        coverage_ratio=round(report.coverage_ratio(), 4),
+        coverage_ratio=round(cov["overall_ratio"], 4),
+        coverage={
+            **cov,
+            "ratio": round(cov["ratio"], 4),
+            "overall_ratio": round(cov["overall_ratio"], 4),
+            "unrepresentable_total": _money(cov["unrepresentable_total"]),
+        },
         matched_amount=_money(report.matched_amount()),
         problem_count=len(report.problems),
         missing_in_erp_by_kind=[

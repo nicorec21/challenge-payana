@@ -90,6 +90,8 @@ h2 + .sub { margin-bottom: 18px; }
 }
 .kpi.neg { color: var(--bad); }
 .kpi.pos { color: var(--ok); }
+/* Ni bien ni mal: un número que se arregla por otra vía. */
+.kpi.warn { color: var(--warn); }
 
 /* ── selector de fuente ─────────────────────────────────────────────── */
 
