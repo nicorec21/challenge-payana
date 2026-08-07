@@ -12,7 +12,12 @@ dependencies = [
 
 [project.optional-dependencies]
 api = ["fastapi>=0.115", "uvicorn>=0.30"]
-dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6"]
+# `dev` arrastra `api` a propósito: `tests/test_report_api.py` levanta la API
+# con `TestClient`, así que sin fastapi esos tests no fallan — *erroran* al
+# construir el fixture, y el que sigue el README (`pip install -e ".[dev]"`)
+# se come diez errores que no son suyos. Dejarlos fuera y saltearlos sería
+# peor: la API es un entregable y quedaría sin cubrir en CI.
+dev = ["conciliacion[api]", "pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6"]
 
 [project.scripts]
 conciliacion = "conciliacion.cli:app"
