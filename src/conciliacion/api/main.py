@@ -328,6 +328,100 @@ def erp_markdown(ledger_id: str) -> str:
     )
 
 
+@app.get("/api/panorama/{source_id}")
+def panorama(
+    source_id: str,
+    page: int = Query(1, ge=1),
+    size: int = Query(25, ge=5, le=200),
+    q: str | None = None,
+    estado: str | None = Query(None, description="Filtra por estado de conciliación."),
+) -> dict[str, Any]:
+    """Panorama de una fuente: qué trae, de dónde viene y si está conciliado.
+
+    Paginado del lado del servidor: 426 líneas de extracto en una sola tabla es
+    un scroll interminable, y traerlas todas para mostrar 25 desperdicia lo
+    mismo del lado del cliente.
+    """
+    from ..config import ODOO_LEDGER_ACCOUNTS, erp_ledger_id
+    from ..reconcile.erp.engine import reconcile_erp
+    from ..reconcile.flow.engine import reconcile_flow
+    from ..reconcile.flow.findings import Coverage
+    from ..report.sources import (
+        bancolombia_panorama,
+        odoo_panorama,
+        paginate,
+        wompi_panorama,
+    )
+    from ..report.views import build_source_groups
+
+    if source_id == "wompi":
+        canal, banco = _load("wompi"), _load("bancolombia")
+        flujo = reconcile_flow(
+            canal, banco,
+            coverage=Coverage(channel=canal.date_range, bank=banco.date_range),
+        )
+        vista = wompi_panorama(canal, build_source_groups(canal), flujo)
+    elif source_id == "bancolombia":
+        canal, banco = _load("wompi"), _load("bancolombia")
+        flujo = reconcile_flow(
+            canal, banco,
+            coverage=Coverage(channel=canal.date_range, bank=banco.date_range),
+        )
+        vista = bancolombia_panorama(banco, flujo)
+    elif source_id == "odoo":
+        libro = _load(erp_ledger_id("wompi"))
+        erp = reconcile_erp(
+            _load("wompi"), libro, account_code=ODOO_LEDGER_ACCOUNTS["wompi"]
+        )
+        vista = odoo_panorama(libro, erp)
+    else:
+        raise HTTPException(404, f"Fuente desconocida: {source_id}")
+
+    items = vista.items
+    if estado:
+        items = [i for i in items if i.reconciliation == estado]
+    if q:
+        needle = q.lower()
+        items = [
+            i for i in items
+            if needle in i.label.lower() or needle in (i.sublabel or "").lower()
+        ]
+
+    pagina, total_paginas = paginate(items, page, size)
+    return {
+        "source_id": vista.source_id,
+        "name": vista.name,
+        "subtitle": vista.subtitle,
+        "unit": vista.unit,
+        "total": vista.total,
+        "counts": vista.counts,
+        "filtered": len(items),
+        "page": page,
+        "size": size,
+        "pages": total_paginas,
+        "items": to_dict(pagina),
+    }
+
+
+@app.get("/api/sources/{ledger_id}/groups")
+def source_groups(ledger_id: str) -> dict[str, Any]:
+    """Los datos de una fuente, agrupados como los piensa un operador.
+
+    Para un canal: las ventas dentro del desembolso que las liquidó. El
+    agrupamiento usa el `disbursement_id` declarado por el canal, no una
+    inferencia.
+    """
+    from ..report.views import build_source_groups
+
+    grupos = build_source_groups(_load(ledger_id))
+    return {
+        "ledger_id": ledger_id,
+        "group_count": len(grupos),
+        "transaction_count": sum(g["transaction_count"] for g in grupos),
+        "groups": to_dict(grupos),
+    }
+
+
 @app.get("/api/kinds")
 def kinds() -> dict[str, list[str]]:
     from ..domain.movement import MovementStatus
