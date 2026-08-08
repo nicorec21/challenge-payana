@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 351 tests, 106/245,
+Este archivo y el README afirman cantidades concretas: 364 tests, 106/258,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -64,9 +64,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 351
+pytest                                        # 364
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 245 — pipeline sobre fixtures
+pytest -m integration                         # 258 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -164,6 +164,11 @@ retefuente    = trunc₂( 0.015 × monto )
 | `INFERRED` (fórmula) | 47/55 desembolsos; los 8 restantes fallan por **exactamente $0,01** |
 
 Ese ±$0,01 es el insumo numérico de `Confidence` y `unexplained`. No lo borres.
+
+El 9/9 de `DECLARED` **está fijado por test**: `audit()` del adapter del CSV
+contrasta cada descuento declarado contra `WOMPI_FEES` y da cero avisos sobre los
+4 archivos. Si empieza a avisar, o cambió la tarifa real o se rompió una fórmula
+— y la CLI lo muestra en la ingesta. Ver ADR-0012.
 
 ### Volumen (ene–abr 2026)
 
@@ -289,6 +294,20 @@ Es lo que los hace testeables con un fixture en memoria.
 **Los adapters no clasifican.** Una línea que dice WOMPI se ingiere como
 `BANK_CREDIT` común. Decidir que *es* una liquidación es del motor, que además
 debe explicarlo. Si el adapter la etiquetara, esa conclusión entraría sin evidencia.
+
+**Los adapters no corrigen: auditan.** Un adapter puede implementar el protocolo
+opcional `Auditor` (`audit(record) -> Iterator[str]`) y contrastar lo que leyó
+contra las reglas de `config.py`. El dato de la fuente **se ingiere igual**: la
+fuente es la verdad, la config es la hipótesis. Los avisos van a
+`IngestionReport.warnings` y **no tumban `report.ok`** — un cambio de tarifa y un
+PDF corrupto se arreglan al revés, así que no pueden verse igual.
+
+Va aparte de `parse` por tres razones, y la del medio es la que sorprende:
+traducir no es juzgar; el aviso **no se persiste** (`Movement` es inmutable, así
+que un desvío guardado en `metadata` seguiría afirmándose después de corregir la
+config); y un desvío puede no tener movimiento donde colgarse —si una retención
+baja a cero la fila no emite movimiento, y esa desaparición es justo lo que hay
+que avisar—. Ver ADR-0012.
 
 **Se ingiere todo, incluso lo que no concilia.** `DECLINED`, `ERROR`, `OTHER`.
 Explicar por qué una venta *no* llegó al banco requiere tenerla. Un movimiento
@@ -484,9 +503,24 @@ hecho del plan contable y afirmarlo requiere haberlo mirado. Lo fijan
 
 Del lado `bancolombia` no hay tipos sin cuenta: su 2,6% es cobertura real.
 
-Ambigüedad abierta: el enunciado dice *"las cuentas contables **a utilizar**
-son"*. Puede ser descripción (falsa) o instrucción de lo que habría que
-proponer. Probablemente lo segundo.
+**La ambigüedad del enunciado, resuelta.** Dice *"las cuentas contables **a
+utilizar** son"*. Como descripción es falsa —la tabla de arriba lo prueba—, así
+que se lee como **instrucción de lo que hay que proponer**. Eso es
+`ERP_PROPOSED_ACCOUNTS` en `config.py`: `FEE → 530505`, `TAX → 240810 + 236500`.
+`TAX` mapea a dos porque el modelo agrupa lo que el plan separa (IVA descontable
+vs. retención por cobrar).
+
+Es el complemento de `ERP_UNREPRESENTABLE_KINDS`: ese dice *qué* no tiene dónde
+asentarse, este *dónde debería ir*. Reportar 27 movimientos sin cuenta y no
+nombrar ninguna deja el trabajo a medias, así que `coverage()` emite
+`unrepresentable_proposed_accounts` y el reporte del CFO tiene su propia sección
+—separada de los faltantes, porque se arreglan por vías distintas: contabilizar
+vs. rediseñar el plan—.
+
+`ODOO_ACCOUNT_REALITY` guarda el nombre real de cada código propuesto. **No se
+propone una cuenta sin haber mirado qué es en Odoo**: repetir el nombre del
+enunciado como si describiera la instancia es exactamente el error que este mapa
+vino a corregir. Lo fija `test_no_se_propone_una_cuenta_sin_haber_mirado_que_es_en_odoo`.
 
 ### El ERP está incompleto — y eso es el entregable de Fase 3
 
@@ -551,6 +585,7 @@ está produciendo ninguno.
 | 0007 | PDF por coordenadas, clave sintética con saldo, autovalidación |
 | 0008 | Tres fuentes, kinds disjuntos, el ledger cierra en cero |
 | 0009 | Costo de sumar el POS, medido |
+| 0012 | El tarifario audita la ingesta; el aviso no se persiste |
 
 ---
 

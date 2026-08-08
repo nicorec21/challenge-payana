@@ -32,6 +32,7 @@ def render_erp_report(report: ErpReport) -> str:
         _veredicto(report),
         _diferencias_de_monto(report),
         _faltantes_en_el_erp(report),
+        _sin_cuenta_donde_asentarse(report),
         _otros_problemas(report),
         _coincidencias(report),
         _nota(report),
@@ -118,6 +119,47 @@ def _faltantes_en_el_erp(r: ErpReport) -> str:
         "contabilizando que la lista de casos.\n\n"
         "| Tipo | Cantidad | Monto |\n|---|---:|---:|\n" + filas + "\n\n"
         f"Neto sin registrar: **{total}**.\n"
+    )
+
+
+def _sin_cuenta_donde_asentarse(r: ErpReport) -> str:
+    """Va después de los faltantes porque se arregla al revés.
+
+    «Falta el asiento» lo resuelve quien contabiliza; «no existe la cuenta» lo
+    resuelve quien diseña el plan. Meterlos en la misma tabla haría que el CFO
+    le pida a la persona equivocada algo que no puede hacer.
+    """
+    from ..config import ODOO_ACCOUNT_REALITY
+
+    cov = r.coverage()
+    propuestas = cov["unrepresentable_proposed_accounts"]
+    if not cov["unrepresentable"] or not propuestas:
+        return ""
+
+    filas = "\n".join(
+        f"| {_ETIQUETA.get(kind, kind)} | "
+        + ", ".join(f"`{c}`" for c in codigos)
+        + " | "
+        + "; ".join(
+            f"{ODOO_ACCOUNT_REALITY[c][0]} — {ODOO_ACCOUNT_REALITY[c][1]}"
+            for c in codigos
+            if c in ODOO_ACCOUNT_REALITY
+        )
+        + " |"
+        for kind, codigos in sorted(propuestas.items())
+    )
+    return (
+        "## Sin cuenta donde asentarse\n\n"
+        f"**{cov['unrepresentable']}** movimientos por "
+        f"{cov['unrepresentable_total']} no están sin registrar: **no existe la "
+        "cuenta donde registrarlos**. El bruto entra a la cuenta puente, el neto "
+        "sale, y la diferencia queda ahí como saldo permanente sin llevarse nunca "
+        "a gasto. No se arregla contabilizando: se arregla rediseñando el plan de "
+        "cuentas, y por eso no cuenta contra la cobertura.\n\n"
+        "Las cuentas que el enunciado pide utilizar existen en Odoo, pero con "
+        "otro nombre y sin uso en los diarios de Wompi y Bancolombia:\n\n"
+        "| Tipo | Cuenta propuesta | Qué es hoy en Odoo |\n"
+        "|---|---|---|\n" + filas + "\n"
     )
 
 
