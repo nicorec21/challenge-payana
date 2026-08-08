@@ -1,10 +1,13 @@
 """Los tres adapters de Wompi, y sobre todo: que juntos cierren en cero."""
 
+from dataclasses import replace
 from datetime import date, datetime
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
+from conciliacion.config import WOMPI_FEES
 from conciliacion.domain import Money, MovementKind, MovementStatus
 from conciliacion.ingest.adapters.wompi_api import (
     WompiApiDisbursementsAdapter,
@@ -268,6 +271,93 @@ class TestCsvDesembolso:
         )
         with pytest.raises(IngestionError, match="Faltan columnas"):
             list(adapter.parse(record))
+
+
+# ── auditoría contra el tarifario ───────────────────────────────────────────
+
+
+class TestAuditoriaDelTarifario:
+    """Que un cambio de tarifa entre sin romper nada es correcto. Que entre sin
+    que nadie se entere, no.
+
+    El CSV manda: sus montos se ingieren tal cual, así que el sistema se adapta
+    solo a una tarifa nueva. Pero los descuentos se **leen** en 4 de 56 días y
+    se **infieren** en el resto con `WOMPI_FEES`; si la config queda vieja, esa
+    mayoría se calcula mal y el residuo aparece sin causa visible. La auditoría
+    es lo que une el síntoma con el motivo.
+    """
+
+    TODOS = (
+        TestCsvDesembolso.NOMBRE_14,
+        TestCsvDesembolso.NOMBRE_15,
+        "27-04-2026-disbursement-report-rs-203607-acwL6FXvd6b5KsYvovUYPe5EKHCfCYLc000.csv",
+        "04-05-2026-disbursement-report-rs-203607-MVDjQLP290BzBSdodr5pIEDENWBanq7M000.csv",
+    )
+
+    def _con_tarifario(self, **cambios):
+        """Adapter que audita contra una variante del tarifario vigente."""
+        alterado = replace(WOMPI_FEES[0], **cambios)
+        return WompiDisbursementCsvAdapter(lambda medio, dia: alterado)
+
+    def test_los_cuatro_csv_pasan_limpio_con_el_tarifario_vigente(self):
+        """El 9/9 exacto de ADR-0005, ahora como test en vez de como afirmación.
+
+        Si este falla, o cambió la tarifa real o se rompió una fórmula."""
+        adapter = WompiDisbursementCsvAdapter()
+        for name in self.TODOS:
+            assert list(adapter.audit(csv_record(name))) == [], name
+
+    def test_un_cambio_de_retefuente_no_pasa_callado(self):
+        """1,5% → 2,5%: exactamente el escenario "cambia la regulación"."""
+        adapter = self._con_tarifario(retefuente_rate=Decimal("0.025"))
+        avisos = list(adapter.audit(csv_record(TestCsvDesembolso.NOMBRE_15)))
+        assert len(avisos) == 1
+        assert "retefuente" in avisos[0]
+
+    def test_el_aviso_distingue_cambio_de_tarifa_de_caso_suelto(self):
+        """Todas las filas desviadas es un cambio de tarifa; una sola es una
+        tarifa negociada o un error de carga. Se arreglan al revés, así que el
+        aviso tiene que decir cuál de las dos es."""
+        todas = self._con_tarifario(commission_rate=Decimal("0.03"))
+        aviso_global = next(iter(todas.audit(csv_record(TestCsvDesembolso.NOMBRE_15))))
+        assert "TODAS las filas" in aviso_global
+        assert "WOMPI_FEES" in aviso_global
+
+        # El archivo del 27-04 consolida el fin de semana: 3 filas en 3 días
+        # distintos, así que un tarifario por fecha desvía solo una.
+        base, otro = WOMPI_FEES[0], replace(WOMPI_FEES[0], commission_fixed=Money(50_000))
+        una_sola = WompiDisbursementCsvAdapter(
+            lambda medio, dia: otro if dia == date(2026, 4, 25) else base
+        )
+        aviso_puntual = next(iter(una_sola.audit(csv_record(self.TODOS[2]))))
+        assert "1 de 3 filas" in aviso_puntual
+        assert "TODAS" not in aviso_puntual
+
+    def test_medio_de_pago_sin_tarifario_se_avisa_en_vez_de_asumirse(self):
+        """Un medio nuevo (NEQUI, PSE) no tiene por qué cobrar como CARD. Que no
+        haya tarifario no es un error: es que no se puede verificar, y esa
+        diferencia tiene que llegar a quien lee el reporte."""
+        adapter = WompiDisbursementCsvAdapter(lambda medio, dia: None)
+        avisos = list(adapter.audit(csv_record(TestCsvDesembolso.NOMBRE_15)))
+        assert len(avisos) == 1
+        assert "CARD" in avisos[0] and "sin tarifario" in avisos[0]
+
+    def test_el_dato_declarado_se_ingiere_igual_aunque_el_tarifario_no_coincida(self):
+        """La fuente es la verdad; la config es la hipótesis. El adapter avisa,
+        NO corrige: corregir haría que el sistema no pueda descubrir nunca que
+        se equivocó (ADR-0005)."""
+        adapter = self._con_tarifario(retefuente_rate=Decimal("0.99"))
+        movs = list(adapter.parse(csv_record(TestCsvDesembolso.NOMBRE_14)))
+        por_columna = {m.metadata["deduction"]: m.amount for m in movs}
+        assert por_columna["retefuente"] == Money.parse("-12611.44")  # el del CSV
+
+    def test_auditar_no_toca_los_movimientos(self):
+        """El aviso no se persiste. `Movement` es inmutable, así que un desvío
+        guardado en `metadata` seguiría afirmándose después de corregir la
+        config. Auditar en cada corrida siempre habla del ahora."""
+        adapter = self._con_tarifario(retefuente_rate=Decimal("0.025"))
+        movs = list(adapter.parse(csv_record(TestCsvDesembolso.NOMBRE_14)))
+        assert not any("tarif" in k for m in movs for k in m.metadata)
 
 
 # ── los tres juntos ─────────────────────────────────────────────────────────

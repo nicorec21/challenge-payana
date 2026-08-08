@@ -355,6 +355,51 @@ class TestReporte:
         assert cov["unrepresentable_total"] == Money.parse("-30")
         assert cov["comparable"] + cov["unrepresentable"] == 4
 
+    def test_la_cobertura_dice_que_cuenta_habria_que_crear(self):
+        """«No existe la cuenta» solo es accionable si se dice **cuál** crear.
+
+        `ERP_UNREPRESENTABLE_KINDS` dice qué no tiene dónde asentarse;
+        `ERP_PROPOSED_ACCOUNTS` dice dónde debería ir. Reportar
+        −$127.131,96 sin cuenta y no nombrar ninguna deja el trabajo a medias.
+        """
+        led = ledger(
+            mov("F1", date(2026, 4, 14), "-10", MovementKind.FEE),
+            mov("F2", date(2026, 4, 14), "-20", MovementKind.TAX),
+        )
+        propuestas = reconcile_erp(led, libro()).coverage()[
+            "unrepresentable_proposed_accounts"
+        ]
+
+        assert propuestas == {"fee": ("530505",), "tax": ("240810", "236500")}
+
+    def test_no_se_propone_cuenta_para_un_tipo_que_ya_se_asienta(self):
+        """El ledger del banco no tiene tipos sin cuenta: su cobertura es real.
+        Proponerle cuentas nuevas sería ruido sobre un problema que no tiene."""
+        led = Ledger(Account("bancolombia", "Banco", role="bank"))
+        led.add(
+            Movement(
+                ledger_id="bancolombia", source_id="pdf", external_id="B1",
+                occurred_on=date(2026, 4, 14), amount=Money.parse("100"),
+                kind=MovementKind.BANK_CREDIT, status=MovementStatus.APPROVED,
+            )
+        )
+        cov = reconcile_erp(led, libro()).coverage()
+
+        assert cov["unrepresentable"] == 0
+        assert cov["unrepresentable_proposed_accounts"] == {}
+
+    def test_no_se_propone_una_cuenta_sin_haber_mirado_que_es_en_odoo(self):
+        """Una propuesta sin el nombre real vuelve al error que este mapa vino a
+        corregir: repetir el nombre del enunciado como si describiera el ERP.
+
+        El enunciado llama «Gastos Bancarios» a 530505, que en la instancia es
+        *Currency Exchange Loss* con una sola línea. Que el reporte pueda decir
+        las dos cosas es lo que lo hace honesto."""
+        from conciliacion.config import ERP_PROPOSED_ACCOUNTS, ODOO_ACCOUNT_REALITY
+
+        propuestos = {c for codes in ERP_PROPOSED_ACCOUNTS.values() for c in codes}
+        assert propuestos <= set(ODOO_ACCOUNT_REALITY)
+
     def test_no_se_excluye_un_tipo_solo_porque_dio_cero(self):
         """La exclusión sale de `config`, no de contar ceros.
 

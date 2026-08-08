@@ -22,8 +22,8 @@ La suite se divide en dos, y cada una responde algo distinto:
 
 ```bash
 pytest -m unit          # 106 — solo dominio, sin I/O. Milisegundos.
-pytest -m integration   # 268 — pipeline real sobre fixtures congelados.
-pytest                  # 374
+pytest -m integration   # 284 — pipeline real sobre fixtures congelados.
+pytest                  # 390
 ```
 
 **Ningún test toca la red.** No es una convención: `tests/conftest.py` bloquea la
@@ -101,6 +101,7 @@ que nadie lee:
 | **Fuentes de datos** | ¿qué trae cada origen, de dónde salió el dato y está verificado? Wompi, Bancolombia y Odoo con el mismo formato de tabla. **No** muestra la conciliación: el estado es un aviso de una palabra |
 | **Flujo · canal → banco** | ¿la plata que Wompi prometió llegó al banco? Una fila por conclusión del motor, con su confianza y su razonamiento completo |
 | **Libro · contra Odoo** | ¿el ERP refleja lo que pasó? Dos corridas —una por ledger, contra su propia cuenta del plan— porque la llave de match no es la misma. Lidera con la conclusión agrupada: del lado banco hay 431 hallazgos y 415 son el mismo |
+| **Informe** | el reporte del CFO renderizado, con ruta propia para poder compartirlo. No es una quinta pregunta: es la respuesta de flujo o de ERP en formato documento, para leer de arriba abajo en vez de filtrar |
 
 En la vista de flujo hay dos niveles de profundidad, porque son dos preguntas
 distintas: el **acordeón** contesta de qué está hecho un giro (sus ventas), y el
@@ -111,9 +112,19 @@ alternativas descartadas y el `raw_ref` del crédito bancario.
 En la del ERP el panel muestra **los dos identificadores** —el del movimiento
 del ledger y el de la línea de Odoo, con el nombre del asiento— que es lo que el
 enunciado pide para cada coincidencia. Cuando falta una punta, ese hueco es la
-discrepancia. Las dos vistas exponen su informe en Markdown para el CFO desde la
-misma barra de filtros; el JSON que consume el front es el mismo que consumiría
-una IA contadora.
+discrepancia. El JSON que consume el front es el mismo que consumiría una IA
+contadora.
+
+**«Ver informe →»**, en la barra de filtros de las dos vistas, abre el reporte
+del CFO renderizado en página propia: `#informe/flujo/wompi/bancolombia` y
+`#informe/erp/wompi`. Es el mismo Markdown que escribe `conciliacion reconcile`
+en `data/out/` —una sola generación, tres formas de leerla— y adentro hay un
+botón que lo baja como archivo, con el mismo nombre que usa la CLI.
+
+Antes el botón apuntaba directo al `.md` de la API, así que el navegador lo
+abría como texto plano: el usuario pedía un informe y recibía su código fuente.
+La ruta va en el hash para que un informe se pueda mandar por mail sin que el
+server tenga que conocer rutas del front.
 
 `raw_ref` es el puntero al byte del que salió el movimiento
 (`data/raw/bancolombia/Extracto_Abril.pdf#pagina=2,y=680`), para poder abrir el

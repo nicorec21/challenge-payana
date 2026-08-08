@@ -148,6 +148,19 @@ WOMPI_FEES = (
 )
 
 
+#: Desviación tolerada al contrastar un descuento DECLARADO contra el tarifario.
+#:
+#: Un centavo, no un margen holgado: sobre los datos del challenge las tres
+#: fórmulas dan **exacto** en las 9 filas declaradas, así que cualquier cosa por
+#: encima del ruido de truncamiento es información. Un cambio de tasa mueve
+#: miles de pesos por fila; con esta tolerancia es imposible que pase callado.
+#:
+#: Es distinto de `INFERENCE_TOLERANCE_PER_TRANSACTION`, que mide el error de
+#: **predecir** el neto de un desembolso sin CSV. Este mide el desacuerdo entre
+#: dos fuentes que deberían coincidir al centavo.
+TARIFF_DEVIATION_TOLERANCE = Money(1)
+
+
 def fee_schedule_for(payment_method: str, day: date) -> FeeSchedule | None:
     """Tarifario aplicable, o `None` si no conocemos uno.
 
@@ -310,14 +323,51 @@ def erp_accounts() -> tuple[Account, ...]:
     )
 
 
-# ─── Mapeo al plan de cuentas de Odoo ───────────────────────────────────────
+# ─── Las cuentas que el enunciado propone ───────────────────────────────────
 
-#: Del enunciado. Las columnas del CSV de desembolsos mapean 1:1, lo que hace
-#: que la conciliación contra el ERP compare cosas comparables.
-ODOO_ACCOUNTS = {
-    "sales": "420500",        # Otras Ventas          ← columna `monto`
-    "iva_commission": "240810",  # IVA Descontable    ← `iva comisión`
-    "commission": "530505",   # Gastos Bancarios      ← `comisión`
-    "withholding": "236500",  # Retención en la Fuente← `retefuente`/`reteica`/`reteiva`
-    "bank": "111001",         # Banco                 ← `total desembolsado`
+#: Nombre **real** en la instancia de Odoo de los códigos que nombra el
+#: enunciado, y cuánto se usan. Verificado consultando el plan de cuentas.
+#:
+#: Está acá para que nadie vuelva a escribir el nombre del enunciado creyendo
+#: que describe la instancia: los tres códigos existen, pero ninguno se llama
+#: como dice el enunciado y ninguno aparece en los diarios 48/49.
+ODOO_ACCOUNT_REALITY: dict[str, tuple[str, str]] = {
+    #  código      nombre real en Odoo        uso real
+    "530505": ("Currency Exchange Loss", "1 línea en todo Odoo"),
+    "236500": ("Withheld at source", "1 línea en todo Odoo"),
+    "240810": ("Discountable VAT", "286 líneas, ninguna en los diarios 48/49"),
 }
+
+#: Dónde **habría que** asentar cada tipo que hoy no tiene cuenta en el plan.
+#:
+#: El enunciado dice *"las cuentas contables **a utilizar** son"*. Contra la
+#: instancia real eso es falso como descripción —el bruto entra a `1110001`, el
+#: neto sale, y las comisiones quedan ahí como saldo permanente sin llevarse
+#: nunca a gasto—, así que se lee como **instrucción de lo que hay que
+#: proponer**. Esto es esa propuesta, y por eso el nombre dice `PROPOSED`:
+#: afirmar que estas cuentas se usan sería mentir.
+#:
+#: Es el complemento exacto de `ERP_UNREPRESENTABLE_KINDS`. Ese dice *qué* no
+#: tiene dónde asentarse; este dice *dónde debería ir*. Un informe que reporta
+#: −$127.131,96 sin cuenta y no dice cuál crear deja el trabajo a medias.
+#:
+#: `TAX` mapea a dos cuentas porque el modelo lo agrupa y el plan no: el IVA de
+#: la comisión es descontable y la retención en la fuente es un activo por
+#: cobrar. Separarlas es del asiento, no de este mapa.
+ERP_PROPOSED_ACCOUNTS: dict[str, tuple[str, ...]] = {
+    MovementKind.FEE.value: ("530505",),           # ← columna `comisión`
+    MovementKind.TAX.value: ("240810", "236500"),  # ← `iva comisión` / retenciones
+}
+
+
+def erp_proposed_accounts(kinds: frozenset[str]) -> dict[str, tuple[str, ...]]:
+    """Cuentas propuestas para los tipos dados, omitiendo los que no tienen.
+
+    Se filtra por los tipos que el reporte realmente marcó sin cuenta: proponer
+    una cuenta para algo que ya se asienta bien sería ruido.
+    """
+    return {
+        kind: codes
+        for kind, codes in ERP_PROPOSED_ACCOUNTS.items()
+        if kind in kinds
+    }

@@ -251,8 +251,8 @@ export function Erp() {
                     ))}
                   </select>
                 )}
-                <a className="chip" href={`/api/reconciliation/erp/${ledger}/report.md`}>
-                  Descargar informe ↓
+                <a className="chip" href={`#informe/erp/${ledger}`}>
+                  Ver informe →
                 </a>
               </div>
 

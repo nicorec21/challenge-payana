@@ -32,6 +32,7 @@ def render_erp_report(report: ErpReport) -> str:
         _veredicto(report),
         _diferencias_de_monto(report),
         _faltantes_en_el_erp(report),
+        _sin_cuenta_donde_asentarse(report),
         _otros_problemas(report),
         _coincidencias(report),
         _nota(report),
@@ -144,9 +145,8 @@ def _faltantes_en_el_erp(r: ErpReport) -> str:
     nota = (
         "\n\nLas filas marcadas *no hay cuenta donde asentarlo* no son un "
         "descuido del contador: los diarios solo tocan la cuenta puente, ventas "
-        "y banco. **El enunciado nombra las cuentas `530505`, `236500` y "
-        "`240810`, y en este Odoo no se usan.** Corregirlo es una decisión de "
-        "plan de cuentas, no de registración.\n"
+        "y banco. Corregirlo es una decisión de plan de cuentas, no de "
+        "registración — cuáles crear está más abajo.\n"
         if sin_cuenta & set(grupos)
         else "\n"
     )
@@ -158,6 +158,48 @@ def _faltantes_en_el_erp(r: ErpReport) -> str:
         + filas
         + f"\n\nNeto pendiente de registrar: **{total}**."
         + nota
+    )
+
+
+def _sin_cuenta_donde_asentarse(r: ErpReport) -> str:
+    """Cuáles crear. Nada más.
+
+    El veredicto ya dice que faltan cuentas y por qué, y la tabla de faltantes
+    ya marca qué filas no se pueden registrar. Lo único que nadie contesta es
+    **cuál cuenta abrir**, así que esta sección se limita a eso: repetir el
+    mecanismo acá lo diluiría en un párrafo que el lector ya leyó dos veces.
+
+    Va al final del bloque de faltantes porque cambia de destinatario: los
+    asientos los hace quien contabiliza, el plan de cuentas lo decide otro.
+    """
+    from ..config import ODOO_ACCOUNT_REALITY
+
+    cov = r.coverage()
+    propuestas = cov["unrepresentable_proposed_accounts"]
+    if not cov["unrepresentable"] or not propuestas:
+        return ""
+
+    filas = "\n".join(
+        f"| {_ETIQUETA.get(kind, kind)} | "
+        + ", ".join(f"`{c}`" for c in codigos)
+        + " | "
+        + "; ".join(
+            f"{ODOO_ACCOUNT_REALITY[c][0]} — {ODOO_ACCOUNT_REALITY[c][1]}"
+            for c in codigos
+            if c in ODOO_ACCOUNT_REALITY
+        )
+        + " |"
+        for kind, codigos in sorted(propuestas.items())
+    )
+    return (
+        "## Qué cuentas habría que abrir\n\n"
+        f"Para los **{cov['unrepresentable']}** movimientos de arriba que hoy no "
+        "tienen dónde asentarse. Los tres códigos que nombra el enunciado "
+        "**existen** en este Odoo, pero con otro nombre y sin uso en los diarios "
+        "de Wompi y Bancolombia — así que abrirlos es decidir qué representan, no "
+        "solo crearlos:\n\n"
+        "| Tipo | Cuenta propuesta | Qué es hoy en Odoo |\n"
+        "|---|---|---|\n" + filas + "\n"
     )
 
 

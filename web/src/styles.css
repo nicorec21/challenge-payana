@@ -305,3 +305,49 @@ pre {
   color: var(--bad); padding: 20px; border: 1px solid var(--bad);
   border-radius: var(--r); background: color-mix(in srgb, var(--bad) 6%, transparent);
 }
+
+/* ── informe renderizado ────────────────────────────────────────────── */
+
+.informe-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+.informe-head h1 { margin: 0; flex: 1; }
+
+/*
+ * El informe es un documento, no un tablero: medida de lectura acotada y
+ * jerarquía propia. Sin `max-width` las líneas cruzan la pantalla entera y el
+ * texto se vuelve imposible de seguir.
+ *
+ * Las tablas quedan afuera de ese límite a propósito — son anchas por
+ * naturaleza y recortarlas obligaría a hacer scroll horizontal para leer un
+ * monto.
+ */
+.md { max-width: 92ch; padding-bottom: 40px; }
+.md > :first-child { margin-top: 0; }
+.md h1 { font-size: 23px; margin: 36px 0 10px; }
+.md h2 {
+  font-size: 17px; margin: 38px 0 10px; padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+}
+.md h3 { font-size: 15px; margin: 26px 0 8px; color: var(--txt-2); }
+.md p { margin: 0 0 14px; color: var(--txt-2); line-height: 1.65; }
+.md strong { color: var(--txt); font-weight: 620; }
+.md em { color: var(--txt-2); }
+.md code {
+  background: var(--panel-2); border: 1px solid var(--line-soft);
+  border-radius: 5px; padding: 1px 5px; color: var(--txt);
+}
+.md ul { margin: 0 0 16px; padding-left: 20px; color: var(--txt-2); }
+.md li { margin-bottom: 6px; line-height: 1.6; }
+.md hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+
+/*
+ * `table-layout: auto` acá y no el `fixed` global: el informe no conoce sus
+ * columnas de antemano y con anchos fijos una columna de fechas queda igual de
+ * ancha que una de explicaciones largas.
+ */
+.md-tabla {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r); overflow-x: auto; margin: 0 0 20px;
+  max-width: 100%;
+}
+.md-tabla table { table-layout: auto; }
+.md-tabla td { vertical-align: top; }

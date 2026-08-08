@@ -328,6 +328,16 @@ async function get<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/** Los informes del CFO viajan como Markdown, no como JSON. */
+async function getText(path: string): Promise<string> {
+  const res = await fetch(path, { headers: { Accept: "text/markdown" } });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new ApiError(body.detail ?? `${res.status} ${res.statusText}`, res.status);
+  }
+  return res.text();
+}
+
 export interface MovementFilters {
   desde?: string;
   hasta?: string;
@@ -394,4 +404,23 @@ export const api = {
       con_desglose_completo: number;
       items: DisbursementBreakdown[];
     }>(`/api/ledgers/${id}/disbursements`),
+
+  /** El informe del CFO en Markdown. Misma corrida que el JSON de al lado. */
+  flowMarkdown: (canal = "wompi", banco = "bancolombia") =>
+    getText(`/api/reconciliation/flow/report.md?canal=${canal}&banco=${banco}`),
+
+  erpMarkdown: (ledger: string) =>
+    getText(`/api/reconciliation/erp/${ledger}/report.md`),
+};
+
+/**
+ * URL de descarga del mismo informe. `?download=1` hace que el backend mande
+ * `Content-Disposition: attachment`, que es lo que convierte el click en un
+ * archivo guardado en vez de una pestaña con texto plano.
+ */
+export const descargaUrl = {
+  flow: (canal = "wompi", banco = "bancolombia") =>
+    `/api/reconciliation/flow/report.md?canal=${canal}&banco=${banco}&download=1`,
+  erp: (ledger: string) =>
+    `/api/reconciliation/erp/${ledger}/report.md?download=1`,
 };

@@ -119,6 +119,9 @@ def estado() -> dict[str, Any]:
                     "movimientos": cov["unrepresentable"],
                     "tipos": cov["unrepresentable_kinds"],
                     "monto": _money(cov["unrepresentable_total"]),
+                    # Sin esto la respuesta es "no hay cuenta" y nada más, que
+                    # deja al que pregunta exactamente donde estaba.
+                    "cuentas_propuestas": cov["unrepresentable_proposed_accounts"],
                 } if cov["unrepresentable"] else None,
                 "por_estado": e.counts(),
             })
@@ -172,7 +175,9 @@ def pendientes(limite: int = LIMITE) -> dict[str, Any]:
                 e = run.erp(repo, ledger_id)
             except LookupError:
                 continue
-            sin_cuenta = set(e.coverage()["unrepresentable_kinds"])
+            cov_e = e.coverage()
+            sin_cuenta = set(cov_e["unrepresentable_kinds"])
+            propuestas = cov_e["unrepresentable_proposed_accounts"]
             grupos: dict[tuple[str, str], list] = defaultdict(list)
             for x in e.problems:
                 grupos[(x.status.value, x.kind or "?")].append(x)
@@ -204,7 +209,8 @@ def pendientes(limite: int = LIMITE) -> dict[str, Any]:
                         else _POR_QUE.get(status, status).format(ledger=ledger_id)
                     ),
                     "accion": (
-                        "revisar el plan de cuentas"
+                        "abrir en el plan de cuentas: "
+                        + ", ".join(propuestas.get(kind, ()) or ["(sin propuesta)"])
                         if estructural
                         else "revisar caso por caso"
                     ),

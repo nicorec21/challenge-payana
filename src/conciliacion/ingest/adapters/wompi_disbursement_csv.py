@@ -33,10 +33,11 @@ from __future__ import annotations
 import csv
 import io
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta, timezone
 
+from ...config import TARIFF_DEVIATION_TOLERANCE, FeeSchedule, fee_schedule_for
 from ...domain.money import Money
 from ...domain.movement import Movement, MovementKind, MovementStatus
 from ..ports import IngestionError, RawRecord
@@ -66,6 +67,23 @@ _DEDUCTIONS: tuple[tuple[str, MovementKind, str], ...] = (
 )
 
 
+#: Columnas que el tarifario sabe predecir, y con qué fórmula.
+#:
+#: Las otras tres (`reteica`, `reteiva`, `impoconsumo`) no tienen tasa modelada:
+#: no aparecen con valor distinto de cero en ninguna fila de la muestra, así que
+#: inventarles una fórmula sería afirmar algo que nadie verificó. Se ingieren y
+#: se declaran no verificables, que es distinto de darlas por buenas.
+_VERIFIABLE: tuple[tuple[str, Callable[[FeeSchedule, Money], Money]], ...] = (
+    ("comisión", FeeSchedule.commission),
+    ("iva comisión", FeeSchedule.iva),
+    ("retefuente", FeeSchedule.retefuente),
+)
+
+#: Firma de `config.fee_schedule_for`. Se inyecta para poder auditar contra un
+#: tarifario de prueba sin tocar el vigente.
+ScheduleLookup = Callable[[str, date], "FeeSchedule | None"]
+
+
 class DisbursementCsvIntegrityError(IngestionError):
     """Una fila no cumple la identidad bruto − descuentos = neto."""
 
@@ -90,6 +108,9 @@ class WompiDisbursementCsvAdapter:
 
     source_id = "wompi_disbursement_csv"
     ledger_id = "wompi"
+
+    def __init__(self, schedule_lookup: ScheduleLookup = fee_schedule_for) -> None:
+        self._schedule_for = schedule_lookup
 
     def sniff(self, record: RawRecord) -> bool:
         if not isinstance(record.payload, (bytes, bytearray)):
@@ -131,6 +152,69 @@ class WompiDisbursementCsvAdapter:
                     },
                     raw_ref=f"{record.locator}#tx={row.transaction_id}",
                 )
+
+    def audit(self, record: RawRecord) -> Iterator[str]:
+        """Contrasta cada descuento declarado contra el tarifario vigente.
+
+        El CSV es la fuente de verdad y se ingiere tal cual: si Wompi sube la
+        comisión, el número nuevo entra sin que haya que tocar nada. El problema
+        es el otro: **entra sin que nadie se entere**. La fila sigue cumpliendo
+        `bruto − descuentos = neto`, concilia perfecto, y el sistema no tiene
+        cómo notar que la tasa cambió.
+
+        Importa porque los descuentos se leen en una minoría de los desembolsos
+        (4 CSV de 56 días). El resto se **infiere** con `WOMPI_FEES`, que seguiría
+        usando la tasa vieja y produciría residuos sin causa visible. Este aviso
+        es lo que conecta el síntoma con el motivo.
+
+        Se agrupa por columna en vez de emitir una línea por fila: que **todas**
+        las filas se desvíen igual es la firma de un cambio de tarifa, y una fila
+        sola la de una tarifa negociada o un error de carga. Un aviso por fila
+        haría que las dos se lean igual.
+        """
+        desvios: dict[str, list[tuple[str, Money, Money]]] = {}
+        sin_tarifario: dict[str, int] = {}
+        filas = 0
+
+        for row in _rows(record):
+            filas += 1
+            schedule = self._schedule_for(row.payment_method, row.occurred_at.date())
+            if schedule is None:
+                medio = row.payment_method or "(vacío)"
+                sin_tarifario[medio] = sin_tarifario.get(medio, 0) + 1
+                continue
+            for column, formula in _VERIFIABLE:
+                declarado = row.deductions[column]
+                esperado = formula(schedule, row.gross)
+                if abs((declarado - esperado).amount) > TARIFF_DEVIATION_TOLERANCE.amount:
+                    desvios.setdefault(column, []).append(
+                        (row.transaction_id, declarado, esperado)
+                    )
+
+        for medio, n in sorted(sin_tarifario.items()):
+            yield (
+                f"medio de pago '{medio}' sin tarifario ({n} de {filas} filas): "
+                f"los descuentos se ingieren declarados pero no se pueden verificar, "
+                f"y los desembolsos sin CSV de ese medio no se van a poder inferir"
+            )
+
+        for column, casos in sorted(desvios.items()):
+            tx, declarado, esperado = casos[0]
+            alcance = (
+                "TODAS las filas del archivo" if len(casos) == filas
+                else f"{len(casos)} de {filas} filas"
+            )
+            pista = (
+                "así se ve un cambio de tarifa: actualizá WOMPI_FEES en config.py "
+                "cerrando la vigente con effective_to y agregando la nueva"
+                if len(casos) == filas
+                else "una sola fila desviada suele ser tarifa negociada o error de carga"
+            )
+            yield (
+                f"'{column}' no coincide con el tarifario en {alcance} — "
+                f"declarado {declarado}, tarifario {esperado} "
+                f"(dif {declarado - esperado}, ej. tx {tx}). {pista}"
+            )
 
 
 # ── parseo ──────────────────────────────────────────────────────────────────

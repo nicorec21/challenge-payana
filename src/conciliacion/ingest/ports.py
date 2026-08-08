@@ -97,6 +97,35 @@ class Adapter(Protocol):
         ...
 
 
+@runtime_checkable
+class Auditor(Protocol):
+    """Contrasta un registro contra las reglas de negocio y reporta desacuerdos.
+
+    **Opcional**: un adapter que no lo implemente se ingiere igual. El pipeline
+    lo detecta con `isinstance`.
+
+    Va separado de `parse` a propósito, por tres razones:
+
+    - `parse` traduce, y traducir no es juzgar. Un adapter que decide si un dato
+      "está bien" mientras lo lee mezcla dos responsabilidades y termina
+      corrigiendo en silencio (ver "los adapters no clasifican" en CLAUDE.md).
+    - El resultado **no se persiste**. Un aviso guardado en `Movement.metadata`
+      quedaría congelado: el movimiento es inmutable, así que un desvío contra
+      el tarifario de enero seguiría afirmándose en marzo aunque la config ya se
+      hubiera corregido. Auditar en cada corrida siempre habla del ahora.
+    - Un desvío puede no tener movimiento donde colgarse. Si una retención baja
+      a cero, la fila no emite movimiento —y esa desaparición es justamente lo
+      que hay que avisar—.
+
+    Devuelve mensajes ya redactados: quien los muestra (CLI, API, reporte) no
+    debería tener que saber qué significa la desviación.
+    """
+
+    def audit(self, record: RawRecord) -> Iterator[str]:
+        """Avisos sobre un registro que **ya parseó bien**. Vacío = todo cierra."""
+        ...
+
+
 class IngestionError(Exception):
     """Falla de parseo atribuible a un registro concreto."""
 

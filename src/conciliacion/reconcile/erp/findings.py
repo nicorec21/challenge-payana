@@ -166,8 +166,13 @@ class ErpReport:
         `unrepresentable` sale de `config.ERP_UNREPRESENTABLE_KINDS`, que es un
         hecho verificado del plan contable, no una derivación de que el conteo
         haya dado cero.
+
+        Y como *"no existe la cuenta"* solo es accionable si se dice **cuál**
+        crear, viene acompañado de `unrepresentable_proposed_accounts`: las
+        cuentas que el enunciado pide utilizar. Son una propuesta, no un hecho
+        del ERP — ninguna de las tres aparece hoy en los diarios 48/49.
         """
-        from ...config import erp_unrepresentable_kinds
+        from ...config import erp_proposed_accounts, erp_unrepresentable_kinds
 
         sin_cuenta = erp_unrepresentable_kinds(self.ledger_id)
         del_ledger = [f for f in self.findings if f.ledger_movement_id]
@@ -182,6 +187,9 @@ class ErpReport:
             "ratio": conciliados / len(comparables) if comparables else 0.0,
             "unrepresentable": len(excluidos),
             "unrepresentable_kinds": sorted(sin_cuenta),
+            #: Qué cuenta habría que crear para cada uno. Vacío si no falta
+            #: ninguna, que es el caso de `bancolombia`.
+            "unrepresentable_proposed_accounts": erp_proposed_accounts(sin_cuenta),
             "unrepresentable_total": Money.sum(
                 (f.ledger_amount for f in excluidos if f.ledger_amount),
                 self.currency,

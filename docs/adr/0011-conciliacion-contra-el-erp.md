@@ -153,6 +153,34 @@ Los faltantes se **agrupan por tipo de movimiento** en el reporte. *"El ERP no
 registra ninguna comisión"* es una conclusión; 27 findings de comisión suelta
 son ruido con la misma información.
 
+## Decisión 8 — «No existe la cuenta» se acompaña de cuál crear
+
+`ERP_UNREPRESENTABLE_KINDS` separa 27 movimientos por −$127.131,96 que no bajan
+la cobertura porque **no hay dónde asentarlos**. Eso identifica el problema y
+deja la acción a medias: quien lee el informe se entera de que hay que rediseñar
+el plan de cuentas, no de cómo.
+
+El enunciado dice *"las cuentas contables **a utilizar** son"* y nombra 530505,
+240810 y 236500. Contra la instancia real la frase es falsa como descripción —los
+tres códigos existen, ninguno se llama como dice el enunciado y ninguno aparece
+en los diarios 48/49—, así que se lee como **instrucción de lo que hay que
+proponer**. `ERP_PROPOSED_ACCOUNTS` es esa propuesta, y `coverage()` la emite en
+`unrepresentable_proposed_accounts`.
+
+El nombre dice `PROPOSED` porque afirmar que estas cuentas se usan sería mentir.
+Junto va `ODOO_ACCOUNT_REALITY` con el nombre real de cada código, y un test que
+exige que todo código propuesto esté ahí: proponer una cuenta sin haber mirado
+qué es en la instancia repite el error que este mapa vino a corregir.
+
+En el reporte del CFO va en **sección aparte** de los faltantes. «Falta el
+asiento» lo resuelve quien contabiliza; «no existe la cuenta» lo resuelve quien
+diseña el plan. En la misma tabla, el CFO le pide a la persona equivocada algo
+que no puede hacer.
+
+`TAX` mapea a **dos** cuentas: el modelo agrupa lo que el plan separa —IVA de la
+comisión (descontable) y retención en la fuente (activo por cobrar)—. Repartir
+entre las dos es del asiento, no de este mapa.
+
 ## Resultado sobre los datos del challenge
 
 ```
