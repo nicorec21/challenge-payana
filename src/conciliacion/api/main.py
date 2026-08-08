@@ -85,6 +85,23 @@ def _run(fn, *args, **kwargs):
         raise HTTPException(404, str(exc)) from None
 
 
+def _markdown(cuerpo: str, filename: str, download: bool) -> PlainTextResponse:
+    """El informe como Markdown, y con `download` como archivo guardable.
+
+    Sin `Content-Disposition` el navegador abre el `.md` en una pestaña y lo
+    muestra como texto plano: el usuario pidió un informe y recibió el código
+    fuente de un informe. El nombre del archivo es el mismo que escribe la CLI
+    en `data/out/`, así que bajarlo de la web o generarlo por consola produce
+    el mismo archivo.
+    """
+    headers = (
+        {"Content-Disposition": f'attachment; filename="{filename}"'}
+        if download
+        else {}
+    )
+    return PlainTextResponse(cuerpo, media_type="text/markdown; charset=utf-8", headers=headers)
+
+
 @app.get("/api/system")
 def system() -> dict[str, Any]:
     """Vista general: ledgers, fuentes y cobertura."""
@@ -258,7 +275,11 @@ def flow(
 
 
 @app.get("/api/reconciliation/flow/report.md", response_class=PlainTextResponse)
-def flow_markdown(canal: str = "wompi", banco: str = "bancolombia") -> str:
+def flow_markdown(
+    canal: str = "wompi",
+    banco: str = "bancolombia",
+    download: bool = False,
+) -> PlainTextResponse:
     """El mismo resultado, renderizado para el CFO.
 
     Misma fuente que el JSON: dos proyecciones, un solo cálculo.
@@ -267,7 +288,8 @@ def flow_markdown(canal: str = "wompi", banco: str = "bancolombia") -> str:
     from ..report.cfo import render_flow_report
 
     with _repo() as repo:
-        return render_flow_report(_run(run.flow, repo, canal, banco))
+        md = render_flow_report(_run(run.flow, repo, canal, banco))
+    return _markdown(md, f"conciliacion-flujo-{canal}-{banco}.md", download)
 
 
 @app.get("/api/movements/{movement_id}/trace")
@@ -297,13 +319,14 @@ def erp(ledger_id: str) -> dict[str, Any]:
 
 
 @app.get("/api/reconciliation/erp/{ledger_id}/report.md", response_class=PlainTextResponse)
-def erp_markdown(ledger_id: str) -> str:
+def erp_markdown(ledger_id: str, download: bool = False) -> PlainTextResponse:
     """El mismo resultado, renderizado para el CFO."""
     from ..reconcile import run
     from ..report.erp_cfo import render_erp_report
 
     with _repo() as repo:
-        return render_erp_report(_run(run.erp, repo, ledger_id))
+        md = render_erp_report(_run(run.erp, repo, ledger_id))
+    return _markdown(md, f"conciliacion-erp-{ledger_id}.md", download)
 
 
 @app.get("/api/panorama/{source_id}")

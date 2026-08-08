@@ -174,8 +174,8 @@ export function Flujo() {
                     {CONFIANZA[c].texto} ({r.by_confidence[c]})
                   </button>
                 ))}
-                <a className="chip" href="/api/reconciliation/flow/report.md">
-                  Descargar informe ↓
+                <a className="chip" href="#informe/flujo/wompi/bancolombia">
+                  Ver informe →
                 </a>
               </div>
 

@@ -236,3 +236,29 @@ class TestApi:
     def test_kinds(self, client):
         body = client.get("/api/kinds").json()
         assert "payment" in body["kinds"] and "settlement" in body["kinds"]
+
+    def test_el_informe_se_sirve_como_markdown(self, client):
+        """`text/plain` hacía que el navegador lo abriera como código fuente."""
+        r = client.get("/api/reconciliation/flow/report.md")
+        assert r.status_code == 200
+        assert r.headers["content-type"].startswith("text/markdown")
+        assert r.text.startswith("# ")
+        # Sin `download` no baja nada: es lo que consume la vista del informe.
+        assert "content-disposition" not in r.headers
+
+    def test_download_lo_convierte_en_archivo(self, client):
+        """El nombre es el mismo que escribe la CLI en `data/out/`: bajarlo de
+        la web o generarlo por consola tiene que dar el mismo archivo."""
+        r = client.get("/api/reconciliation/flow/report.md?download=1")
+        assert (
+            r.headers["content-disposition"]
+            == 'attachment; filename="conciliacion-flujo-wompi-bancolombia.md"'
+        )
+
+    def test_el_informe_del_erp_tambien(self, client):
+        r = client.get("/api/reconciliation/erp/wompi/report.md?download=1")
+        assert r.headers["content-type"].startswith("text/markdown")
+        assert (
+            r.headers["content-disposition"]
+            == 'attachment; filename="conciliacion-erp-wompi.md"'
+        )
