@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 364 tests, 106/258,
+Este archivo y el README afirman cantidades concretas: 387 tests, 106/281,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -64,9 +64,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 364
+pytest                                        # 387
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 258 — pipeline sobre fixtures
+pytest -m integration                         # 281 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -75,6 +75,7 @@ conciliacion show wompi
 conciliacion reconcile                        # flujo canal -> banco, 2 salidas
 conciliacion ingest wompi_erp --desde 2025-01-01 --hasta 2026-12-31
 conciliacion reconcile-erp wompi              # ledger vs libro de Odoo
+conciliacion-mcp                              # servidor MCP por stdio
 ```
 
 `--offline` omite las fuentes de red y reprocesa desde `data/raw/`.
@@ -357,14 +358,38 @@ src/conciliacion/
 │                        pos_asobancaria (demo, no registrado)
 ├── reconcile/
 │   ├── calendar.py      días hábiles CO con Ley Emiliani
-│   ├── flow/            Fase 2 — vacío
-│   └── erp/             Fase 3 — vacío
+│   ├── run.py           cargar ledgers + correr el motor. UN camino para todos
+│   ├── flow/            Fase 2 — canal → banco
+│   └── erp/             Fase 3 — ledger vs libro de Odoo
+├── report/
+│   ├── contract.py      LA representación serializable. El resto proyecta de acá
+│   ├── cfo.py           Markdown para el CFO      ┐ dos renderers,
+│   ├── erp_cfo.py       Markdown del ERP          │ un solo cálculo
+│   ├── flow_views.py    JSON del flujo            │
+│   ├── erp_views.py     JSON del ERP              ┘
+│   ├── views.py         extracto, transacciones, desembolsos
+│   └── sources.py       panorama por fuente (la vista de exploración)
+├── api/main.py      HTTP, delgada: sirve lo persistido, no ingiere ni concilia
+├── agent/
+│   ├── tools.py         las 5 operaciones del agente. Python puro, sin MCP
+│   └── mcp_server.py    las registra por MCP. Solo esto importa el SDK
 ├── storage/         SQLite, un archivo, sin ORM
-├── config.py        cuentas, tarifario, políticas de liquidación
+├── config.py        cuentas, tarifario, políticas, plan de cuentas de Odoo
 ├── settings.py      secretos desde .env
 ├── sources.py       composition root — el archivo que mide la extensibilidad
 └── cli.py           punto de entrada, no interfaz de usuario
 ```
+
+**`reconcile/run.py` existe para que no haya dos caminos de cálculo.** La web, el
+CLI y las herramientas del agente piden la misma conciliación por la misma
+función. Antes cada uno armaba su invocación y ya había **tres copias** del
+recorte de cobertura; una que cambiara de default habría hecho que el sistema
+afirme dos cosas distintas sobre el mismo hecho.
+
+**`agent/tools.py` no depende de MCP.** Toda la lógica vive ahí y se testea sin
+levantar un servidor; `mcp_server.py` solo registra. El SDK está en el extra
+`[mcp]`, y `dev` lo arrastra —igual que `[api]`— porque si no, los tests
+*erroran* en CI en vez de fallar, que fue exactamente lo que pasó con `fastapi`.
 
 `data/raw/` se versiona (evidencia, permite correr recién clonado).
 `data/out/`, `.env` y `*.db` no.
@@ -585,6 +610,8 @@ está produciendo ninguno.
 | 0007 | PDF por coordenadas, clave sintética con saldo, autovalidación |
 | 0008 | Tres fuentes, kinds disjuntos, el ledger cierra en cero |
 | 0009 | Costo de sumar el POS, medido |
+| 0010 | Conciliación de flujo: el primer salto no se busca, lo declara el canal |
+| 0011 | El libro contable es otro ledger; se define por cuenta, no por diario |
 | 0012 | El tarifario audita la ingesta; el aviso no se persiste |
 
 ---

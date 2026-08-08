@@ -154,6 +154,17 @@ class SqliteRepository:
         ).fetchall()
         return [_to_movement(r) for r in rows]
 
+    def movement(self, movement_id: str) -> Movement | None:
+        """Un movimiento por su id, sin saber de qué ledger es.
+
+        El id es `sha256(source_id + external_id)` (ADR-0001): global y estable
+        entre corridas, así que quien lo tiene no necesita saber dónde vive.
+        """
+        row = self._conn.execute(
+            "SELECT * FROM movement WHERE id = ?", (movement_id,)
+        ).fetchone()
+        return _to_movement(row) if row else None
+
     def count(self, ledger_id: str | None = None) -> int:
         if ledger_id is None:
             return self._conn.execute("SELECT COUNT(*) FROM movement").fetchone()[0]

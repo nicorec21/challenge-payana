@@ -129,7 +129,7 @@ def reconcile(
     """
     import json
 
-    from .reconcile.flow.engine import reconcile_flow
+    from .reconcile import run
     from .report.cfo import render_flow_report
     from .report.contract import to_dict
     from .report.flow_views import build_flow_report
@@ -137,14 +137,17 @@ def reconcile(
     settings = load_settings()
     with SqliteRepository(settings.database_path) as repo:
         try:
-            canal_led = repo.load_ledger(canal)
-            banco_led = repo.load_ledger(banco)
-        except KeyError as exc:
-            typer.secho(f"{exc}. Corré primero: conciliacion ingest <ledger>", fg="red")
+            report = run.flow(
+                repo,
+                canal,
+                banco,
+                desde=date.fromisoformat(desde) if desde else None,
+                hasta=date.fromisoformat(hasta) if hasta else None,
+            )
+        except LookupError as exc:
+            typer.secho(str(exc), fg="red")
             raise typer.Exit(1) from None
 
-        cobertura = _coverage(canal_led, banco_led, desde, hasta)
-        report = reconcile_flow(canal_led, banco_led, coverage=cobertura)
         view = build_flow_report(report)
         run_id = repo.save_flow_run(view)
 
@@ -167,27 +170,6 @@ def reconcile(
     typer.echo(f"\n  CFO   {md}\n  IA    {js}")
 
 
-def _coverage(canal_led, banco_led, desde: str | None, hasta: str | None):
-    """Cobertura efectiva de cada fuente.
-
-    Se puede acotar a mano porque el rango de movimientos observados es una
-    aproximación conservadora: un mes sin movimientos es indistinguible de un
-    mes que nadie bajó. Ver `reconcile_flow`.
-    """
-    from .reconcile.flow.findings import Coverage
-
-    def recortar(rango):
-        if rango is None:
-            return None
-        inicio = max(rango[0], date.fromisoformat(desde)) if desde else rango[0]
-        fin = min(rango[1], date.fromisoformat(hasta)) if hasta else rango[1]
-        return (inicio, fin) if inicio <= fin else None
-
-    return Coverage(
-        channel=recortar(canal_led.date_range), bank=recortar(banco_led.date_range)
-    )
-
-
 @app.command(name="reconcile-erp")
 def reconcile_erp_cmd(
     ledger: str = typer.Argument("wompi", help="Ledger a comparar contra su libro."),
@@ -202,35 +184,19 @@ def reconcile_erp_cmd(
     """
     import json
 
-    from .config import ODOO_LEDGER_ACCOUNTS, erp_ledger_id
-    from .reconcile.erp.engine import reconcile_erp
+    from .reconcile import run
     from .report.contract import to_dict
     from .report.erp_cfo import render_erp_report
     from .report.erp_views import build_erp_report
 
-    account_code = ODOO_LEDGER_ACCOUNTS.get(ledger)
-    if account_code is None:
-        typer.secho(
-            f"'{ledger}' no tiene libro contable declarado. "
-            f"Opciones: {', '.join(ODOO_LEDGER_ACCOUNTS)}",
-            fg="red",
-        )
-        raise typer.Exit(1)
-
     settings = load_settings()
     with SqliteRepository(settings.database_path) as repo:
         try:
-            operativo = repo.load_ledger(ledger)
-            libro = repo.load_ledger(erp_ledger_id(ledger))
-        except KeyError as exc:
-            typer.secho(
-                f"{exc}. Corré primero: conciliacion ingest {ledger} && "
-                f"conciliacion ingest {erp_ledger_id(ledger)}",
-                fg="red",
-            )
+            report = run.erp(repo, ledger)
+        except LookupError as exc:
+            typer.secho(str(exc), fg="red")
             raise typer.Exit(1) from None
 
-        report = reconcile_erp(operativo, libro, account_code=account_code)
         view = build_erp_report(report)
 
     destino = Path(salida) if salida else settings.out_dir
@@ -240,11 +206,23 @@ def reconcile_erp_cmd(
     md.write_text(render_erp_report(report), encoding="utf-8")
     js.write_text(json.dumps(to_dict(view), ensure_ascii=False, indent=2), encoding="utf-8")
 
-    typer.secho(f"\n{ledger} vs libro Odoo (cuenta {account_code})", bold=True)
+    cov = report.coverage()
+    typer.secho(f"\n{ledger} vs libro Odoo (cuenta {report.account_code})", bold=True)
     for estado, n in sorted(report.counts().items()):
         color = "red" if estado in ("amount_mismatch", "missing_in_ledger") else None
         typer.secho(f"  {estado:<20} {n:>4}", fg=color)
-    typer.echo(f"\n  cobertura del ERP  {report.coverage_ratio():.1%}")
+    typer.echo(
+        f"\n  cobertura          {cov['ratio']:.1%} "
+        f"({cov['matched']}/{cov['comparable']} de lo que el plan puede representar)"
+    )
+    if cov["unrepresentable"]:
+        # Separado a propósito: no se arregla asentando, se arregla rediseñando
+        # el plan de cuentas. Ver `ERP_UNREPRESENTABLE_KINDS`.
+        typer.echo(
+            f"  sin cuenta         {cov['unrepresentable']} "
+            f"({', '.join(cov['unrepresentable_kinds'])}) "
+            f"{cov['unrepresentable_total']}"
+        )
     typer.echo(f"  monto conciliado   {report.matched_amount()}")
     typer.secho(f"  a revisar          {len(report.problems)}", bold=True)
     typer.echo(f"\n  CFO   {md}\n  IA    {js}")
