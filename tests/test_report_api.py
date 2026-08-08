@@ -255,10 +255,12 @@ class TestApi:
             == 'attachment; filename="conciliacion-flujo-wompi-bancolombia.md"'
         )
 
-    def test_el_informe_del_erp_tambien(self, client):
-        r = client.get("/api/reconciliation/erp/wompi/report.md?download=1")
-        assert r.headers["content-type"].startswith("text/markdown")
-        assert (
-            r.headers["content-disposition"]
-            == 'attachment; filename="conciliacion-erp-wompi.md"'
-        )
+    def test_informe_sin_libro_da_404_con_instruccion(self, client):
+        """Sin libro ingerido el informe del ERP no existe todavía.
+
+        Devuelve JSON con el 404, no un Markdown vacío: la vista necesita poder
+        distinguir «el informe dice que no hay hallazgos» de «no hay datos para
+        opinar», que se ven igual una vez renderizados."""
+        r = client.get("/api/reconciliation/erp/wompi/report.md")
+        assert r.status_code == 404
+        assert "conciliacion ingest" in r.json()["detail"]
