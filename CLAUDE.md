@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 387 tests, 106/281,
+Este archivo y el README afirman cantidades concretas: 390 tests, 106/284,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -64,9 +64,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 387
+pytest                                        # 390
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 281 — pipeline sobre fixtures
+pytest -m integration                         # 284 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -338,6 +338,19 @@ era otra?"*.
 
 **Allowlist, nunca denylist, para campos de fuentes externas.** Si el proveedor
 agrega un campo con PII mañana, una denylist lo persiste en silencio.
+
+**El front tiene dos dependencias y conviene que siga así.** `react` y
+`react-dom`, nada más. `web/src/markdown.tsx` renderiza el informe del CFO sin
+librería de Markdown porque el input **no es arbitrario**: lo genera `cfo.py` /
+`erp_cfo.py`, y medido sobre los dos informes completos usa exactamente h1-h3,
+tablas, listas con `-`, `---`, y `**negrita**` / `*cursiva*` / `` `código` ``.
+Cero links, cero HTML, cero bloques de código.
+
+Devuelve elementos de React, **nunca** HTML como string. Sin
+`dangerouslySetInnerHTML` no hay superficie de inyección, y eso importa porque
+el informe cita descripciones que vienen del extracto bancario. Si el generador
+emite algo que el renderer no entiende, la línea cae a párrafo: se ve pobre,
+nunca se pierde.
 
 ---
 
