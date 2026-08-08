@@ -148,6 +148,19 @@ WOMPI_FEES = (
 )
 
 
+#: Desviación tolerada al contrastar un descuento DECLARADO contra el tarifario.
+#:
+#: Un centavo, no un margen holgado: sobre los datos del challenge las tres
+#: fórmulas dan **exacto** en las 9 filas declaradas, así que cualquier cosa por
+#: encima del ruido de truncamiento es información. Un cambio de tasa mueve
+#: miles de pesos por fila; con esta tolerancia es imposible que pase callado.
+#:
+#: Es distinto de `INFERENCE_TOLERANCE_PER_TRANSACTION`, que mide el error de
+#: **predecir** el neto de un desembolso sin CSV. Este mide el desacuerdo entre
+#: dos fuentes que deberían coincidir al centavo.
+TARIFF_DEVIATION_TOLERANCE = Money(1)
+
+
 def fee_schedule_for(payment_method: str, day: date) -> FeeSchedule | None:
     """Tarifario aplicable, o `None` si no conocemos uno.
 

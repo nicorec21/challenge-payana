@@ -101,6 +101,64 @@ class TestIngesta:
         assert report.adapters_used == {"bancolombia_pdf": 214}
 
 
+class TestAuditoria:
+    """`audit` es opt-in y no puede tumbar una ingesta buena."""
+
+    def _spec(self, adapter):
+        class UnRegistro:
+            connector_id = "memoria"
+            def fetch(self, window=None):
+                yield RawRecord(locator="x.txt", payload=b"dato")
+
+        return SourceSpec("memoria", UnRegistro(), (adapter,))
+
+    def _adapter(self, **extra):
+        class Base:
+            source_id, ledger_id = "memoria", "bancolombia"
+            def sniff(self, record): return True
+            def parse(self, record): return iter(())
+
+        return type("Adapter", (Base,), extra)()
+
+    def test_un_adapter_sin_audit_se_ingiere_igual(self, registry):
+        """Opt-in: sumar una fuente no obliga a escribir un método vacío."""
+        report = ingest(self._spec(self._adapter()), registry.new_ledger("bancolombia"))
+        assert report.warnings == [] and report.ok
+
+    def test_los_avisos_no_invalidan_la_ingesta(self, registry):
+        """El dato entró completo; lo que quedó viejo es nuestra config. Si un
+        aviso tumbara `ok`, un cambio de tarifa se leería igual que un PDF
+        corrupto — y se arreglan al revés."""
+        adapter = self._adapter(audit=lambda self, record: iter(["la tarifa cambió"]))
+        report = ingest(self._spec(adapter), registry.new_ledger("bancolombia"))
+
+        assert report.warnings == [("x.txt", "la tarifa cambió")]
+        assert report.ok and report.skipped == []
+        assert "1 AVISO(S)" in report.summary()
+
+    def test_un_registro_que_no_parsea_no_se_audita(self, registry):
+        """Auditar algo ilegible produce ruido sobre un problema ya reportado."""
+        def explota(self, record):
+            raise ValueError("ilegible")
+
+        adapter = self._adapter(
+            parse=explota, audit=lambda self, record: iter(["no debería verse"])
+        )
+        report = ingest(self._spec(adapter), registry.new_ledger("bancolombia"))
+        assert report.warnings == [] and len(report.skipped) == 1
+
+    def test_un_auditor_roto_no_pierde_los_movimientos(self, registry):
+        def explota(self, record):
+            raise RuntimeError("bug")
+            yield  # pragma: no cover - lo hace generador
+
+        report = ingest(
+            self._spec(self._adapter(audit=explota)), registry.new_ledger("bancolombia")
+        )
+        assert report.ok
+        assert "no se pudo auditar" in report.warnings[0][1]
+
+
 class TestSeleccionDeAdapter:
     def test_registro_sin_adapters_falla(self):
         with pytest.raises(ValueError, match="sin adapters"):

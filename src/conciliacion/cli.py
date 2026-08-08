@@ -74,6 +74,10 @@ def ingest(
         typer.secho(f"  {report.summary()}", fg=color)
         for locator, reason in report.skipped[:5]:
             typer.secho(f"      ! {locator}: {reason}", fg="yellow")
+        # Sin recorte: un aviso de tarifario es raro y accionable. Cortarlo a
+        # los primeros N escondería justo el que dice qué cambió.
+        for locator, aviso in report.warnings:
+            typer.secho(f"      ⚠ {locator}: {aviso}", fg="yellow")
 
     with SqliteRepository(settings.database_path) as repo:
         nuevos = repo.save_ledger(built)
