@@ -53,8 +53,8 @@ class FetchWindow:
 class Connector(Protocol):
     """Trae bytes crudos de algún lado. No interpreta nada.
 
-    Implementaciones: LocalFileConnector, HttpApiConnector, WebhookConnector,
-    OdooRpcConnector.
+    Implementaciones: LocalFileConnector, WompiApiConnector, OdooRpcConnector.
+    Un WebhookConnector entraría por el mismo protocolo sin tocar los adapters.
     """
 
     #: Identificador estable, aparece en los reportes.

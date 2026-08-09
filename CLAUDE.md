@@ -42,6 +42,11 @@ Si tu cambio mueve alguno, actualizalo en todos los lugares donde aparece
 (`CLAUDE.md`, `README.md`, ADRs). Un número que ya no cierra le enseña al
 próximo lector a desconfiar de todos los demás.
 
+`docs/salida/` es una **copia versionada** de las salidas de `data/out/` sobre
+los datos del challenge. Si tu cambio mueve un resultado de conciliación,
+regenerá las salidas (`reconcile`, `reconcile-erp wompi`,
+`reconcile-erp bancolombia`) y actualizá esa copia en el mismo cambio.
+
 ### Qué NO documentar
 
 - Lo que el código ya dice. Si hace falta explicar *qué* hace una función,

@@ -6,9 +6,53 @@ Odoo) en una historia explicable del dinero, y responde:
 > ¿Qué plata esperábamos recibir, qué llegó al banco, qué falta, qué está mal
 > registrado en el ERP, y **por qué creemos eso**?
 
-> **Estado:** en construcción. El dominio, la capa de ingesta y el calendario
-> hábil están implementados y testeados. Los adapters concretos y los motores de
-> conciliación se completan al conocer el layout real de cada fuente.
+Las tres fases del challenge están completas: modelado e ingesta, conciliación
+de flujo canal → banco, y conciliación contra el ERP. La salida generada sobre
+los datos provistos está versionada en [`docs/salida/`](docs/salida/).
+
+```mermaid
+flowchart LR
+    subgraph fuentes["Fuentes"]
+        API["Wompi API<br/>(JSON)"]
+        CSV["Desembolsos<br/>(CSV)"]
+        PDF["Bancolombia<br/>(PDF)"]
+        ODOO["Odoo<br/>(XML-RPC)"]
+    end
+    subgraph ingesta["Fase 1 · Ingesta"]
+        CA["Connector ⟂ Adapter"]
+    end
+    subgraph ledgers["Ledgers canónicos"]
+        LW["wompi"]
+        LB["bancolombia"]
+        LE["libros del ERP"]
+    end
+    F2["Fase 2 · Flujo<br/>canal → banco"]
+    F3["Fase 3 · Ledger<br/>vs libro de Odoo"]
+    EXP["Explanation<br/>(un solo cálculo)"]
+    CFO["Informe CFO<br/>(Markdown)"]
+    IA["Salida IA<br/>(JSON)"]
+
+    API --> CA
+    CSV --> CA
+    PDF --> CA
+    ODOO --> CA
+    CA --> LW
+    CA --> LB
+    CA --> LE
+    LW --> F2
+    LB --> F2
+    LW --> F3
+    LB --> F3
+    LE --> F3
+    F2 --> EXP
+    F3 --> EXP
+    EXP --> CFO
+    EXP --> IA
+```
+
+El informe del CFO y el JSON para la IA salen de la misma `Explanation`; la web
+y el servidor MCP son lectores de esas mismas salidas, no caminos de cálculo
+propios.
 
 ## Cómo correrlo
 
@@ -70,6 +114,9 @@ conciliacion reconcile-erp wompi
 Escribe las **dos salidas** en `data/out/`: el reporte legible para el CFO y el
 JSON estructurado. Se generan del mismo resultado — si salieran por caminos
 distintos podrían afirmar cosas distintas sobre el mismo hecho.
+
+Una copia de esas salidas, generada sobre los datos del challenge, está
+versionada en [`docs/salida/`](docs/salida/) para poder leerlas sin correr nada.
 
 La CLI es el punto de entrada del pipeline, no la interfaz de usuario: dispara
 la ingesta y regenera las salidas. Correr `ingest` dos veces no duplica nada.
@@ -144,6 +191,7 @@ sistema dejaría de tener una sola versión de la verdad
 | `.env.example` | sí | plantilla |
 | `data/raw/` | sí | evidencia: lo que el sistema ingirió |
 | `data/out/` | no | salidas generadas, descartables |
+| `docs/salida/` | sí | copia de las salidas sobre los datos del challenge |
 | `conciliacion.db` | no | base regenerable desde `data/raw/` |
 
 `data/raw/` se versiona para que el repositorio corra recién clonado. Los
@@ -162,7 +210,7 @@ src/conciliacion/
 ├── ingest/         Fase 1. Connector (cómo llegan los bytes)
 │   ├── ports.py        + Adapter (qué significan). Ejes ortogonales.
 │   ├── registry.py     Registro de fuentes y pipeline de ingesta
-│   ├── connectors/     LocalFile, HttpApi, Webhook, OdooRpc
+│   ├── connectors/     LocalFile, WompiApi, OdooRpc
 │   └── adapters/       Uno por layout
 ├── reconcile/
 │   ├── calendar.py     Días hábiles Colombia (Ley Emiliani). Necesario para T+1.
@@ -181,8 +229,18 @@ src/conciliacion/
 data/raw/           Evidencia cruda, tal como llegó. Inmutable.
 data/out/           Reportes generados. Descartable.
 docs/adr/           Decisiones de diseño
+docs/salida/        Copia versionada de las salidas sobre los datos del challenge
 tests/
 ```
+
+**Por qué no hay connector de webhook.** El enunciado nombra los webhooks de
+Wompi como uno de los feeds posibles, y el diseño los soporta: un
+`WebhookConnector` sería otra forma de traer los mismos bytes JSON que hoy trae
+`WompiApiConnector`, y el adapter no se entera. No está implementado por una
+razón operativa, no de diseño: la cuenta de Wompi del challenge es la
+integración productiva de Payana, compartida, y registrar una URL de eventos
+tocaría su configuración real. El polling de la API cubre los mismos datos sin
+ese riesgo.
 
 ## Los dos usuarios
 
@@ -293,6 +351,9 @@ se pueden romper y convenciones. Es el archivo a leer antes de tocar nada.
 | [0011](docs/adr/0011-conciliacion-contra-el-erp.md) | ERP: el libro es otro ledger. Se define por cuenta, no por diario |
 
 ## Cómo leer la salida
+
+Los archivos completos están en [`docs/salida/`](docs/salida/) — seis: informe
+CFO (`.md`) y salida IA (`.json`) para el flujo y para cada corrida del ERP.
 
 `conciliacion reconcile` produce, sobre los datos del challenge:
 
