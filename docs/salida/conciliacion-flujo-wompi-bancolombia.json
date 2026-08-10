@@ -1,0 +1,5507 @@
+{
+  "contract_version": "1.0",
+  "generated_at": "2026-08-09T01:24:03.331208+00:00",
+  "channel_ledger_id": "wompi",
+  "bank_ledger_id": "bancolombia",
+  "coverage": {
+    "channel": {
+      "from": "2026-01-02",
+      "to": "2026-05-04"
+    },
+    "bank": {
+      "from": "2026-01-01",
+      "to": "2026-04-30"
+    },
+    "overlap": {
+      "from": "2026-01-02",
+      "to": "2026-04-30"
+    }
+  },
+  "counts": {
+    "matched": 55,
+    "unmatched_bank": 3,
+    "out_of_coverage": 1
+  },
+  "by_confidence": {
+    "medium": 4,
+    "high": 52,
+    "exact": 3
+  },
+  "matched_amount": {
+    "cents": 26360092628,
+    "currency": "COP",
+    "formatted": "$263.600.926,28 COP"
+  },
+  "unexplained_total": {
+    "cents": 89410598,
+    "currency": "COP",
+    "formatted": "$894.105,98 COP"
+  },
+  "disputed_amount": {
+    "cents": 89410590,
+    "currency": "COP",
+    "formatted": "$894.105,90 COP"
+  },
+  "rounding_amount": {
+    "cents": 8,
+    "currency": "COP",
+    "formatted": "$0,08 COP"
+  },
+  "problem_count": 3,
+  "findings": [
+    {
+      "id": "fnd_bd30370e8d38c732",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-02",
+      "settlement_movement_id": "mov_22b9b62919283e0a",
+      "bank_movement_id": "mov_2f80be0547d84711",
+      "transaction_ids": [],
+      "settlement_amount": {
+        "cents": 1971531389,
+        "currency": "COP",
+        "formatted": "$19.715.313,89 COP"
+      },
+      "bank_amount": {
+        "cents": 1971531389,
+        "currency": "COP",
+        "formatted": "$19.715.313,89 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $19.715.313,89 COP del 2026-01-02 corresponde al giro de $19.715.313,89 COP declarado por el canal. No hay ventas cargadas que lo compongan: el período de origen está fuera de los datos ingeridos.",
+        "confidence": "medium",
+        "source_movement_ids": [
+          "mov_22b9b62919283e0a"
+        ],
+        "target_movement_ids": [
+          "mov_2f80be0547d84711"
+        ],
+        "gross": null,
+        "net": {
+          "cents": 1971531389,
+          "currency": "COP",
+          "formatted": "$19.715.313,89 COP"
+        },
+        "adjustments": [],
+        "adjustments_total": null,
+        "is_balanced": false,
+        "window": {
+          "start": "2026-01-02",
+          "end": "2026-01-07",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_dfd0e4eaa229bf9e",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-05",
+      "settlement_movement_id": "mov_1842f4d2ec6b4667",
+      "bank_movement_id": "mov_bd74fc39baf36f5e",
+      "transaction_ids": [
+        "mov_a02669425ff7d417",
+        "mov_7aba294e8277693d"
+      ],
+      "settlement_amount": {
+        "cents": 482071476,
+        "currency": "COP",
+        "formatted": "$4.820.714,76 COP"
+      },
+      "bank_amount": {
+        "cents": 482071476,
+        "currency": "COP",
+        "formatted": "$4.820.714,76 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $4.820.714,76 COP del 2026-01-05 es la liquidación de 2 venta(s) por $5.038.130,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-05 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_a02669425ff7d417",
+          "mov_7aba294e8277693d",
+          "mov_1842f4d2ec6b4667"
+        ],
+        "target_movement_ids": [
+          "mov_bd74fc39baf36f5e"
+        ],
+        "gross": {
+          "cents": 503813000,
+          "currency": "COP",
+          "formatted": "$5.038.130,00 COP"
+        },
+        "net": {
+          "cents": 482071476,
+          "currency": "COP",
+          "formatted": "$4.820.714,76 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 11919605,
+              "currency": "COP",
+              "formatted": "$119.196,05 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 2264724,
+              "currency": "COP",
+              "formatted": "$22.647,24 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 7557195,
+              "currency": "COP",
+              "formatted": "$75.571,95 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 21741524,
+          "currency": "COP",
+          "formatted": "$217.415,24 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-05",
+          "end": "2026-01-08",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_7988500303ceabe3",
+      "status": "unmatched_bank",
+      "is_problem": true,
+      "occurred_on": "2026-01-06",
+      "settlement_movement_id": null,
+      "bank_movement_id": "mov_2932243eb3fe0b76",
+      "transaction_ids": [],
+      "settlement_amount": null,
+      "bank_amount": {
+        "cents": 25794085,
+        "currency": "COP",
+        "formatted": "$257.940,85 COP"
+      },
+      "difference": null,
+      "explanation": {
+        "rule_id": "flow.bank_credit_without_settlement",
+        "summary": "Crédito de $257.940,85 COP el 2026-01-06 («PAGO DE PROV WOMPI S.A.S.») que parece del canal wompi, pero ningún giro declarado lo explica. Entró plata sin origen identificado.",
+        "confidence": "medium",
+        "source_movement_ids": [],
+        "target_movement_ids": [
+          "mov_2932243eb3fe0b76"
+        ],
+        "gross": null,
+        "net": {
+          "cents": 25794085,
+          "currency": "COP",
+          "formatted": "$257.940,85 COP"
+        },
+        "adjustments": [],
+        "adjustments_total": null,
+        "is_balanced": false,
+        "window": null,
+        "alternatives": [
+          {
+            "description": "detección por descripción del extracto",
+            "movement_ids": [
+              "mov_2932243eb3fe0b76"
+            ],
+            "rejected_because": "la descripción es una heurística para acotar qué revisar, no una llave: cambió a mitad del período (PAGO DE PROV → PAGO DE TERC). Un crédito del canal con otra descripción no aparecería acá.",
+            "residual": null
+          }
+        ],
+        "unexplained": {
+          "cents": 25794085,
+          "currency": "COP",
+          "formatted": "$257.940,85 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_c4cab39c8cc44b23",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-07",
+      "settlement_movement_id": "mov_dfd5e3e43b36c835",
+      "bank_movement_id": "mov_f4851cfdeffaf0bd",
+      "transaction_ids": [
+        "mov_1cb85c6e076437e8",
+        "mov_4de5772422ed09e3",
+        "mov_a0626caf862ac611",
+        "mov_e682bffc9e2f7922"
+      ],
+      "settlement_amount": {
+        "cents": 1234934093,
+        "currency": "COP",
+        "formatted": "$12.349.340,93 COP"
+      },
+      "bank_amount": {
+        "cents": 1234934093,
+        "currency": "COP",
+        "formatted": "$12.349.340,93 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $12.349.340,93 COP del 2026-01-07 es la liquidación de 4 venta(s) por $12.905.740,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-07 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_1cb85c6e076437e8",
+          "mov_4de5772422ed09e3",
+          "mov_a0626caf862ac611",
+          "mov_e682bffc9e2f7922",
+          "mov_dfd5e3e43b36c835"
+        ],
+        "target_movement_ids": [
+          "mov_f4851cfdeffaf0bd"
+        ],
+        "gross": {
+          "cents": 1290574000,
+          "currency": "COP",
+          "formatted": "$12.905.740,00 COP"
+        },
+        "net": {
+          "cents": 1234934093,
+          "currency": "COP",
+          "formatted": "$12.349.340,93 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 30488487,
+              "currency": "COP",
+              "formatted": "$304.884,87 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 5792811,
+              "currency": "COP",
+              "formatted": "$57.928,11 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 19358609,
+              "currency": "COP",
+              "formatted": "$193.586,09 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 55639907,
+          "currency": "COP",
+          "formatted": "$556.399,07 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-07",
+          "end": "2026-01-13",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_a698680b2219d36b",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-13",
+      "settlement_movement_id": "mov_bc9c03f5bed1b6f9",
+      "bank_movement_id": "mov_fcc29b08df89a567",
+      "transaction_ids": [
+        "mov_df6dc9ba1b45a874",
+        "mov_4b8ced5cb83d3fc1"
+      ],
+      "settlement_amount": {
+        "cents": 36824534,
+        "currency": "COP",
+        "formatted": "$368.245,34 COP"
+      },
+      "bank_amount": {
+        "cents": 36824534,
+        "currency": "COP",
+        "formatted": "$368.245,34 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $368.245,34 COP del 2026-01-13 es la liquidación de 2 venta(s) por $385.772,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-13 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_df6dc9ba1b45a874",
+          "mov_4b8ced5cb83d3fc1",
+          "mov_bc9c03f5bed1b6f9"
+        ],
+        "target_movement_ids": [
+          "mov_fcc29b08df89a567"
+        ],
+        "gross": {
+          "cents": 38577200,
+          "currency": "COP",
+          "formatted": "$385.772,00 COP"
+        },
+        "net": {
+          "cents": 36824534,
+          "currency": "COP",
+          "formatted": "$368.245,34 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 986563,
+              "currency": "COP",
+              "formatted": "$9.865,63 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 187446,
+              "currency": "COP",
+              "formatted": "$1.874,46 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 578657,
+              "currency": "COP",
+              "formatted": "$5.786,57 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1752666,
+          "currency": "COP",
+          "formatted": "$17.526,66 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-13",
+          "end": "2026-01-16",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_a2cb2fa2170af7eb",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-15",
+      "settlement_movement_id": "mov_b771957640c1fe86",
+      "bank_movement_id": "mov_20b1b43cf749c7e9",
+      "transaction_ids": [
+        "mov_009d69f7f95f9d63",
+        "mov_058514ad9f04e39a"
+      ],
+      "settlement_amount": {
+        "cents": 36539335,
+        "currency": "COP",
+        "formatted": "$365.393,35 COP"
+      },
+      "bank_amount": {
+        "cents": 36539335,
+        "currency": "COP",
+        "formatted": "$365.393,35 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $365.393,35 COP del 2026-01-15 es la liquidación de 2 venta(s) por $382.792,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-15 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_009d69f7f95f9d63",
+          "mov_058514ad9f04e39a",
+          "mov_b771957640c1fe86"
+        ],
+        "target_movement_ids": [
+          "mov_20b1b43cf749c7e9"
+        ],
+        "gross": {
+          "cents": 38279200,
+          "currency": "COP",
+          "formatted": "$382.792,00 COP"
+        },
+        "net": {
+          "cents": 36539335,
+          "currency": "COP",
+          "formatted": "$365.393,35 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 979561,
+              "currency": "COP",
+              "formatted": "$9.795,61 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 186116,
+              "currency": "COP",
+              "formatted": "$1.861,16 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 574188,
+              "currency": "COP",
+              "formatted": "$5.741,88 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1739865,
+          "currency": "COP",
+          "formatted": "$17.398,65 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-15",
+          "end": "2026-01-20",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_c15d19e045e13b73",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-16",
+      "settlement_movement_id": "mov_4a246c8ab4fcac37",
+      "bank_movement_id": "mov_7120db0549ec657f",
+      "transaction_ids": [
+        "mov_19097ba63d350809",
+        "mov_5b56f7d009c6db8c"
+      ],
+      "settlement_amount": {
+        "cents": 44247105,
+        "currency": "COP",
+        "formatted": "$442.471,05 COP"
+      },
+      "bank_amount": {
+        "cents": 44247105,
+        "currency": "COP",
+        "formatted": "$442.471,05 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $442.471,05 COP del 2026-01-16 es la liquidación de 2 venta(s) por $463.330,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-16 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_19097ba63d350809",
+          "mov_5b56f7d009c6db8c",
+          "mov_4a246c8ab4fcac37"
+        ],
+        "target_movement_ids": [
+          "mov_7120db0549ec657f"
+        ],
+        "gross": {
+          "cents": 46333000,
+          "currency": "COP",
+          "formatted": "$463.330,00 COP"
+        },
+        "net": {
+          "cents": 44247105,
+          "currency": "COP",
+          "formatted": "$442.471,05 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1168825,
+              "currency": "COP",
+              "formatted": "$11.688,25 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 222076,
+              "currency": "COP",
+              "formatted": "$2.220,76 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 694994,
+              "currency": "COP",
+              "formatted": "$6.949,94 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 2085895,
+          "currency": "COP",
+          "formatted": "$20.858,95 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-16",
+          "end": "2026-01-21",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_c039010f85fe9738",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-19",
+      "settlement_movement_id": "mov_3099f43be6d10dea",
+      "bank_movement_id": "mov_cce86e929ab83e8d",
+      "transaction_ids": [
+        "mov_15ff419692cd455e",
+        "mov_9ba7d16d38f31e43"
+      ],
+      "settlement_amount": {
+        "cents": 270503960,
+        "currency": "COP",
+        "formatted": "$2.705.039,60 COP"
+      },
+      "bank_amount": {
+        "cents": 270503960,
+        "currency": "COP",
+        "formatted": "$2.705.039,60 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $2.705.039,60 COP del 2026-01-19 es la liquidación de 2 venta(s) por $2.827.474,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-19 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_15ff419692cd455e",
+          "mov_9ba7d16d38f31e43",
+          "mov_3099f43be6d10dea"
+        ],
+        "target_movement_ids": [
+          "mov_cce86e929ab83e8d"
+        ],
+        "gross": {
+          "cents": 282747400,
+          "currency": "COP",
+          "formatted": "$2.827.474,00 COP"
+        },
+        "net": {
+          "cents": 270503960,
+          "currency": "COP",
+          "formatted": "$2.705.039,60 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 6724563,
+              "currency": "COP",
+              "formatted": "$67.245,63 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 1277666,
+              "currency": "COP",
+              "formatted": "$12.776,66 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 4241211,
+              "currency": "COP",
+              "formatted": "$42.412,11 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 12243440,
+          "currency": "COP",
+          "formatted": "$122.434,40 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-19",
+          "end": "2026-01-22",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_f2500809cd979b75",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-20",
+      "settlement_movement_id": "mov_e007bce15c77dcc2",
+      "bank_movement_id": "mov_b4dcaa4c31df8997",
+      "transaction_ids": [
+        "mov_65c7075ddbe87fb7"
+      ],
+      "settlement_amount": {
+        "cents": 54083641,
+        "currency": "COP",
+        "formatted": "$540.836,41 COP"
+      },
+      "bank_amount": {
+        "cents": 54083641,
+        "currency": "COP",
+        "formatted": "$540.836,41 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $540.836,41 COP del 2026-01-20 es la liquidación de 1 venta(s) por $565.614,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-20 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_65c7075ddbe87fb7",
+          "mov_e007bce15c77dcc2"
+        ],
+        "target_movement_ids": [
+          "mov_b4dcaa4c31df8997"
+        ],
+        "gross": {
+          "cents": 56561400,
+          "currency": "COP",
+          "formatted": "$565.614,00 COP"
+        },
+        "net": {
+          "cents": 54083641,
+          "currency": "COP",
+          "formatted": "$540.836,41 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1369192,
+              "currency": "COP",
+              "formatted": "$13.691,92 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 260146,
+              "currency": "COP",
+              "formatted": "$2.601,46 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 848421,
+              "currency": "COP",
+              "formatted": "$8.484,21 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 2477759,
+          "currency": "COP",
+          "formatted": "$24.777,59 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-20",
+          "end": "2026-01-23",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_f4c92790e1a20574",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-21",
+      "settlement_movement_id": "mov_c21fc2bc9ca6aa20",
+      "bank_movement_id": "mov_c859744ae373eb9a",
+      "transaction_ids": [
+        "mov_1d59a1b39f0fab91",
+        "mov_7d22a2d2b13521c2",
+        "mov_da70c6721cbb8592"
+      ],
+      "settlement_amount": {
+        "cents": 1005451299,
+        "currency": "COP",
+        "formatted": "$10.054.512,99 COP"
+      },
+      "bank_amount": {
+        "cents": 1005451299,
+        "currency": "COP",
+        "formatted": "$10.054.512,99 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $10.054.512,99 COP del 2026-01-21 es la liquidación de 3 venta(s) por $10.507.391,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-21 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_1d59a1b39f0fab91",
+          "mov_7d22a2d2b13521c2",
+          "mov_da70c6721cbb8592",
+          "mov_c21fc2bc9ca6aa20"
+        ],
+        "target_movement_ids": [
+          "mov_c859744ae373eb9a"
+        ],
+        "gross": {
+          "cents": 1050739100,
+          "currency": "COP",
+          "formatted": "$10.507.391,00 COP"
+        },
+        "net": {
+          "cents": 1005451299,
+          "currency": "COP",
+          "formatted": "$10.054.512,99 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 24812367,
+              "currency": "COP",
+              "formatted": "$248.123,67 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 4714348,
+              "currency": "COP",
+              "formatted": "$47.143,48 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 15761086,
+              "currency": "COP",
+              "formatted": "$157.610,86 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 45287801,
+          "currency": "COP",
+          "formatted": "$452.878,01 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-21",
+          "end": "2026-01-26",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_95fedbc9da16c863",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-22",
+      "settlement_movement_id": "mov_5656876ab609a609",
+      "bank_movement_id": "mov_06ee0e4085616834",
+      "transaction_ids": [
+        "mov_bc1b7833d33156de",
+        "mov_e8242b517a45ca1b"
+      ],
+      "settlement_amount": {
+        "cents": 918006374,
+        "currency": "COP",
+        "formatted": "$9.180.063,74 COP"
+      },
+      "bank_amount": {
+        "cents": 918006374,
+        "currency": "COP",
+        "formatted": "$9.180.063,74 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $9.180.063,74 COP del 2026-01-22 es la liquidación de 2 venta(s) por $9.593.187,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-22 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_bc1b7833d33156de",
+          "mov_e8242b517a45ca1b",
+          "mov_5656876ab609a609"
+        ],
+        "target_movement_ids": [
+          "mov_06ee0e4085616834"
+        ],
+        "gross": {
+          "cents": 959318700,
+          "currency": "COP",
+          "formatted": "$9.593.187,00 COP"
+        },
+        "net": {
+          "cents": 918006374,
+          "currency": "COP",
+          "formatted": "$9.180.063,74 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 22623989,
+              "currency": "COP",
+              "formatted": "$226.239,89 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 4298557,
+              "currency": "COP",
+              "formatted": "$42.985,57 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 14389780,
+              "currency": "COP",
+              "formatted": "$143.897,80 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 41312326,
+          "currency": "COP",
+          "formatted": "$413.123,26 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-22",
+          "end": "2026-01-27",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_b200de4d2cb44a92",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-23",
+      "settlement_movement_id": "mov_a0c36883c75a2c1e",
+      "bank_movement_id": "mov_1751f5031547630c",
+      "transaction_ids": [
+        "mov_210f9de804c5de41",
+        "mov_8f3bc8ecfcf5d4da",
+        "mov_bd56b46c6b548506",
+        "mov_cf86605420ee0a53"
+      ],
+      "settlement_amount": {
+        "cents": 1667396291,
+        "currency": "COP",
+        "formatted": "$16.673.962,91 COP"
+      },
+      "bank_amount": {
+        "cents": 1667396291,
+        "currency": "COP",
+        "formatted": "$16.673.962,91 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $16.673.962,91 COP del 2026-01-23 es la liquidación de 4 venta(s) por $17.424.511,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-23 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_210f9de804c5de41",
+          "mov_8f3bc8ecfcf5d4da",
+          "mov_bd56b46c6b548506",
+          "mov_cf86605420ee0a53",
+          "mov_a0c36883c75a2c1e"
+        ],
+        "target_movement_ids": [
+          "mov_1751f5031547630c"
+        ],
+        "gross": {
+          "cents": 1742451100,
+          "currency": "COP",
+          "formatted": "$17.424.511,00 COP"
+        },
+        "net": {
+          "cents": 1667396291,
+          "currency": "COP",
+          "formatted": "$16.673.962,91 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 41107600,
+              "currency": "COP",
+              "formatted": "$411.076,00 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 7810443,
+              "currency": "COP",
+              "formatted": "$78.104,43 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 26136766,
+              "currency": "COP",
+              "formatted": "$261.367,66 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 75054809,
+          "currency": "COP",
+          "formatted": "$750.548,09 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-23",
+          "end": "2026-01-28",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_6659a82941712b55",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-26",
+      "settlement_movement_id": "mov_a4ad8ceab4d8cb18",
+      "bank_movement_id": "mov_7017f377fd58bce2",
+      "transaction_ids": [
+        "mov_e358a5c25f42ac40",
+        "mov_fb831bd7ebe6f3ff",
+        "mov_4332602a8c3816aa",
+        "mov_8961132ca1dddbbf",
+        "mov_030088d4a3a204d5"
+      ],
+      "settlement_amount": {
+        "cents": 803367833,
+        "currency": "COP",
+        "formatted": "$8.033.678,33 COP"
+      },
+      "bank_amount": {
+        "cents": 803367833,
+        "currency": "COP",
+        "formatted": "$8.033.678,33 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $8.033.678,33 COP del 2026-01-26 es la liquidación de 5 venta(s) por $8.396.828,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-26 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_e358a5c25f42ac40",
+          "mov_fb831bd7ebe6f3ff",
+          "mov_4332602a8c3816aa",
+          "mov_8961132ca1dddbbf",
+          "mov_030088d4a3a204d5",
+          "mov_a4ad8ceab4d8cb18"
+        ],
+        "target_movement_ids": [
+          "mov_7017f377fd58bce2"
+        ],
+        "gross": {
+          "cents": 839682800,
+          "currency": "COP",
+          "formatted": "$8.396.828,00 COP"
+        },
+        "net": {
+          "cents": 803367833,
+          "currency": "COP",
+          "formatted": "$8.033.678,33 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 19932544,
+              "currency": "COP",
+              "formatted": "$199.325,44 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 3787181,
+              "currency": "COP",
+              "formatted": "$37.871,81 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 12595242,
+              "currency": "COP",
+              "formatted": "$125.952,42 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 36314967,
+          "currency": "COP",
+          "formatted": "$363.149,67 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-26",
+          "end": "2026-01-29",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_07ce05a51521d6c7",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-27",
+      "settlement_movement_id": "mov_8b7c39909e66240c",
+      "bank_movement_id": "mov_35f8437bf504a33a",
+      "transaction_ids": [
+        "mov_93d42feba8442cf3"
+      ],
+      "settlement_amount": {
+        "cents": 114042649,
+        "currency": "COP",
+        "formatted": "$1.140.426,49 COP"
+      },
+      "bank_amount": {
+        "cents": 114042649,
+        "currency": "COP",
+        "formatted": "$1.140.426,49 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $1.140.426,49 COP del 2026-01-27 es la liquidación de 1 venta(s) por $1.192.122,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-27 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_93d42feba8442cf3",
+          "mov_8b7c39909e66240c"
+        ],
+        "target_movement_ids": [
+          "mov_35f8437bf504a33a"
+        ],
+        "gross": {
+          "cents": 119212200,
+          "currency": "COP",
+          "formatted": "$1.192.122,00 COP"
+        },
+        "net": {
+          "cents": 114042649,
+          "currency": "COP",
+          "formatted": "$1.140.426,49 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2841486,
+              "currency": "COP",
+              "formatted": "$28.414,86 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 539882,
+              "currency": "COP",
+              "formatted": "$5.398,82 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1788183,
+              "currency": "COP",
+              "formatted": "$17.881,83 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 5169551,
+          "currency": "COP",
+          "formatted": "$51.695,51 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-27",
+          "end": "2026-01-30",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_c1329548e424025a",
+      "status": "unmatched_bank",
+      "is_problem": true,
+      "occurred_on": "2026-01-27",
+      "settlement_movement_id": null,
+      "bank_movement_id": "mov_0943b12ffa4d1dab",
+      "transaction_ids": [],
+      "settlement_amount": null,
+      "bank_amount": {
+        "cents": 37880528,
+        "currency": "COP",
+        "formatted": "$378.805,28 COP"
+      },
+      "difference": null,
+      "explanation": {
+        "rule_id": "flow.bank_credit_without_settlement",
+        "summary": "Crédito de $378.805,28 COP el 2026-01-27 («PAGO DE PROV WOMPI S.A.S.») que parece del canal wompi, pero ningún giro declarado lo explica. Entró plata sin origen identificado.",
+        "confidence": "medium",
+        "source_movement_ids": [],
+        "target_movement_ids": [
+          "mov_0943b12ffa4d1dab"
+        ],
+        "gross": null,
+        "net": {
+          "cents": 37880528,
+          "currency": "COP",
+          "formatted": "$378.805,28 COP"
+        },
+        "adjustments": [],
+        "adjustments_total": null,
+        "is_balanced": false,
+        "window": null,
+        "alternatives": [
+          {
+            "description": "detección por descripción del extracto",
+            "movement_ids": [
+              "mov_0943b12ffa4d1dab"
+            ],
+            "rejected_because": "la descripción es una heurística para acotar qué revisar, no una llave: cambió a mitad del período (PAGO DE PROV → PAGO DE TERC). Un crédito del canal con otra descripción no aparecería acá.",
+            "residual": null
+          }
+        ],
+        "unexplained": {
+          "cents": 37880528,
+          "currency": "COP",
+          "formatted": "$378.805,28 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_662dcb72d364a900",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-01-29",
+      "settlement_movement_id": "mov_e1087cf18ab7ad4b",
+      "bank_movement_id": "mov_ab47b3be4f3f4a45",
+      "transaction_ids": [
+        "mov_d0021d728182b39b"
+      ],
+      "settlement_amount": {
+        "cents": 11613777,
+        "currency": "COP",
+        "formatted": "$116.137,77 COP"
+      },
+      "bank_amount": {
+        "cents": 11613777,
+        "currency": "COP",
+        "formatted": "$116.137,77 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $116.137,77 COP del 2026-01-29 es la liquidación de 1 venta(s) por $121.849,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-01-29 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_d0021d728182b39b",
+          "mov_e1087cf18ab7ad4b"
+        ],
+        "target_movement_ids": [
+          "mov_ab47b3be4f3f4a45"
+        ],
+        "gross": {
+          "cents": 12184900,
+          "currency": "COP",
+          "formatted": "$121.849,00 COP"
+        },
+        "net": {
+          "cents": 11613777,
+          "currency": "COP",
+          "formatted": "$116.137,77 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 326345,
+              "currency": "COP",
+              "formatted": "$3.263,45 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 62005,
+              "currency": "COP",
+              "formatted": "$620,05 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 182773,
+              "currency": "COP",
+              "formatted": "$1.827,73 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 571123,
+          "currency": "COP",
+          "formatted": "$5.711,23 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-01-29",
+          "end": "2026-02-03",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_056ed30103b6a0e3",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-02",
+      "settlement_movement_id": "mov_92309350b6a6ff56",
+      "bank_movement_id": "mov_8e1e351322a5c2ad",
+      "transaction_ids": [
+        "mov_6110623bd77914ea",
+        "mov_04b32fb2cf3b5668",
+        "mov_9f996fef873ad68a"
+      ],
+      "settlement_amount": {
+        "cents": 1785756770,
+        "currency": "COP",
+        "formatted": "$17.857.567,70 COP"
+      },
+      "bank_amount": {
+        "cents": 1785756770,
+        "currency": "COP",
+        "formatted": "$17.857.567,70 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $17.857.567,70 COP del 2026-02-02 es la liquidación de 3 venta(s) por $18.660.755,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-02 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_6110623bd77914ea",
+          "mov_04b32fb2cf3b5668",
+          "mov_9f996fef873ad68a",
+          "mov_92309350b6a6ff56"
+        ],
+        "target_movement_ids": [
+          "mov_8e1e351322a5c2ad"
+        ],
+        "gross": {
+          "cents": 1866075500,
+          "currency": "COP",
+          "formatted": "$18.660.755,00 COP"
+        },
+        "net": {
+          "cents": 1785756770,
+          "currency": "COP",
+          "formatted": "$17.857.567,70 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 43972773,
+              "currency": "COP",
+              "formatted": "$439.727,73 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 8354825,
+              "currency": "COP",
+              "formatted": "$83.548,25 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 27991132,
+              "currency": "COP",
+              "formatted": "$279.911,32 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 80318730,
+          "currency": "COP",
+          "formatted": "$803.187,30 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-02",
+          "end": "2026-02-05",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_6fdf45953845a287",
+      "status": "unmatched_bank",
+      "is_problem": true,
+      "occurred_on": "2026-02-02",
+      "settlement_movement_id": null,
+      "bank_movement_id": "mov_bc86739ef2a013a1",
+      "transaction_ids": [],
+      "settlement_amount": null,
+      "bank_amount": {
+        "cents": 25735977,
+        "currency": "COP",
+        "formatted": "$257.359,77 COP"
+      },
+      "difference": null,
+      "explanation": {
+        "rule_id": "flow.bank_credit_without_settlement",
+        "summary": "Crédito de $257.359,77 COP el 2026-02-02 («PAGO DE PROV WOMPI S.A.S.») que parece del canal wompi, pero ningún giro declarado lo explica. Entró plata sin origen identificado.",
+        "confidence": "medium",
+        "source_movement_ids": [],
+        "target_movement_ids": [
+          "mov_bc86739ef2a013a1"
+        ],
+        "gross": null,
+        "net": {
+          "cents": 25735977,
+          "currency": "COP",
+          "formatted": "$257.359,77 COP"
+        },
+        "adjustments": [],
+        "adjustments_total": null,
+        "is_balanced": false,
+        "window": null,
+        "alternatives": [
+          {
+            "description": "detección por descripción del extracto",
+            "movement_ids": [
+              "mov_bc86739ef2a013a1"
+            ],
+            "rejected_because": "la descripción es una heurística para acotar qué revisar, no una llave: cambió a mitad del período (PAGO DE PROV → PAGO DE TERC). Un crédito del canal con otra descripción no aparecería acá.",
+            "residual": null
+          }
+        ],
+        "unexplained": {
+          "cents": 25735977,
+          "currency": "COP",
+          "formatted": "$257.359,77 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_b826972c8f96c1ed",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-03",
+      "settlement_movement_id": "mov_9e6f8bbe973e8d23",
+      "bank_movement_id": "mov_37e6e3a3116af3f2",
+      "transaction_ids": [
+        "mov_388976448004a8fc",
+        "mov_9ed7ac9b1535f98c",
+        "mov_cde9cc01302e917c"
+      ],
+      "settlement_amount": {
+        "cents": 989825119,
+        "currency": "COP",
+        "formatted": "$9.898.251,19 COP"
+      },
+      "bank_amount": {
+        "cents": 989825119,
+        "currency": "COP",
+        "formatted": "$9.898.251,19 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $9.898.251,19 COP del 2026-02-03 es la liquidación de 3 venta(s) por $10.344.114,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-03 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_388976448004a8fc",
+          "mov_9ed7ac9b1535f98c",
+          "mov_cde9cc01302e917c",
+          "mov_9e6f8bbe973e8d23"
+        ],
+        "target_movement_ids": [
+          "mov_37e6e3a3116af3f2"
+        ],
+        "gross": {
+          "cents": 1034411400,
+          "currency": "COP",
+          "formatted": "$10.344.114,00 COP"
+        },
+        "net": {
+          "cents": 989825119,
+          "currency": "COP",
+          "formatted": "$9.898.251,19 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 24428666,
+              "currency": "COP",
+              "formatted": "$244.286,66 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 4641445,
+              "currency": "COP",
+              "formatted": "$46.414,45 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 15516170,
+              "currency": "COP",
+              "formatted": "$155.161,70 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 44586281,
+          "currency": "COP",
+          "formatted": "$445.862,81 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-03",
+          "end": "2026-02-06",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_c095f7dcd798ba91",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-04",
+      "settlement_movement_id": "mov_df22364f733cf724",
+      "bank_movement_id": "mov_3d54cc0d7e3c6d66",
+      "transaction_ids": [
+        "mov_69d0f58935bca1e4",
+        "mov_1297c0bab15b0fcf",
+        "mov_2b230051b95eb1f6",
+        "mov_65bc24eedd0b0c7a"
+      ],
+      "settlement_amount": {
+        "cents": 1232409434,
+        "currency": "COP",
+        "formatted": "$12.324.094,34 COP"
+      },
+      "bank_amount": {
+        "cents": 1232409434,
+        "currency": "COP",
+        "formatted": "$12.324.094,34 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $12.324.094,34 COP del 2026-02-04 es la liquidación de 4 venta(s) por $12.879.360,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-04 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_69d0f58935bca1e4",
+          "mov_1297c0bab15b0fcf",
+          "mov_2b230051b95eb1f6",
+          "mov_65bc24eedd0b0c7a",
+          "mov_df22364f733cf724"
+        ],
+        "target_movement_ids": [
+          "mov_3d54cc0d7e3c6d66"
+        ],
+        "gross": {
+          "cents": 1287936000,
+          "currency": "COP",
+          "formatted": "$12.879.360,00 COP"
+        },
+        "net": {
+          "cents": 1232409434,
+          "currency": "COP",
+          "formatted": "$12.324.094,34 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 30426494,
+              "currency": "COP",
+              "formatted": "$304.264,94 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 5781032,
+              "currency": "COP",
+              "formatted": "$57.810,32 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 19319040,
+              "currency": "COP",
+              "formatted": "$193.190,40 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 55526566,
+          "currency": "COP",
+          "formatted": "$555.265,66 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-04",
+          "end": "2026-02-09",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_bcd747ee5ae40287",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-05",
+      "settlement_movement_id": "mov_1f0c825035fd8d51",
+      "bank_movement_id": "mov_d011b91eabfa982e",
+      "transaction_ids": [
+        "mov_031c9e19f4b77f8b",
+        "mov_0386083459481d75"
+      ],
+      "settlement_amount": {
+        "cents": 283275208,
+        "currency": "COP",
+        "formatted": "$2.832.752,08 COP"
+      },
+      "bank_amount": {
+        "cents": 283275208,
+        "currency": "COP",
+        "formatted": "$2.832.752,08 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $2.832.752,08 COP del 2026-02-05 es la liquidación de 2 venta(s) por $2.960.920,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-05 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_031c9e19f4b77f8b",
+          "mov_0386083459481d75",
+          "mov_1f0c825035fd8d51"
+        ],
+        "target_movement_ids": [
+          "mov_d011b91eabfa982e"
+        ],
+        "gross": {
+          "cents": 296092000,
+          "currency": "COP",
+          "formatted": "$2.960.920,00 COP"
+        },
+        "net": {
+          "cents": 283275208,
+          "currency": "COP",
+          "formatted": "$2.832.752,08 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 7038162,
+              "currency": "COP",
+              "formatted": "$70.381,62 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 1337250,
+              "currency": "COP",
+              "formatted": "$13.372,50 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 4441380,
+              "currency": "COP",
+              "formatted": "$44.413,80 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 12816792,
+          "currency": "COP",
+          "formatted": "$128.167,92 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-05",
+          "end": "2026-02-10",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_2d172946f4994368",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-09",
+      "settlement_movement_id": "mov_b18227d15c0d3f6a",
+      "bank_movement_id": "mov_fa2af241ea1960c4",
+      "transaction_ids": [
+        "mov_12c34b7af0552137",
+        "mov_8f888e95328b22f4"
+      ],
+      "settlement_amount": {
+        "cents": 311200152,
+        "currency": "COP",
+        "formatted": "$3.112.001,52 COP"
+      },
+      "bank_amount": {
+        "cents": 311200152,
+        "currency": "COP",
+        "formatted": "$3.112.001,52 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $3.112.001,52 COP del 2026-02-09 es la liquidación de 2 venta(s) por $3.252.706,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-09 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_12c34b7af0552137",
+          "mov_8f888e95328b22f4",
+          "mov_b18227d15c0d3f6a"
+        ],
+        "target_movement_ids": [
+          "mov_fa2af241ea1960c4"
+        ],
+        "gross": {
+          "cents": 325270600,
+          "currency": "COP",
+          "formatted": "$3.252.706,00 COP"
+        },
+        "net": {
+          "cents": 311200152,
+          "currency": "COP",
+          "formatted": "$3.112.001,52 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 7723858,
+              "currency": "COP",
+              "formatted": "$77.238,58 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 1467532,
+              "currency": "COP",
+              "formatted": "$14.675,32 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 4879058,
+              "currency": "COP",
+              "formatted": "$48.790,58 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 14070448,
+          "currency": "COP",
+          "formatted": "$140.704,48 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-09",
+          "end": "2026-02-12",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_f8a6fada694d7443",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-11",
+      "settlement_movement_id": "mov_923730fcac197bcb",
+      "bank_movement_id": "mov_93acf8bc646d003d",
+      "transaction_ids": [
+        "mov_a707f6977da16598"
+      ],
+      "settlement_amount": {
+        "cents": 17271959,
+        "currency": "COP",
+        "formatted": "$172.719,59 COP"
+      },
+      "bank_amount": {
+        "cents": 17271959,
+        "currency": "COP",
+        "formatted": "$172.719,59 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $172.719,59 COP del 2026-02-11 es la liquidación de 1 venta(s) por $180.971,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-11 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_a707f6977da16598",
+          "mov_923730fcac197bcb"
+        ],
+        "target_movement_ids": [
+          "mov_93acf8bc646d003d"
+        ],
+        "gross": {
+          "cents": 18097100,
+          "currency": "COP",
+          "formatted": "$180.971,00 COP"
+        },
+        "net": {
+          "cents": 17271959,
+          "currency": "COP",
+          "formatted": "$172.719,59 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 465281,
+              "currency": "COP",
+              "formatted": "$4.652,81 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 88403,
+              "currency": "COP",
+              "formatted": "$884,03 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 271456,
+              "currency": "COP",
+              "formatted": "$2.714,56 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 825140,
+          "currency": "COP",
+          "formatted": "$8.251,40 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-02-11",
+          "end": "2026-02-16",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_33d389f992b74778",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-12",
+      "settlement_movement_id": "mov_cb132ec4c39c1a38",
+      "bank_movement_id": "mov_19b2fa1a3b4adb32",
+      "transaction_ids": [
+        "mov_a7518751d9218e35",
+        "mov_cd7b7291cffe3bb3"
+      ],
+      "settlement_amount": {
+        "cents": 369303467,
+        "currency": "COP",
+        "formatted": "$3.693.034,67 COP"
+      },
+      "bank_amount": {
+        "cents": 369303467,
+        "currency": "COP",
+        "formatted": "$3.693.034,67 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $3.693.034,67 COP del 2026-02-12 es la liquidación de 2 venta(s) por $3.859.824,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-12 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_a7518751d9218e35",
+          "mov_cd7b7291cffe3bb3",
+          "mov_cb132ec4c39c1a38"
+        ],
+        "target_movement_ids": [
+          "mov_19b2fa1a3b4adb32"
+        ],
+        "gross": {
+          "cents": 385982400,
+          "currency": "COP",
+          "formatted": "$3.859.824,00 COP"
+        },
+        "net": {
+          "cents": 369303467,
+          "currency": "COP",
+          "formatted": "$3.693.034,67 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 9150586,
+              "currency": "COP",
+              "formatted": "$91.505,86 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 1738611,
+              "currency": "COP",
+              "formatted": "$17.386,11 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 5789736,
+              "currency": "COP",
+              "formatted": "$57.897,36 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 16678933,
+          "currency": "COP",
+          "formatted": "$166.789,33 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-12",
+          "end": "2026-02-17",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_d647f28e7367f16a",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-13",
+      "settlement_movement_id": "mov_4479d5c116a86c52",
+      "bank_movement_id": "mov_8f69bc8646cda516",
+      "transaction_ids": [
+        "mov_3afec93910d48470",
+        "mov_bfef8f9c57a0319e"
+      ],
+      "settlement_amount": {
+        "cents": 1546307892,
+        "currency": "COP",
+        "formatted": "$15.463.078,92 COP"
+      },
+      "bank_amount": {
+        "cents": 1546307892,
+        "currency": "COP",
+        "formatted": "$15.463.078,92 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $15.463.078,92 COP del 2026-02-13 es la liquidación de 2 venta(s) por $16.158.271,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-13 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_3afec93910d48470",
+          "mov_bfef8f9c57a0319e",
+          "mov_4479d5c116a86c52"
+        ],
+        "target_movement_ids": [
+          "mov_8f69bc8646cda516"
+        ],
+        "gross": {
+          "cents": 1615827100,
+          "currency": "COP",
+          "formatted": "$16.158.271,00 COP"
+        },
+        "net": {
+          "cents": 1546307892,
+          "currency": "COP",
+          "formatted": "$15.463.078,92 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 38051935,
+              "currency": "COP",
+              "formatted": "$380.519,35 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 7229867,
+              "currency": "COP",
+              "formatted": "$72.298,67 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 24237406,
+              "currency": "COP",
+              "formatted": "$242.374,06 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 69519208,
+          "currency": "COP",
+          "formatted": "$695.192,08 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-13",
+          "end": "2026-02-18",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_96ae9ae9122b7555",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-16",
+      "settlement_movement_id": "mov_d9e302e416d9c465",
+      "bank_movement_id": "mov_0366ac39f1f8860f",
+      "transaction_ids": [
+        "mov_d04b01f69040b697",
+        "mov_b3e9f11023a9fada"
+      ],
+      "settlement_amount": {
+        "cents": 3656127629,
+        "currency": "COP",
+        "formatted": "$36.561.276,29 COP"
+      },
+      "bank_amount": {
+        "cents": 3656127629,
+        "currency": "COP",
+        "formatted": "$36.561.276,29 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $36.561.276,29 COP del 2026-02-16 es la liquidación de 2 venta(s) por $38.203.648,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-16 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_d04b01f69040b697",
+          "mov_b3e9f11023a9fada",
+          "mov_d9e302e416d9c465"
+        ],
+        "target_movement_ids": [
+          "mov_0366ac39f1f8860f"
+        ],
+        "gross": {
+          "cents": 3820364800,
+          "currency": "COP",
+          "formatted": "$38.203.648,00 COP"
+        },
+        "net": {
+          "cents": 3656127629,
+          "currency": "COP",
+          "formatted": "$36.561.276,29 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 89858572,
+              "currency": "COP",
+              "formatted": "$898.585,72 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 17073128,
+              "currency": "COP",
+              "formatted": "$170.731,28 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 57305471,
+              "currency": "COP",
+              "formatted": "$573.054,71 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 164237171,
+          "currency": "COP",
+          "formatted": "$1.642.371,71 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-16",
+          "end": "2026-02-19",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_98368bb0816625ef",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-17",
+      "settlement_movement_id": "mov_b7084e7148525b6c",
+      "bank_movement_id": "mov_6de6bd1e58eb2bdd",
+      "transaction_ids": [
+        "mov_6d415a52e299b961",
+        "mov_73fc59b76defcaf3",
+        "mov_d4543bd899554079"
+      ],
+      "settlement_amount": {
+        "cents": 113501377,
+        "currency": "COP",
+        "formatted": "$1.135.013,77 COP"
+      },
+      "bank_amount": {
+        "cents": 113501377,
+        "currency": "COP",
+        "formatted": "$1.135.013,77 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $1.135.013,77 COP del 2026-02-17 es la liquidación de 3 venta(s) por $1.187.461,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-17 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_6d415a52e299b961",
+          "mov_73fc59b76defcaf3",
+          "mov_d4543bd899554079",
+          "mov_b7084e7148525b6c"
+        ],
+        "target_movement_ids": [
+          "mov_6de6bd1e58eb2bdd"
+        ],
+        "gross": {
+          "cents": 118746100,
+          "currency": "COP",
+          "formatted": "$1.187.461,00 COP"
+        },
+        "net": {
+          "cents": 113501377,
+          "currency": "COP",
+          "formatted": "$1.135.013,77 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2910532,
+              "currency": "COP",
+              "formatted": "$29.105,32 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 553000,
+              "currency": "COP",
+              "formatted": "$5.530,00 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1781191,
+              "currency": "COP",
+              "formatted": "$17.811,91 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 5244723,
+          "currency": "COP",
+          "formatted": "$52.447,23 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-17",
+          "end": "2026-02-20",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_a2ba8c15cad7c83f",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-18",
+      "settlement_movement_id": "mov_ef1941eb2ea85e56",
+      "bank_movement_id": "mov_a33608aee8d72a54",
+      "transaction_ids": [
+        "mov_759f688d02223367",
+        "mov_cdea116870e40937"
+      ],
+      "settlement_amount": {
+        "cents": 176540445,
+        "currency": "COP",
+        "formatted": "$1.765.404,45 COP"
+      },
+      "bank_amount": {
+        "cents": 176540445,
+        "currency": "COP",
+        "formatted": "$1.765.404,45 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $1.765.404,45 COP del 2026-02-18 es la liquidación de 2 venta(s) por $1.845.655,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-18 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_759f688d02223367",
+          "mov_cdea116870e40937",
+          "mov_ef1941eb2ea85e56"
+        ],
+        "target_movement_ids": [
+          "mov_a33608aee8d72a54"
+        ],
+        "gross": {
+          "cents": 184565500,
+          "currency": "COP",
+          "formatted": "$1.845.655,00 COP"
+        },
+        "net": {
+          "cents": 176540445,
+          "currency": "COP",
+          "formatted": "$1.765.404,45 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 4417289,
+              "currency": "COP",
+              "formatted": "$44.172,89 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 839284,
+              "currency": "COP",
+              "formatted": "$8.392,84 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 2768482,
+              "currency": "COP",
+              "formatted": "$27.684,82 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 8025055,
+          "currency": "COP",
+          "formatted": "$80.250,55 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-18",
+          "end": "2026-02-23",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_96c178fd8b267662",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-19",
+      "settlement_movement_id": "mov_3a563165aaa5dbf0",
+      "bank_movement_id": "mov_ee0629284cdbaee4",
+      "transaction_ids": [
+        "mov_10559e8500491406"
+      ],
+      "settlement_amount": {
+        "cents": 62081582,
+        "currency": "COP",
+        "formatted": "$620.815,82 COP"
+      },
+      "bank_amount": {
+        "cents": 62081582,
+        "currency": "COP",
+        "formatted": "$620.815,82 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $620.815,82 COP del 2026-02-19 es la liquidación de 1 venta(s) por $649.184,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-19 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_10559e8500491406",
+          "mov_3a563165aaa5dbf0"
+        ],
+        "target_movement_ids": [
+          "mov_ee0629284cdbaee4"
+        ],
+        "gross": {
+          "cents": 64918400,
+          "currency": "COP",
+          "formatted": "$649.184,00 COP"
+        },
+        "net": {
+          "cents": 62081582,
+          "currency": "COP",
+          "formatted": "$620.815,82 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1565582,
+              "currency": "COP",
+              "formatted": "$15.655,82 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 297460,
+              "currency": "COP",
+              "formatted": "$2.974,60 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 973776,
+              "currency": "COP",
+              "formatted": "$9.737,76 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 2836818,
+          "currency": "COP",
+          "formatted": "$28.368,18 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-19",
+          "end": "2026-02-24",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_20dc0e45ba54bf21",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-20",
+      "settlement_movement_id": "mov_731b65779e7b7491",
+      "bank_movement_id": "mov_e91f58f73760c9c3",
+      "transaction_ids": [
+        "mov_80ed4bf79f0a1322",
+        "mov_f1e3179e450c7f74"
+      ],
+      "settlement_amount": {
+        "cents": 46492021,
+        "currency": "COP",
+        "formatted": "$464.920,21 COP"
+      },
+      "bank_amount": {
+        "cents": 46492021,
+        "currency": "COP",
+        "formatted": "$464.920,21 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $464.920,21 COP del 2026-02-20 es la liquidación de 2 venta(s) por $486.787,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-20 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_80ed4bf79f0a1322",
+          "mov_f1e3179e450c7f74",
+          "mov_731b65779e7b7491"
+        ],
+        "target_movement_ids": [
+          "mov_e91f58f73760c9c3"
+        ],
+        "gross": {
+          "cents": 48678700,
+          "currency": "COP",
+          "formatted": "$486.787,00 COP"
+        },
+        "net": {
+          "cents": 46492021,
+          "currency": "COP",
+          "formatted": "$464.920,21 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1223949,
+              "currency": "COP",
+              "formatted": "$12.239,49 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 232549,
+              "currency": "COP",
+              "formatted": "$2.325,49 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 730180,
+              "currency": "COP",
+              "formatted": "$7.301,80 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 2186678,
+          "currency": "COP",
+          "formatted": "$21.866,78 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-02-20",
+          "end": "2026-02-25",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_94035bb849520013",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-24",
+      "settlement_movement_id": "mov_3f0018875efab3af",
+      "bank_movement_id": "mov_edee226b804494e1",
+      "transaction_ids": [
+        "mov_399aed4ac421aa5b",
+        "mov_31cce4a872ca088a",
+        "mov_02a7953a547fc3f6",
+        "mov_147a837e4d37168e",
+        "mov_1f25826df7c39433",
+        "mov_a292d2cc98a8be5e",
+        "mov_061f697ca2fda9cd",
+        "mov_0c2d385fb93c400e",
+        "mov_6de74b80feabdb8e",
+        "mov_81571ba1032bd0a9",
+        "mov_e7f0419932ff525a"
+      ],
+      "settlement_amount": {
+        "cents": 2814564523,
+        "currency": "COP",
+        "formatted": "$28.145.645,23 COP"
+      },
+      "bank_amount": {
+        "cents": 2814564523,
+        "currency": "COP",
+        "formatted": "$28.145.645,23 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $28.145.645,23 COP del 2026-02-24 es la liquidación de 11 venta(s) por $29.414.683,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-24 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_399aed4ac421aa5b",
+          "mov_31cce4a872ca088a",
+          "mov_02a7953a547fc3f6",
+          "mov_147a837e4d37168e",
+          "mov_1f25826df7c39433",
+          "mov_a292d2cc98a8be5e",
+          "mov_061f697ca2fda9cd",
+          "mov_0c2d385fb93c400e",
+          "mov_6de74b80feabdb8e",
+          "mov_81571ba1032bd0a9",
+          "mov_e7f0419932ff525a",
+          "mov_3f0018875efab3af"
+        ],
+        "target_movement_ids": [
+          "mov_edee226b804494e1"
+        ],
+        "gross": {
+          "cents": 2941468300,
+          "currency": "COP",
+          "formatted": "$29.414.683,00 COP"
+        },
+        "net": {
+          "cents": 2814564523,
+          "currency": "COP",
+          "formatted": "$28.145.645,23 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 69564503,
+              "currency": "COP",
+              "formatted": "$695.645,03 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 13217251,
+              "currency": "COP",
+              "formatted": "$132.172,51 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 44122023,
+              "currency": "COP",
+              "formatted": "$441.220,23 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 126903777,
+          "currency": "COP",
+          "formatted": "$1.269.037,77 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-24",
+          "end": "2026-02-27",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_bb3aba49810ca24b",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-26",
+      "settlement_movement_id": "mov_25e17da861d6031f",
+      "bank_movement_id": "mov_a97a8eab4b89e1c3",
+      "transaction_ids": [
+        "mov_1a56eea6200203a5",
+        "mov_75ed3697a4197854",
+        "mov_7fddddd59b36fe0c",
+        "mov_b6fc0051f0b886cf"
+      ],
+      "settlement_amount": {
+        "cents": 1049509136,
+        "currency": "COP",
+        "formatted": "$10.495.091,36 COP"
+      },
+      "bank_amount": {
+        "cents": 1049509136,
+        "currency": "COP",
+        "formatted": "$10.495.091,36 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $10.495.091,36 COP del 2026-02-26 es la liquidación de 4 venta(s) por $10.968.246,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-26 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_1a56eea6200203a5",
+          "mov_75ed3697a4197854",
+          "mov_7fddddd59b36fe0c",
+          "mov_b6fc0051f0b886cf",
+          "mov_25e17da861d6031f"
+        ],
+        "target_movement_ids": [
+          "mov_a97a8eab4b89e1c3"
+        ],
+        "gross": {
+          "cents": 1096824600,
+          "currency": "COP",
+          "formatted": "$10.968.246,00 COP"
+        },
+        "net": {
+          "cents": 1049509136,
+          "currency": "COP",
+          "formatted": "$10.495.091,36 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 25935376,
+              "currency": "COP",
+              "formatted": "$259.353,76 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 4927720,
+              "currency": "COP",
+              "formatted": "$49.277,20 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 16452368,
+              "currency": "COP",
+              "formatted": "$164.523,68 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 47315464,
+          "currency": "COP",
+          "formatted": "$473.154,64 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-26",
+          "end": "2026-03-03",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_55093f81516b7812",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-26",
+      "settlement_movement_id": "mov_aa6c7f46f6878538",
+      "bank_movement_id": "mov_cb48e53c5d563d4f",
+      "transaction_ids": [
+        "mov_9f05194d57ae3487",
+        "mov_ef217b437a593284"
+      ],
+      "settlement_amount": {
+        "cents": 98801354,
+        "currency": "COP",
+        "formatted": "$988.013,54 COP"
+      },
+      "bank_amount": {
+        "cents": 98801354,
+        "currency": "COP",
+        "formatted": "$988.013,54 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $988.013,54 COP del 2026-02-26 es la liquidación de 2 venta(s) por $1.033.364,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-26 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_9f05194d57ae3487",
+          "mov_ef217b437a593284",
+          "mov_aa6c7f46f6878538"
+        ],
+        "target_movement_ids": [
+          "mov_cb48e53c5d563d4f"
+        ],
+        "gross": {
+          "cents": 103336400,
+          "currency": "COP",
+          "formatted": "$1.033.364,00 COP"
+        },
+        "net": {
+          "cents": 98801354,
+          "currency": "COP",
+          "formatted": "$988.013,54 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2508404,
+              "currency": "COP",
+              "formatted": "$25.084,04 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 476596,
+              "currency": "COP",
+              "formatted": "$4.765,96 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1550046,
+              "currency": "COP",
+              "formatted": "$15.500,46 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 4535046,
+          "currency": "COP",
+          "formatted": "$45.350,46 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-02-26",
+          "end": "2026-03-03",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_cb2d5f824d5564db",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-02-27",
+      "settlement_movement_id": "mov_66347bc69eb3b2cb",
+      "bank_movement_id": "mov_e0f5933b08425354",
+      "transaction_ids": [
+        "mov_0287a3a631554f15"
+      ],
+      "settlement_amount": {
+        "cents": 198617841,
+        "currency": "COP",
+        "formatted": "$1.986.178,41 COP"
+      },
+      "bank_amount": {
+        "cents": 198617841,
+        "currency": "COP",
+        "formatted": "$1.986.178,41 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $1.986.178,41 COP del 2026-02-27 es la liquidación de 1 venta(s) por $2.075.843,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-02-27 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_0287a3a631554f15",
+          "mov_66347bc69eb3b2cb"
+        ],
+        "target_movement_ids": [
+          "mov_e0f5933b08425354"
+        ],
+        "gross": {
+          "cents": 207584300,
+          "currency": "COP",
+          "formatted": "$2.075.843,00 COP"
+        },
+        "net": {
+          "cents": 198617841,
+          "currency": "COP",
+          "formatted": "$1.986.178,41 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 4918231,
+              "currency": "COP",
+              "formatted": "$49.182,31 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 934463,
+              "currency": "COP",
+              "formatted": "$9.344,63 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 3113764,
+              "currency": "COP",
+              "formatted": "$31.137,64 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 8966458,
+          "currency": "COP",
+          "formatted": "$89.664,58 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-02-27",
+          "end": "2026-03-04",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_f5880e8882067a8f",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-02",
+      "settlement_movement_id": "mov_43fd354ef1ddec47",
+      "bank_movement_id": "mov_32f61db69327951d",
+      "transaction_ids": [
+        "mov_5242bc3e9817db56",
+        "mov_efe6dc1d75c83fc0",
+        "mov_f3ac3c7a693ffafc"
+      ],
+      "settlement_amount": {
+        "cents": 95867147,
+        "currency": "COP",
+        "formatted": "$958.671,47 COP"
+      },
+      "bank_amount": {
+        "cents": 95867147,
+        "currency": "COP",
+        "formatted": "$958.671,47 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $958.671,47 COP del 2026-03-02 es la liquidación de 3 venta(s) por $1.003.202,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-02 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_5242bc3e9817db56",
+          "mov_efe6dc1d75c83fc0",
+          "mov_f3ac3c7a693ffafc",
+          "mov_43fd354ef1ddec47"
+        ],
+        "target_movement_ids": [
+          "mov_32f61db69327951d"
+        ],
+        "gross": {
+          "cents": 100320200,
+          "currency": "COP",
+          "formatted": "$1.003.202,00 COP"
+        },
+        "net": {
+          "cents": 95867147,
+          "currency": "COP",
+          "formatted": "$958.671,47 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2477523,
+              "currency": "COP",
+              "formatted": "$24.775,23 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 470728,
+              "currency": "COP",
+              "formatted": "$4.707,28 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1504802,
+              "currency": "COP",
+              "formatted": "$15.048,02 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 4453053,
+          "currency": "COP",
+          "formatted": "$44.530,53 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-02",
+          "end": "2026-03-05",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_03982f044b02ce5a",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-04",
+      "settlement_movement_id": "mov_6c9696d4b95103d7",
+      "bank_movement_id": "mov_7687b3212ce7740b",
+      "transaction_ids": [
+        "mov_7ca3784667beb18e",
+        "mov_f2fca10c5cb477f2"
+      ],
+      "settlement_amount": {
+        "cents": 562796231,
+        "currency": "COP",
+        "formatted": "$5.627.962,31 COP"
+      },
+      "bank_amount": {
+        "cents": 562796231,
+        "currency": "COP",
+        "formatted": "$5.627.962,31 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $5.627.962,31 COP del 2026-03-04 es la liquidación de 2 venta(s) por $5.881.618,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-04 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_7ca3784667beb18e",
+          "mov_f2fca10c5cb477f2",
+          "mov_6c9696d4b95103d7"
+        ],
+        "target_movement_ids": [
+          "mov_7687b3212ce7740b"
+        ],
+        "gross": {
+          "cents": 588161800,
+          "currency": "COP",
+          "formatted": "$5.881.618,00 COP"
+        },
+        "net": {
+          "cents": 562796231,
+          "currency": "COP",
+          "formatted": "$5.627.962,31 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 13901801,
+              "currency": "COP",
+              "formatted": "$139.018,01 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 2641341,
+              "currency": "COP",
+              "formatted": "$26.413,41 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 8822427,
+              "currency": "COP",
+              "formatted": "$88.224,27 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 25365569,
+          "currency": "COP",
+          "formatted": "$253.655,69 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-04",
+          "end": "2026-03-09",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_3cd287c69d66ba99",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-05",
+      "settlement_movement_id": "mov_97b46c7b6189abbd",
+      "bank_movement_id": "mov_f36c399391ae2775",
+      "transaction_ids": [
+        "mov_fddafb013c7abec6"
+      ],
+      "settlement_amount": {
+        "cents": 33743775,
+        "currency": "COP",
+        "formatted": "$337.437,75 COP"
+      },
+      "bank_amount": {
+        "cents": 33743775,
+        "currency": "COP",
+        "formatted": "$337.437,75 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $337.437,75 COP del 2026-03-05 es la liquidación de 1 venta(s) por $353.084,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-05 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_fddafb013c7abec6",
+          "mov_97b46c7b6189abbd"
+        ],
+        "target_movement_ids": [
+          "mov_f36c399391ae2775"
+        ],
+        "gross": {
+          "cents": 35308400,
+          "currency": "COP",
+          "formatted": "$353.084,00 COP"
+        },
+        "net": {
+          "cents": 33743775,
+          "currency": "COP",
+          "formatted": "$337.437,75 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 869747,
+              "currency": "COP",
+              "formatted": "$8.697,47 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 165252,
+              "currency": "COP",
+              "formatted": "$1.652,52 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 529626,
+              "currency": "COP",
+              "formatted": "$5.296,26 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1564625,
+          "currency": "COP",
+          "formatted": "$15.646,25 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-05",
+          "end": "2026-03-10",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_2d529834c7ca0dee",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-06",
+      "settlement_movement_id": "mov_19c4b5f763b94d26",
+      "bank_movement_id": "mov_9db45b0f5a476f1c",
+      "transaction_ids": [
+        "mov_2a70faac955cdde9"
+      ],
+      "settlement_amount": {
+        "cents": 344963518,
+        "currency": "COP",
+        "formatted": "$3.449.635,18 COP"
+      },
+      "bank_amount": {
+        "cents": 344963518,
+        "currency": "COP",
+        "formatted": "$3.449.635,18 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $3.449.635,18 COP del 2026-03-06 es la liquidación de 1 venta(s) por $3.605.000,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-06 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_2a70faac955cdde9",
+          "mov_19c4b5f763b94d26"
+        ],
+        "target_movement_ids": [
+          "mov_9db45b0f5a476f1c"
+        ],
+        "gross": {
+          "cents": 360500000,
+          "currency": "COP",
+          "formatted": "$3.605.000,00 COP"
+        },
+        "net": {
+          "cents": 344963518,
+          "currency": "COP",
+          "formatted": "$3.449.635,18 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 8511750,
+              "currency": "COP",
+              "formatted": "$85.117,50 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 1617232,
+              "currency": "COP",
+              "formatted": "$16.172,32 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 5407500,
+              "currency": "COP",
+              "formatted": "$54.075,00 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 15536482,
+          "currency": "COP",
+          "formatted": "$155.364,82 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-06",
+          "end": "2026-03-11",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_0de3043d145dfc5c",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-09",
+      "settlement_movement_id": "mov_fb969f00ce593bb1",
+      "bank_movement_id": "mov_509d17eab4b5d2f5",
+      "transaction_ids": [
+        "mov_47e1e59f43e142c4"
+      ],
+      "settlement_amount": {
+        "cents": 37026310,
+        "currency": "COP",
+        "formatted": "$370.263,10 COP"
+      },
+      "bank_amount": {
+        "cents": 37026310,
+        "currency": "COP",
+        "formatted": "$370.263,10 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $370.263,10 COP del 2026-03-09 es la liquidación de 1 venta(s) por $387.383,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-09 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_47e1e59f43e142c4",
+          "mov_fb969f00ce593bb1"
+        ],
+        "target_movement_ids": [
+          "mov_509d17eab4b5d2f5"
+        ],
+        "gross": {
+          "cents": 38738300,
+          "currency": "COP",
+          "formatted": "$387.383,00 COP"
+        },
+        "net": {
+          "cents": 37026310,
+          "currency": "COP",
+          "formatted": "$370.263,10 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 950350,
+              "currency": "COP",
+              "formatted": "$9.503,50 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 180566,
+              "currency": "COP",
+              "formatted": "$1.805,66 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 581074,
+              "currency": "COP",
+              "formatted": "$5.810,74 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1711990,
+          "currency": "COP",
+          "formatted": "$17.119,90 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-09",
+          "end": "2026-03-12",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_eb76a13d45c2070c",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-12",
+      "settlement_movement_id": "mov_46cd055867a2f62d",
+      "bank_movement_id": "mov_285f06a76514d4e7",
+      "transaction_ids": [
+        "mov_17cca7257ed88aa4"
+      ],
+      "settlement_amount": {
+        "cents": 41767748,
+        "currency": "COP",
+        "formatted": "$417.677,48 COP"
+      },
+      "bank_amount": {
+        "cents": 41767748,
+        "currency": "COP",
+        "formatted": "$417.677,48 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $417.677,48 COP del 2026-03-12 es la liquidación de 1 venta(s) por $436.926,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-12 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_17cca7257ed88aa4",
+          "mov_46cd055867a2f62d"
+        ],
+        "target_movement_ids": [
+          "mov_285f06a76514d4e7"
+        ],
+        "gross": {
+          "cents": 43692600,
+          "currency": "COP",
+          "formatted": "$436.926,00 COP"
+        },
+        "net": {
+          "cents": 41767748,
+          "currency": "COP",
+          "formatted": "$417.677,48 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1066776,
+              "currency": "COP",
+              "formatted": "$10.667,76 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 202687,
+              "currency": "COP",
+              "formatted": "$2.026,87 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 655389,
+              "currency": "COP",
+              "formatted": "$6.553,89 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1924852,
+          "currency": "COP",
+          "formatted": "$19.248,52 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-12",
+          "end": "2026-03-17",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_092b32e49d2052ec",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-16",
+      "settlement_movement_id": "mov_0e2ba728d0631c14",
+      "bank_movement_id": "mov_cccc2d0d81e20365",
+      "transaction_ids": [
+        "mov_3a23023b34392c60"
+      ],
+      "settlement_amount": {
+        "cents": 103455736,
+        "currency": "COP",
+        "formatted": "$1.034.557,36 COP"
+      },
+      "bank_amount": {
+        "cents": 103455736,
+        "currency": "COP",
+        "formatted": "$1.034.557,36 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $1.034.557,36 COP del 2026-03-16 es la liquidación de 1 venta(s) por $1.081.500,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-16 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_3a23023b34392c60",
+          "mov_0e2ba728d0631c14"
+        ],
+        "target_movement_ids": [
+          "mov_cccc2d0d81e20365"
+        ],
+        "gross": {
+          "cents": 108150000,
+          "currency": "COP",
+          "formatted": "$1.081.500,00 COP"
+        },
+        "net": {
+          "cents": 103455736,
+          "currency": "COP",
+          "formatted": "$1.034.557,36 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2581525,
+              "currency": "COP",
+              "formatted": "$25.815,25 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 490489,
+              "currency": "COP",
+              "formatted": "$4.904,89 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1622250,
+              "currency": "COP",
+              "formatted": "$16.222,50 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 4694264,
+          "currency": "COP",
+          "formatted": "$46.942,64 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-16",
+          "end": "2026-03-19",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_2106aa199f3227ee",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-19",
+      "settlement_movement_id": "mov_675c6f9d5ad21408",
+      "bank_movement_id": "mov_1591670223406d32",
+      "transaction_ids": [
+        "mov_57398c4caf229847"
+      ],
+      "settlement_amount": {
+        "cents": 33221330,
+        "currency": "COP",
+        "formatted": "$332.213,30 COP"
+      },
+      "bank_amount": {
+        "cents": 33221330,
+        "currency": "COP",
+        "formatted": "$332.213,30 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $332.213,30 COP del 2026-03-19 es la liquidación de 1 venta(s) por $347.625,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-19 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_57398c4caf229847",
+          "mov_675c6f9d5ad21408"
+        ],
+        "target_movement_ids": [
+          "mov_1591670223406d32"
+        ],
+        "gross": {
+          "cents": 34762500,
+          "currency": "COP",
+          "formatted": "$347.625,00 COP"
+        },
+        "net": {
+          "cents": 33221330,
+          "currency": "COP",
+          "formatted": "$332.213,30 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 856918,
+              "currency": "COP",
+              "formatted": "$8.569,18 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 162814,
+              "currency": "COP",
+              "formatted": "$1.628,14 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 521437,
+              "currency": "COP",
+              "formatted": "$5.214,37 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1541169,
+          "currency": "COP",
+          "formatted": "$15.411,69 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-03-19",
+          "end": "2026-03-25",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_2ffc623c6f745a4d",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-20",
+      "settlement_movement_id": "mov_ea24167b4815c715",
+      "bank_movement_id": "mov_cdc3cf5a4eb0e5ee",
+      "transaction_ids": [
+        "mov_a4631cd9de728205"
+      ],
+      "settlement_amount": {
+        "cents": 20258769,
+        "currency": "COP",
+        "formatted": "$202.587,69 COP"
+      },
+      "bank_amount": {
+        "cents": 20258769,
+        "currency": "COP",
+        "formatted": "$202.587,69 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $202.587,69 COP del 2026-03-20 es la liquidación de 1 venta(s) por $212.180,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-20 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_a4631cd9de728205",
+          "mov_ea24167b4815c715"
+        ],
+        "target_movement_ids": [
+          "mov_cdc3cf5a4eb0e5ee"
+        ],
+        "gross": {
+          "cents": 21218000,
+          "currency": "COP",
+          "formatted": "$212.180,00 COP"
+        },
+        "net": {
+          "cents": 20258769,
+          "currency": "COP",
+          "formatted": "$202.587,69 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 538623,
+              "currency": "COP",
+              "formatted": "$5.386,23 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 102338,
+              "currency": "COP",
+              "formatted": "$1.023,38 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 318270,
+              "currency": "COP",
+              "formatted": "$3.182,70 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 959231,
+          "currency": "COP",
+          "formatted": "$9.592,31 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-20",
+          "end": "2026-03-26",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_2305e17aaf86ce8d",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-24",
+      "settlement_movement_id": "mov_b5fc7e2aba10bc63",
+      "bank_movement_id": "mov_51785e9b2bc6c4fb",
+      "transaction_ids": [
+        "mov_c2252b782c98f314"
+      ],
+      "settlement_amount": {
+        "cents": 21885251,
+        "currency": "COP",
+        "formatted": "$218.852,51 COP"
+      },
+      "bank_amount": {
+        "cents": 21885251,
+        "currency": "COP",
+        "formatted": "$218.852,51 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $218.852,51 COP del 2026-03-24 es la liquidación de 1 venta(s) por $229.175,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-24 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_c2252b782c98f314",
+          "mov_b5fc7e2aba10bc63"
+        ],
+        "target_movement_ids": [
+          "mov_51785e9b2bc6c4fb"
+        ],
+        "gross": {
+          "cents": 22917500,
+          "currency": "COP",
+          "formatted": "$229.175,00 COP"
+        },
+        "net": {
+          "cents": 21885251,
+          "currency": "COP",
+          "formatted": "$218.852,51 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 578561,
+              "currency": "COP",
+              "formatted": "$5.785,61 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 109926,
+              "currency": "COP",
+              "formatted": "$1.099,26 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 343762,
+              "currency": "COP",
+              "formatted": "$3.437,62 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1032249,
+          "currency": "COP",
+          "formatted": "$10.322,49 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-24",
+          "end": "2026-03-27",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_3a8da097d9833a45",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-25",
+      "settlement_movement_id": "mov_0e7e77e0b98a9e73",
+      "bank_movement_id": "mov_fc282b71316e882a",
+      "transaction_ids": [
+        "mov_20616a54e5bb7bff"
+      ],
+      "settlement_amount": {
+        "cents": 57900488,
+        "currency": "COP",
+        "formatted": "$579.004,88 COP"
+      },
+      "bank_amount": {
+        "cents": 57900488,
+        "currency": "COP",
+        "formatted": "$579.004,88 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $579.004,88 COP del 2026-03-25 es la liquidación de 1 venta(s) por $605.496,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-25 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_20616a54e5bb7bff",
+          "mov_0e7e77e0b98a9e73"
+        ],
+        "target_movement_ids": [
+          "mov_fc282b71316e882a"
+        ],
+        "gross": {
+          "cents": 60549600,
+          "currency": "COP",
+          "formatted": "$605.496,00 COP"
+        },
+        "net": {
+          "cents": 57900488,
+          "currency": "COP",
+          "formatted": "$579.004,88 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1462915,
+              "currency": "COP",
+              "formatted": "$14.629,15 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 277953,
+              "currency": "COP",
+              "formatted": "$2.779,53 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 908244,
+              "currency": "COP",
+              "formatted": "$9.082,44 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 2649112,
+          "currency": "COP",
+          "formatted": "$26.491,12 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-25",
+          "end": "2026-03-30",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_86458960310e676d",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-26",
+      "settlement_movement_id": "mov_d94333e0383b7882",
+      "bank_movement_id": "mov_fca888cb55effa3a",
+      "transaction_ids": [
+        "mov_86dde5dbea171311",
+        "mov_f82c6a4a3ac0da0e"
+      ],
+      "settlement_amount": {
+        "cents": 73110229,
+        "currency": "COP",
+        "formatted": "$731.102,29 COP"
+      },
+      "bank_amount": {
+        "cents": 73110229,
+        "currency": "COP",
+        "formatted": "$731.102,29 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $731.102,29 COP del 2026-03-26 es la liquidación de 2 venta(s) por $764.919,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-26 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_86dde5dbea171311",
+          "mov_f82c6a4a3ac0da0e",
+          "mov_d94333e0383b7882"
+        ],
+        "target_movement_ids": [
+          "mov_fca888cb55effa3a"
+        ],
+        "gross": {
+          "cents": 76491900,
+          "currency": "COP",
+          "formatted": "$764.919,00 COP"
+        },
+        "net": {
+          "cents": 73110229,
+          "currency": "COP",
+          "formatted": "$731.102,29 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1877558,
+              "currency": "COP",
+              "formatted": "$18.775,58 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 356735,
+              "currency": "COP",
+              "formatted": "$3.567,35 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1147378,
+              "currency": "COP",
+              "formatted": "$11.473,78 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 3381671,
+          "currency": "COP",
+          "formatted": "$33.816,71 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-26",
+          "end": "2026-03-31",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_11f3462463c61043",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-30",
+      "settlement_movement_id": "mov_f0f6bcc0172c5e8c",
+      "bank_movement_id": "mov_ab6a05135f1a165c",
+      "transaction_ids": [
+        "mov_6efd75eb6f32a52c"
+      ],
+      "settlement_amount": {
+        "cents": 34167647,
+        "currency": "COP",
+        "formatted": "$341.676,47 COP"
+      },
+      "bank_amount": {
+        "cents": 34167647,
+        "currency": "COP",
+        "formatted": "$341.676,47 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $341.676,47 COP del 2026-03-30 es la liquidación de 1 venta(s) por $357.513,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-30 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_6efd75eb6f32a52c",
+          "mov_f0f6bcc0172c5e8c"
+        ],
+        "target_movement_ids": [
+          "mov_ab6a05135f1a165c"
+        ],
+        "gross": {
+          "cents": 35751300,
+          "currency": "COP",
+          "formatted": "$357.513,00 COP"
+        },
+        "net": {
+          "cents": 34167647,
+          "currency": "COP",
+          "formatted": "$341.676,47 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 880155,
+              "currency": "COP",
+              "formatted": "$8.801,55 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 167229,
+              "currency": "COP",
+              "formatted": "$1.672,29 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 536269,
+              "currency": "COP",
+              "formatted": "$5.362,69 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1583653,
+          "currency": "COP",
+          "formatted": "$15.836,53 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-30",
+          "end": "2026-04-06",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_c79c40a941b58f74",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-03-31",
+      "settlement_movement_id": "mov_a63a32c6834a231d",
+      "bank_movement_id": "mov_ff61e9bb34be92c4",
+      "transaction_ids": [
+        "mov_7bdaae887eb223b0"
+      ],
+      "settlement_amount": {
+        "cents": 18967443,
+        "currency": "COP",
+        "formatted": "$189.674,43 COP"
+      },
+      "bank_amount": {
+        "cents": 18967443,
+        "currency": "COP",
+        "formatted": "$189.674,43 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $189.674,43 COP del 2026-03-31 es la liquidación de 1 venta(s) por $198.687,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-03-31 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_7bdaae887eb223b0",
+          "mov_a63a32c6834a231d"
+        ],
+        "target_movement_ids": [
+          "mov_ff61e9bb34be92c4"
+        ],
+        "gross": {
+          "cents": 19868700,
+          "currency": "COP",
+          "formatted": "$198.687,00 COP"
+        },
+        "net": {
+          "cents": 18967443,
+          "currency": "COP",
+          "formatted": "$189.674,43 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 506914,
+              "currency": "COP",
+              "formatted": "$5.069,14 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 96313,
+              "currency": "COP",
+              "formatted": "$963,13 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 298030,
+              "currency": "COP",
+              "formatted": "$2.980,30 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 901257,
+          "currency": "COP",
+          "formatted": "$9.012,57 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-03-31",
+          "end": "2026-04-07",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_06bd90892e866be9",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-01",
+      "settlement_movement_id": "mov_726b0149743744bf",
+      "bank_movement_id": "mov_1353c3b35d5aacdc",
+      "transaction_ids": [
+        "mov_5176e361f6b65412",
+        "mov_ebcda5ba3cfbca5e"
+      ],
+      "settlement_amount": {
+        "cents": 132736953,
+        "currency": "COP",
+        "formatted": "$1.327.369,53 COP"
+      },
+      "bank_amount": {
+        "cents": 132736953,
+        "currency": "COP",
+        "formatted": "$1.327.369,53 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $1.327.369,53 COP del 2026-04-01 es la liquidación de 2 venta(s) por $1.387.955,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-04-01 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_5176e361f6b65412",
+          "mov_ebcda5ba3cfbca5e",
+          "mov_726b0149743744bf"
+        ],
+        "target_movement_ids": [
+          "mov_1353c3b35d5aacdc"
+        ],
+        "gross": {
+          "cents": 138795500,
+          "currency": "COP",
+          "formatted": "$1.387.955,00 COP"
+        },
+        "net": {
+          "cents": 132736953,
+          "currency": "COP",
+          "formatted": "$1.327.369,53 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 3341693,
+              "currency": "COP",
+              "formatted": "$33.416,93 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 634921,
+              "currency": "COP",
+              "formatted": "$6.349,21 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 2081932,
+              "currency": "COP",
+              "formatted": "$20.819,32 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 6058546,
+          "currency": "COP",
+          "formatted": "$60.585,46 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-04-01",
+          "end": "2026-04-08",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_c2d4cde11ee3fab2",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-06",
+      "settlement_movement_id": "mov_bfd93678df37e7b4",
+      "bank_movement_id": "mov_2ea29b4bdcfde2da",
+      "transaction_ids": [
+        "mov_64cbe159e1d097dc"
+      ],
+      "settlement_amount": {
+        "cents": 48426510,
+        "currency": "COP",
+        "formatted": "$484.265,10 COP"
+      },
+      "bank_amount": {
+        "cents": 48426510,
+        "currency": "COP",
+        "formatted": "$484.265,10 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $484.265,10 COP del 2026-04-06 es la liquidación de 1 venta(s) por $506.503,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-04-06 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_64cbe159e1d097dc",
+          "mov_bfd93678df37e7b4"
+        ],
+        "target_movement_ids": [
+          "mov_2ea29b4bdcfde2da"
+        ],
+        "gross": {
+          "cents": 50650300,
+          "currency": "COP",
+          "formatted": "$506.503,00 COP"
+        },
+        "net": {
+          "cents": 48426510,
+          "currency": "COP",
+          "formatted": "$484.265,10 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1230282,
+              "currency": "COP",
+              "formatted": "$12.302,82 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 233753,
+              "currency": "COP",
+              "formatted": "$2.337,53 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 759754,
+              "currency": "COP",
+              "formatted": "$7.597,54 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 2223789,
+          "currency": "COP",
+          "formatted": "$22.237,89 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-04-06",
+          "end": "2026-04-09",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_2f981cda2d5bc914",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-08",
+      "settlement_movement_id": "mov_d80102c8aa5cb057",
+      "bank_movement_id": "mov_5efcc35fde6bb66d",
+      "transaction_ids": [
+        "mov_5df971593d74bda7"
+      ],
+      "settlement_amount": {
+        "cents": 114042649,
+        "currency": "COP",
+        "formatted": "$1.140.426,49 COP"
+      },
+      "bank_amount": {
+        "cents": 114042649,
+        "currency": "COP",
+        "formatted": "$1.140.426,49 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $1.140.426,49 COP del 2026-04-08 es la liquidación de 1 venta(s) por $1.192.122,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-04-08 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_5df971593d74bda7",
+          "mov_d80102c8aa5cb057"
+        ],
+        "target_movement_ids": [
+          "mov_5efcc35fde6bb66d"
+        ],
+        "gross": {
+          "cents": 119212200,
+          "currency": "COP",
+          "formatted": "$1.192.122,00 COP"
+        },
+        "net": {
+          "cents": 114042649,
+          "currency": "COP",
+          "formatted": "$1.140.426,49 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2841486,
+              "currency": "COP",
+              "formatted": "$28.414,86 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 539882,
+              "currency": "COP",
+              "formatted": "$5.398,82 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1788183,
+              "currency": "COP",
+              "formatted": "$17.881,83 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 5169551,
+          "currency": "COP",
+          "formatted": "$51.695,51 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-04-08",
+          "end": "2026-04-13",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_3f03438ab34680c5",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-09",
+      "settlement_movement_id": "mov_8309b8ddc8a3b8e7",
+      "bank_movement_id": "mov_b9d80e9b82587e27",
+      "transaction_ids": [
+        "mov_86903ea01afe8e46"
+      ],
+      "settlement_amount": {
+        "cents": 463389901,
+        "currency": "COP",
+        "formatted": "$4.633.899,01 COP"
+      },
+      "bank_amount": {
+        "cents": 463389901,
+        "currency": "COP",
+        "formatted": "$4.633.899,01 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $4.633.899,01 COP del 2026-04-09 es la liquidación de 1 venta(s) por $4.842.430,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-04-09 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_86903ea01afe8e46",
+          "mov_8309b8ddc8a3b8e7"
+        ],
+        "target_movement_ids": [
+          "mov_b9d80e9b82587e27"
+        ],
+        "gross": {
+          "cents": 484243000,
+          "currency": "COP",
+          "formatted": "$4.842.430,00 COP"
+        },
+        "net": {
+          "cents": 463389901,
+          "currency": "COP",
+          "formatted": "$4.633.899,01 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 11419710,
+              "currency": "COP",
+              "formatted": "$114.197,10 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 2169744,
+              "currency": "COP",
+              "formatted": "$21.697,44 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 7263645,
+              "currency": "COP",
+              "formatted": "$72.636,45 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 20853099,
+          "currency": "COP",
+          "formatted": "$208.530,99 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-04-09",
+          "end": "2026-04-14",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_37237dc21ab43ebb",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-13",
+      "settlement_movement_id": "mov_4e2b9c0c998ed8c2",
+      "bank_movement_id": "mov_6463e4884ae1b27e",
+      "transaction_ids": [
+        "mov_eb36c5cb66f967b8"
+      ],
+      "settlement_amount": {
+        "cents": 344963518,
+        "currency": "COP",
+        "formatted": "$3.449.635,18 COP"
+      },
+      "bank_amount": {
+        "cents": 344963518,
+        "currency": "COP",
+        "formatted": "$3.449.635,18 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $3.449.635,18 COP del 2026-04-13 es la liquidación de 1 venta(s) por $3.605.000,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-04-13 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_eb36c5cb66f967b8",
+          "mov_4e2b9c0c998ed8c2"
+        ],
+        "target_movement_ids": [
+          "mov_6463e4884ae1b27e"
+        ],
+        "gross": {
+          "cents": 360500000,
+          "currency": "COP",
+          "formatted": "$3.605.000,00 COP"
+        },
+        "net": {
+          "cents": 344963518,
+          "currency": "COP",
+          "formatted": "$3.449.635,18 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 8511750,
+              "currency": "COP",
+              "formatted": "$85.117,50 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 1617232,
+              "currency": "COP",
+              "formatted": "$16.172,32 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 5407500,
+              "currency": "COP",
+              "formatted": "$54.075,00 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 15536482,
+          "currency": "COP",
+          "formatted": "$155.364,82 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-04-13",
+          "end": "2026-04-16",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_45fa9d035c14ad2d",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-14",
+      "settlement_movement_id": "mov_2e364ed09f8e37e9",
+      "bank_movement_id": "mov_00b3eb9a97a5cc19",
+      "transaction_ids": [
+        "mov_48e8afcefa648812"
+      ],
+      "settlement_amount": {
+        "cents": 80416363,
+        "currency": "COP",
+        "formatted": "$804.163,63 COP"
+      },
+      "bank_amount": {
+        "cents": 80416363,
+        "currency": "COP",
+        "formatted": "$804.163,63 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $804.163,63 COP del 2026-04-14 es la liquidación de 1 venta(s) por $840.763,00 COP bruto, menos comisiones e impuestos (declaradas por el canal). El canal declaró el giro el 2026-04-14 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "exact",
+        "source_movement_ids": [
+          "mov_48e8afcefa648812",
+          "mov_2e364ed09f8e37e9"
+        ],
+        "target_movement_ids": [
+          "mov_00b3eb9a97a5cc19"
+        ],
+        "gross": {
+          "cents": 84076300,
+          "currency": "COP",
+          "formatted": "$840.763,00 COP"
+        },
+        "net": {
+          "cents": 80416363,
+          "currency": "COP",
+          "formatted": "$804.163,63 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2015793,
+              "currency": "COP",
+              "formatted": "$20.157,93 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 383000,
+              "currency": "COP",
+              "formatted": "$3.830,00 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1261144,
+              "currency": "COP",
+              "formatted": "$12.611,44 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 3659937,
+          "currency": "COP",
+          "formatted": "$36.599,37 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-04-14",
+          "end": "2026-04-17",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_181dc5637a1bbe99",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-15",
+      "settlement_movement_id": "mov_b5e6243beb990083",
+      "bank_movement_id": "mov_bbe49bbabe00c302",
+      "transaction_ids": [
+        "mov_4c97bd4f7d8967f9",
+        "mov_52b4f82d0a33db27",
+        "mov_5ff7ac0d9b9ddfc0",
+        "mov_d216bbadacee18ef"
+      ],
+      "settlement_amount": {
+        "cents": 92637311,
+        "currency": "COP",
+        "formatted": "$926.373,11 COP"
+      },
+      "bank_amount": {
+        "cents": 92637311,
+        "currency": "COP",
+        "formatted": "$926.373,11 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $926.373,11 COP del 2026-04-15 es la liquidación de 4 venta(s) por $969.951,00 COP bruto, menos comisiones e impuestos (declaradas por el canal). El canal declaró el giro el 2026-04-15 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "exact",
+        "source_movement_ids": [
+          "mov_4c97bd4f7d8967f9",
+          "mov_52b4f82d0a33db27",
+          "mov_5ff7ac0d9b9ddfc0",
+          "mov_d216bbadacee18ef",
+          "mov_b5e6243beb990083"
+        ],
+        "target_movement_ids": [
+          "mov_bbe49bbabe00c302"
+        ],
+        "gross": {
+          "cents": 96995100,
+          "currency": "COP",
+          "formatted": "$969.951,00 COP"
+        },
+        "net": {
+          "cents": 92637311,
+          "currency": "COP",
+          "formatted": "$926.373,11 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 2439383,
+              "currency": "COP",
+              "formatted": "$24.393,83 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 463481,
+              "currency": "COP",
+              "formatted": "$4.634,81 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1454925,
+              "currency": "COP",
+              "formatted": "$14.549,25 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 4357789,
+          "currency": "COP",
+          "formatted": "$43.577,89 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-04-15",
+          "end": "2026-04-20",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_e7243141a6ec2efb",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-20",
+      "settlement_movement_id": "mov_6b3667f46a50612c",
+      "bank_movement_id": "mov_a3f3149fa42da274",
+      "transaction_ids": [
+        "mov_78a380a8c44f0810",
+        "mov_efec424d9f9cb8a6",
+        "mov_f5ed6f5c9ae2ebda"
+      ],
+      "settlement_amount": {
+        "cents": 61283346,
+        "currency": "COP",
+        "formatted": "$612.833,46 COP"
+      },
+      "bank_amount": {
+        "cents": 61283346,
+        "currency": "COP",
+        "formatted": "$612.833,46 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $612.833,46 COP del 2026-04-20 es la liquidación de 3 venta(s) por $641.838,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-04-20 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_78a380a8c44f0810",
+          "mov_efec424d9f9cb8a6",
+          "mov_f5ed6f5c9ae2ebda",
+          "mov_6b3667f46a50612c"
+        ],
+        "target_movement_ids": [
+          "mov_a3f3149fa42da274"
+        ],
+        "gross": {
+          "cents": 64183800,
+          "currency": "COP",
+          "formatted": "$641.838,00 COP"
+        },
+        "net": {
+          "cents": 61283346,
+          "currency": "COP",
+          "formatted": "$612.833,46 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1628318,
+              "currency": "COP",
+              "formatted": "$16.283,18 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 309379,
+              "currency": "COP",
+              "formatted": "$3.093,79 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 962756,
+              "currency": "COP",
+              "formatted": "$9.627,56 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 2900453,
+          "currency": "COP",
+          "formatted": "$29.004,53 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-04-20",
+          "end": "2026-04-23",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_a30bb16302552f2e",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-23",
+      "settlement_movement_id": "mov_501f0a9f226cc6aa",
+      "bank_movement_id": "mov_3ce35aa2c343f642",
+      "transaction_ids": [
+        "mov_a187beca321eea78"
+      ],
+      "settlement_amount": {
+        "cents": 71048712,
+        "currency": "COP",
+        "formatted": "$710.487,12 COP"
+      },
+      "bank_amount": {
+        "cents": 71048712,
+        "currency": "COP",
+        "formatted": "$710.487,12 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $710.487,12 COP del 2026-04-23 es la liquidación de 1 venta(s) por $742.881,00 COP bruto, menos comisiones e impuestos (inferidas del tarifario). El canal declaró el giro el 2026-04-23 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_a187beca321eea78",
+          "mov_501f0a9f226cc6aa"
+        ],
+        "target_movement_ids": [
+          "mov_3ce35aa2c343f642"
+        ],
+        "gross": {
+          "cents": 74288100,
+          "currency": "COP",
+          "formatted": "$742.881,00 COP"
+        },
+        "net": {
+          "cents": 71048712,
+          "currency": "COP",
+          "formatted": "$710.487,12 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1785770,
+              "currency": "COP",
+              "formatted": "$17.857,70 COP"
+            },
+            "source": "inferred",
+            "note": "inferido con el tarifario vigente (2.3500% + $400,00 COP fijo); el canal no declaró el desglose de este desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 339296,
+              "currency": "COP",
+              "formatted": "$3.392,96 COP"
+            },
+            "source": "inferred",
+            "note": "19% sobre la comisión sin truncar; calcularlo sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1114321,
+              "currency": "COP",
+              "formatted": "$11.143,21 COP"
+            },
+            "source": "inferred",
+            "note": "retención en la fuente (1.50% del bruto)"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 3239387,
+          "currency": "COP",
+          "formatted": "$32.393,87 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-04-23",
+          "end": "2026-04-28",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": {
+          "cents": 1,
+          "currency": "COP",
+          "formatted": "$0,01 COP"
+        }
+      }
+    },
+    {
+      "id": "fnd_f23b918814ee0e6a",
+      "status": "matched",
+      "is_problem": false,
+      "occurred_on": "2026-04-27",
+      "settlement_movement_id": "mov_43e9ed4a03a67d96",
+      "bank_movement_id": "mov_69872d6228e32314",
+      "transaction_ids": [
+        "mov_88d2c0e8a3e02f77",
+        "mov_e0ad4cdf6c0d01a7",
+        "mov_f3db82ce363fdaa9"
+      ],
+      "settlement_amount": {
+        "cents": 69816078,
+        "currency": "COP",
+        "formatted": "$698.160,78 COP"
+      },
+      "bank_amount": {
+        "cents": 69816078,
+        "currency": "COP",
+        "formatted": "$698.160,78 COP"
+      },
+      "difference": {
+        "cents": 0,
+        "currency": "COP",
+        "formatted": "$0,00 COP"
+      },
+      "explanation": {
+        "rule_id": "flow.settlement_declared_batch",
+        "summary": "El crédito de $698.160,78 COP del 2026-04-27 es la liquidación de 3 venta(s) por $730.996,00 COP bruto, menos comisiones e impuestos (declaradas por el canal). El canal declaró el giro el 2026-04-27 y el banco lo acreditó el mismo día. El agrupamiento de ventas no se infirió: cada venta declara a qué desembolso pertenece.",
+        "confidence": "exact",
+        "source_movement_ids": [
+          "mov_88d2c0e8a3e02f77",
+          "mov_e0ad4cdf6c0d01a7",
+          "mov_f3db82ce363fdaa9",
+          "mov_43e9ed4a03a67d96"
+        ],
+        "target_movement_ids": [
+          "mov_69872d6228e32314"
+        ],
+        "gross": {
+          "cents": 73099600,
+          "currency": "COP",
+          "formatted": "$730.996,00 COP"
+        },
+        "net": {
+          "cents": 69816078,
+          "currency": "COP",
+          "formatted": "$698.160,78 COP"
+        },
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 1837839,
+              "currency": "COP",
+              "formatted": "$18.378,39 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 349189,
+              "currency": "COP",
+              "formatted": "$3.491,89 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 1096494,
+              "currency": "COP",
+              "formatted": "$10.964,94 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 3283522,
+          "currency": "COP",
+          "formatted": "$32.835,22 COP"
+        },
+        "is_balanced": true,
+        "window": {
+          "start": "2026-04-27",
+          "end": "2026-04-30",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    },
+    {
+      "id": "fnd_2d04c0342a883b67",
+      "status": "out_of_coverage",
+      "is_problem": false,
+      "occurred_on": "2026-05-04",
+      "settlement_movement_id": "mov_e921df4f88143963",
+      "bank_movement_id": null,
+      "transaction_ids": [
+        "mov_754cf1101b109cae"
+      ],
+      "settlement_amount": {
+        "cents": 30342952,
+        "currency": "COP",
+        "formatted": "$303.429,52 COP"
+      },
+      "bank_amount": null,
+      "difference": null,
+      "explanation": {
+        "rule_id": "flow.out_of_coverage",
+        "summary": "Giro de $303.429,52 COP el 2026-05-04. No se puede concluir: el extracto bancario cubre 2026-01-01 a 2026-04-30. No es un faltante de plata sino de datos.",
+        "confidence": "high",
+        "source_movement_ids": [
+          "mov_754cf1101b109cae",
+          "mov_e921df4f88143963"
+        ],
+        "target_movement_ids": [],
+        "gross": {
+          "cents": 31754900,
+          "currency": "COP",
+          "formatted": "$317.549,00 COP"
+        },
+        "net": null,
+        "adjustments": [
+          {
+            "kind": "commission",
+            "amount": {
+              "cents": 786240,
+              "currency": "COP",
+              "formatted": "$7.862,40 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "tax",
+            "amount": {
+              "cents": 149385,
+              "currency": "COP",
+              "formatted": "$1.493,85 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          },
+          {
+            "kind": "withholding",
+            "amount": {
+              "cents": 476323,
+              "currency": "COP",
+              "formatted": "$4.763,23 COP"
+            },
+            "source": "declared",
+            "note": "declarado por el canal en el reporte de desembolso"
+          }
+        ],
+        "adjustments_total": {
+          "cents": 1411948,
+          "currency": "COP",
+          "formatted": "$14.119,48 COP"
+        },
+        "is_balanced": false,
+        "window": {
+          "start": "2026-05-04",
+          "end": "2026-05-07",
+          "rule": "[0, 3] días hábiles desde el giro, calendario CO"
+        },
+        "alternatives": [],
+        "unexplained": null
+      }
+    }
+  ]
+}
