@@ -19,6 +19,7 @@ from .ingest.adapters.wompi_api import (
     WompiApiTransactionsAdapter,
 )
 from .ingest.adapters.wompi_disbursement_csv import WompiDisbursementCsvAdapter
+from .ingest.connectors.archive_replay import ArchiveReplayConnector
 from .ingest.connectors.local_file import LocalFileConnector
 from .ingest.connectors.odoo_rpc import OdooRpcConnector
 from .ingest.connectors.wompi_api import WompiApiConnector
@@ -29,9 +30,10 @@ from .settings import Settings
 def build_registry(settings: Settings, *, offline: bool = False) -> SourceRegistry:
     """Arma el registro con todas las fuentes conocidas.
 
-    `offline=True` omite las fuentes que requieren red. Sirve para reprocesar
-    desde lo ya archivado en `data/raw/` sin credenciales ni conexión — que es
-    como debería poder correr quien clona el repositorio.
+    `offline=True` reemplaza los connectors de red por un replay de lo ya
+    archivado en `data/raw/`: mismas fuentes, mismos adapters, cero
+    credenciales. Quien clona el repositorio reconstruye todos los ledgers
+    —y la conciliación completa— desde lo versionado.
     """
     registry = SourceRegistry()
     for account in ACCOUNTS:
@@ -63,25 +65,31 @@ def build_registry(settings: Settings, *, offline: bool = False) -> SourceRegist
         )
     )
 
-    if offline:
-        return registry
-
     # ── Wompi: API REST ───────────────────────────────────────────────────
+    #
+    # En vivo el connector archiva cada página ya redactada en `data/raw/`;
+    # offline, un replay de ese archivo reemite los mismos registros con los
+    # mismos locators. Misma fuente, mismos adapters: cambia solo el transporte,
+    # y los ledgers que producen ambos caminos son idénticos movimiento a
+    # movimiento.
     archive = raw / "wompi" / "api"
-    registry.register_source(
-        SourceSpec(
-            name="wompi_api_transacciones",
-            connector=WompiApiConnector("transactions", settings.wompi, archive_dir=archive),
-            adapters=(WompiApiTransactionsAdapter(),),
+    for resource, name, adapter in (
+        ("transactions", "wompi_api_transacciones", WompiApiTransactionsAdapter()),
+        ("disbursements", "wompi_api_desembolsos", WompiApiDisbursementsAdapter()),
+    ):
+        connector = (
+            ArchiveReplayConnector(
+                archive / resource,
+                fragment="id",
+                metadata={"resource": resource, "redacted": True},
+                connector_id=f"replay_wompi_{resource}",
+            )
+            if offline
+            else WompiApiConnector(resource, settings.wompi, archive_dir=archive)
         )
-    )
-    registry.register_source(
-        SourceSpec(
-            name="wompi_api_desembolsos",
-            connector=WompiApiConnector("disbursements", settings.wompi, archive_dir=archive),
-            adapters=(WompiApiDisbursementsAdapter(),),
+        registry.register_source(
+            SourceSpec(name=name, connector=connector, adapters=(adapter,))
         )
-    )
 
     # ── Odoo: el libro contable de cada ledger ────────────────────────────
     #
@@ -89,12 +97,20 @@ def build_registry(settings: Settings, *, offline: bool = False) -> SourceRegist
     # tres diarios distintos y tomar el diario perdería los giros al banco.
     odoo_archive = raw / "odoo"
     for base_id, account_code in ODOO_LEDGER_ACCOUNTS.items():
+        connector = (
+            ArchiveReplayConnector(
+                odoo_archive / account_code,
+                fragment="line",
+                metadata={"account_code": account_code, "redacted": True},
+                connector_id=f"replay_odoo_{account_code}",
+            )
+            if offline
+            else OdooRpcConnector(account_code, settings.odoo, archive_dir=odoo_archive)
+        )
         registry.register_source(
             SourceSpec(
                 name=f"odoo_libro_{base_id}",
-                connector=OdooRpcConnector(
-                    account_code, settings.odoo, archive_dir=odoo_archive
-                ),
+                connector=connector,
                 adapters=(OdooLedgerAdapter(erp_ledger_id(base_id), account_code),),
             )
         )

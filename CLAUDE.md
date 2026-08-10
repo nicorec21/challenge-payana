@@ -69,9 +69,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 390
+pytest                                        # 397
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 284 — pipeline sobre fixtures
+pytest -m integration                         # 291 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -83,7 +83,9 @@ conciliacion reconcile-erp wompi              # ledger vs libro de Odoo
 conciliacion-mcp                              # servidor MCP por stdio
 ```
 
-`--offline` omite las fuentes de red y reprocesa desde `data/raw/`.
+`--offline` sirve **todas** las fuentes desde `data/raw/`: las locales directo,
+las de red por replay de sus payloads archivados (`ArchiveReplayConnector`,
+ADR-0013). La conciliación completa corre recién clonado, sin credenciales.
 
 **Ningún test toca la red, y se hace cumplir.** `tests/conftest.py` bloquea la
 creación de sockets; un test que intente salir falla con un mensaje explícito.
@@ -95,8 +97,11 @@ El marcado `unit`/`integration` es automático por módulo (`UNIT_MODULES` en
 
 CI son **3 checks**: `test (3.11)`, `test (3.13)` —ruff + unit + integration +
 cobertura como steps— y `smoke`, que instala sin dependencias de desarrollo ni
-credenciales y verifica que la ingesta offline dé 426 movimientos y que
-reingerir dé 0 nuevos.
+credenciales y verifica que la ingesta offline dé 426 movimientos, que reingerir
+dé 0 nuevos, que la conciliación completa corra sin red (replay del archivo) y
+que lo generado coincida con la copia versionada en `docs/salida/` (ignorando
+solo `generated_at`). Si tu cambio mueve la conciliación y no actualizás esa
+copia, `smoke` falla.
 
 Los steps no son jobs a propósito: la suite tarda ~9 s y un runner extra cuesta
 más setup del que ahorra. Si agregás verificaciones, agregá **steps**; un job
@@ -371,7 +376,7 @@ src/conciliacion/
 ├── ingest/
 │   ├── ports.py         Connector (cómo llegan los bytes) ⟂ Adapter (qué significan)
 │   ├── registry.py      GenerarLedger / RegistrarMovimientos
-│   ├── connectors/      local_file, wompi_api
+│   ├── connectors/      local_file, wompi_api, odoo_rpc, archive_replay
 │   └── adapters/        bancolombia_pdf, wompi_api, wompi_disbursement_csv,
 │                        pos_asobancaria (demo, no registrado)
 ├── reconcile/
@@ -631,6 +636,7 @@ está produciendo ninguno.
 | 0010 | Conciliación de flujo: el primer salto no se busca, lo declara el canal |
 | 0011 | El libro contable es otro ledger; se define por cuenta, no por diario |
 | 0012 | El tarifario audita la ingesta; el aviso no se persiste |
+| 0013 | Offline por replay del archivo; la salida versionada se verifica en CI |
 
 ---
 

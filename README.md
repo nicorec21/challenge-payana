@@ -66,21 +66,28 @@ La suite se divide en dos, y cada una responde algo distinto:
 
 ```bash
 pytest -m unit          # 106 — solo dominio, sin I/O. Milisegundos.
-pytest -m integration   # 284 — pipeline real sobre fixtures congelados.
-pytest                  # 390
+pytest -m integration   # 291 — pipeline real sobre fixtures congelados.
+pytest                  # 397
 ```
 
 **Ningún test toca la red.** No es una convención: `tests/conftest.py` bloquea la
 creación de sockets, y un test que intente salir falla con un mensaje explícito.
 Los tests de la API usan `httpx.MockTransport`.
 
-Ingesta sin credenciales ni red, sobre los datos versionados en `data/raw/`:
+Ingesta sin credenciales ni red, sobre los datos versionados en `data/raw/`.
+Funciona para **todos** los ledgers: los archivos locales se leen directo y las
+fuentes de API se reproducen por replay de sus payloads archivados (ya
+redactados) — así que la conciliación completa corre recién clonado:
 
 ```bash
 conciliacion ingest bancolombia --offline
+conciliacion ingest wompi --offline
+conciliacion ingest wompi_erp --offline --desde 2025-01-01 --hasta 2026-12-31
+conciliacion ingest bancolombia_erp --offline --desde 2025-01-01 --hasta 2026-12-31
 ```
 
-Para las fuentes de API hace falta `.env` (copiar de `.env.example`):
+Para ingerir **en vivo** de la API de Wompi o de Odoo hace falta `.env`
+(copiar de `.env.example`):
 
 ```bash
 conciliacion ingest wompi
@@ -210,7 +217,7 @@ src/conciliacion/
 ├── ingest/         Fase 1. Connector (cómo llegan los bytes)
 │   ├── ports.py        + Adapter (qué significan). Ejes ortogonales.
 │   ├── registry.py     Registro de fuentes y pipeline de ingesta
-│   ├── connectors/     LocalFile, WompiApi, OdooRpc
+│   ├── connectors/     LocalFile, WompiApi, OdooRpc, ArchiveReplay
 │   └── adapters/       Uno por layout
 ├── reconcile/
 │   ├── calendar.py     Días hábiles Colombia (Ley Emiliani). Necesario para T+1.
@@ -324,6 +331,13 @@ la ingesta offline, verifica que salgan 426 movimientos, la vuelve a correr y
 exige `0 nuevos` para probar la idempotencia. Falla también si alguien commitea
 un `.env`.
 
+Después reconstruye **todos** los ledgers por replay de los payloads archivados
+en `data/raw/`, corre las tres conciliaciones sin red, y compara lo generado
+contra la copia versionada en [`docs/salida/`](docs/salida/) (ignorando solo
+`generated_at`). Si un cambio mueve la conciliación y no actualiza esa copia,
+el check falla con el archivo señalado: la regla de "actualizá la salida en el
+mismo cambio" deja de depender de que alguien se acuerde.
+
 Es lo que sostiene la afirmación de este README de que el repositorio funciona
 recién clonado: si alguien introduce una dependencia oculta a `.env` o a la API
 de Wompi en el camino offline, los tests seguirían pasando y este job no.
@@ -349,6 +363,8 @@ se pueden romper y convenciones. Es el archivo a leer antes de tocar nada.
 | [0009](docs/adr/0009-extensibilidad-demostrada-pos.md) | Costo de sumar el POS, medido: 0 líneas de dominio, cadencia = 1 línea de config |
 | [0010](docs/adr/0010-conciliacion-de-flujo.md) | Flujo: dos saltos, el primero declarado. "Falta plata" ≠ "falta data" |
 | [0011](docs/adr/0011-conciliacion-contra-el-erp.md) | ERP: el libro es otro ledger. Se define por cuenta, no por diario |
+| [0012](docs/adr/0012-auditoria-del-tarifario.md) | El tarifario audita la ingesta; el aviso no se persiste |
+| [0013](docs/adr/0013-offline-por-replay-y-salida-verificada.md) | Offline por replay del archivo; `docs/salida/` se verifica en CI |
 
 ## Cómo leer la salida
 

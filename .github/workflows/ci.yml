@@ -90,3 +90,50 @@ jobs:
 
       - name: Las fuentes se declaran sin credenciales
         run: conciliacion sources --offline
+
+      # Los connectors de red quedan cubiertos por el replay de sus payloads
+      # archivados en data/raw/ (versionados, ya redactados): un clon fresco
+      # reconstruye TODOS los ledgers sin credenciales.
+      - name: Ingesta offline del resto (replay del archivo)
+        run: |
+          conciliacion ingest wompi --offline --strict
+          conciliacion ingest wompi_erp --offline --strict --desde 2025-01-01 --hasta 2026-12-31
+          conciliacion ingest bancolombia_erp --offline --strict --desde 2025-01-01 --hasta 2026-12-31
+
+      - name: La conciliación completa corre sin red
+        run: |
+          conciliacion reconcile
+          conciliacion reconcile-erp wompi
+          conciliacion reconcile-erp bancolombia
+
+      # docs/salida/ es la copia versionada de las salidas sobre los datos del
+      # challenge. Si un cambio mueve la conciliación y no actualiza la copia,
+      # el repo le muestra al lector un resultado que el código ya no produce.
+      # Se ignora `generated_at` (marca de la corrida, no del resultado).
+      - name: Las salidas versionadas están al día
+        run: |
+          python - <<'EOF'
+          import json, pathlib, sys
+
+          out, ref = pathlib.Path("data/out"), pathlib.Path("docs/salida")
+          desactualizados = []
+          for path in sorted(ref.glob("conciliacion-*")):
+              gen = out / path.name
+              if path.suffix == ".json":
+                  a = json.loads(gen.read_text(encoding="utf-8"))
+                  b = json.loads(path.read_text(encoding="utf-8"))
+                  for d in (a, b):
+                      d.pop("generated_at", None)
+                  same = a == b
+              else:
+                  same = gen.read_text(encoding="utf-8") == path.read_text(encoding="utf-8")
+              print(("OK   " if same else "DIFF ") + path.name)
+              if not same:
+                  desactualizados.append(path.name)
+          if desactualizados:
+              print("::error::La salida generada no coincide con docs/salida/. "
+                    "Regenerá (reconcile, reconcile-erp wompi, reconcile-erp bancolombia) "
+                    "y copiá data/out/ a docs/salida/ en este mismo cambio: "
+                    + ", ".join(desactualizados))
+              sys.exit(1)
+          EOF

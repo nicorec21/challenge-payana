@@ -14,4 +14,7 @@ Cómo interpretar los estados y los números: sección **«Cómo leer la salida�
 del [README](../../README.md) principal.
 
 Si un cambio en la ingesta o en los motores mueve estos resultados, regenerá
-las salidas y actualizá esta copia en el mismo cambio.
+las salidas y actualizá esta copia en el mismo cambio. No depende de la
+memoria de nadie: el job `smoke` del CI regenera la conciliación completa sin
+red (replay de `data/raw/`, ver ADR-0013) y falla si lo generado no coincide
+con esta copia.
