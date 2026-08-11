@@ -226,6 +226,12 @@ un crédito bancario completo el 24/03. Un matcher que busque subconjuntos sin
 restricción temporal casa el crédito del 24/03 con una transacción del 14/04, con
 monto exacto. Solo la fecha lo evita.
 
+**Windows no trae tzdata del sistema.** `zoneinfo.ZoneInfo("America/Bogota")`
+revienta con `ZoneInfoNotFoundError` en Windows puro — Linux/Mac lo resuelven
+contra el tzdata del OS, Windows no tiene equivalente. `pyproject.toml` declara
+`tzdata; sys_platform == 'win32'` para cubrirlo; si el error reaparece, es que
+alguien instaló sin ese extra o el marker se rompió.
+
 **Los números de cuenta no coinciden.** La API de Wompi declara destino
 `19300002179`; los extractos son de `19300008472`. Los extractos son sintéticos
 (Alimentos Alcázar es ficticia) sobre montos reales. **La cuenta no sirve como
