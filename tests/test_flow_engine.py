@@ -344,6 +344,39 @@ class TestVentanaTemporal:
         assert not reconcile_flow(c, b, calendar=CAL, policy=angosta, coverage=TODO_2026).of(FlowStatus.MATCHED)
         assert reconcile_flow(c, b, calendar=CAL, policy=ancha, coverage=TODO_2026).of(FlowStatus.MATCHED)
 
+    def test_la_puntualidad_se_mide_contra_el_lag_giro_banco(self):
+        """Son dos cadencias: venta→giro (`settlement_lag`) y giro→crédito
+        (`credit_lag`, mismo día para Wompi, 10/10 verificado). La confianza
+        puntúa contra la segunda.
+
+        El bug: `puntual = dias == settlement_lag - 1` usaba la primera. Para
+        Wompi (lag=1) da 0 por casualidad; para un canal T+2 aceptaba como
+        puntual un crédito un día tarde, sin evidencia que lo respalde.
+        """
+        d = date(2026, 4, 13)
+        def escenario(dia_credito: date):
+            c = canal(
+                venta("T1", d, "840763", "D1"),
+                descuento("T1", "comisión", "20157.93", MovementKind.FEE),
+                descuento("T1", "iva comisión", "3830.00", MovementKind.TAX),
+                descuento("T1", "retefuente", "12611.44", MovementKind.TAX),
+                giro("D1", date(2026, 4, 15), "804163.63", "D1"),
+            )
+            b = banco(credito("B1", dia_credito, "804163.63"))
+            politica = SettlementPolicy(settlement_lag_business_days=2)
+            (f,) = reconcile_flow(
+                c, b, calendar=CAL, policy=politica, coverage=TODO_2026
+            ).of(FlowStatus.MATCHED)
+            return f.confidence
+
+        # Mismo día: puntual, y con desglose declarado que cierra → EXACT.
+        assert escenario(date(2026, 4, 15)) is Confidence.EXACT
+        # Un día hábil tarde: el monto cierra pero la puntualidad no —igual
+        # que un crédito tardío de Wompi, que ya puntuaba MEDIUM—. Antes del
+        # arreglo esto daba EXACT: el `settlement_lag - 1` del canal T+2
+        # bendecía el desfasaje como si hubiera evidencia de esa cadencia.
+        assert escenario(date(2026, 4, 16)) is Confidence.MEDIUM
+
 
 class TestAmbiguedad:
     def test_dos_creditos_iguales_producen_AMBIGUOUS(self):

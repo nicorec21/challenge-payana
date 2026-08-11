@@ -196,6 +196,11 @@ class SettlementPolicy:
 
     #: Días hábiles entre la venta y la liquidación declarada por el canal.
     settlement_lag_business_days: int
+    #: Días hábiles esperados entre el giro y el crédito bancario. Es una
+    #: cadencia DISTINTA de la anterior —venta→giro vs. giro→banco— y la
+    #: confianza del match se puntúa contra esta. Para Wompi: mismo día,
+    #: verificado 10/10 en abril 2026.
+    credit_lag_business_days: int = 0
     #: Ventana, en días hábiles, para buscar el crédito en el banco a partir
     #: de la fecha de liquidación.
     min_business_days: int = 0

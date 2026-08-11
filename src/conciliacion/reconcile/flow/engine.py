@@ -590,7 +590,11 @@ def _confidence(
     cierra = abs(inexplicado.amount) <= (
         0 if batch.has_declared_deductions else tolerancia
     )
-    puntual = dias_habiles == policy.settlement_lag_business_days - 1 or dias_habiles == 0
+    # Contra el lag giro→banco, no el lag venta→giro: son cadencias distintas.
+    # La versión anterior usaba `settlement_lag_business_days - 1`, que para
+    # Wompi (lag=1) da 0 por casualidad y para cualquier otra política puntúa
+    # como puntual un desfasaje sin evidencia que lo respalde.
+    puntual = 0 <= dias_habiles <= policy.credit_lag_business_days
 
     if not batch.transactions:
         # Giro sin ventas que lo compongan: el monto coincide pero no se puede

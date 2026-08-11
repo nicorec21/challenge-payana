@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 403 tests, 106/297,
+Este archivo y el README afirman cantidades concretas: 409 tests, 106/303,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -69,9 +69,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 403
+pytest                                        # 409
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 297 — pipeline sobre fixtures
+pytest -m integration                         # 303 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -564,6 +564,15 @@ tipo dé cero coincidencias puede ser casualidad; que no exista la cuenta es un
 hecho del plan contable y afirmarlo requiere haberlo mirado. Lo fijan
 `test_la_cobertura_separa_lo_que_no_tiene_cuenta_donde_asentarse` y
 `test_no_se_excluye_un_tipo_solo_porque_dio_cero`.
+
+**Y la exclusión también ata al matcher, no solo a la cuenta de cobertura.** Si
+un tipo no puede estar en la cuenta, un match suyo contra una línea del libro es
+falso por definición. Dejarlos competir fue un bug latente: una comisión de
+monto igual a un giro (±3 días) se llevaba la línea del giro en el pase por
+monto y los dos veredictos salían invertidos. Cero casos sobre estos datos —por
+eso no se vio—. Los tipos de `ERP_UNREPRESENTABLE_KINDS` no entran a ningún pase
+y su finding usa `erp.no_account_in_chart` (ver ampliación en ADR-0011). Lo fija
+`TestLosTiposSinCuentaNoCompitenPorLineasDelLibro`.
 
 Del lado `bancolombia` no hay tipos sin cuenta: su 2,6% es cobertura real.
 
