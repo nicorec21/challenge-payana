@@ -18,7 +18,7 @@ Criterio de redacción, que es donde está el trabajo:
 
 from __future__ import annotations
 
-from ..domain.explanation import Confidence, EvidenceSource
+from ..domain.explanation import AdjustmentKind, Confidence, EvidenceSource
 from ..domain.money import Money
 from ..reconcile.flow.findings import FlowFinding, FlowReport, FlowStatus
 
@@ -72,14 +72,28 @@ def _veredicto(r: FlowReport) -> str:
     en_disputa = Money.sum(
         f.explanation.unexplained for f in problemas if f.explanation.unexplained
     )
-    redondeo = r.unexplained_total() - en_disputa
+    # Los giros que cerraron por monto pero cuyo desglose no se pudo verificar
+    # van aparte del redondeo: el redondeo vale un centavo por venta y esto
+    # puede valer el giro entero. Sumarlos daría un número que se lee como ruido.
+    sin_verificar = Money.sum(
+        f.explanation.unexplained for f in r.unverified if f.explanation.unexplained
+    )
+    redondeo = r.unexplained_total() - en_disputa - sin_verificar
 
-    if not problemas:
+    if not problemas and sin_verificar.is_zero:
         titulo = "## ✅ Todo el dinero del período está explicado"
         cuerpo = (
             f"Se conciliaron **{conciliados}** giros por **{r.matched_amount()}**. "
             f"No hay plata que haya salido del canal sin aparecer en el banco, "
             f"ni créditos bancarios del canal sin origen identificado."
+        )
+    elif not problemas:
+        titulo = "## ⚠️ El dinero llegó, pero no todo está explicado"
+        cuerpo = (
+            f"Se conciliaron **{conciliados}** giros por **{r.matched_amount()}**. "
+            f"Cada giro del canal encontró su crédito en el banco, así que no falta "
+            f"plata. Pero en **{len(r.unverified)}** caso(s) el sistema no pudo "
+            f"verificar de qué está hecho el giro, por **{sin_verificar}**."
         )
     else:
         titulo = f"## ⚠️ Hay {len(problemas)} caso(s) que requieren revisión"
@@ -87,6 +101,13 @@ def _veredicto(r: FlowReport) -> str:
             f"Se conciliaron **{conciliados}** giros por **{r.matched_amount()}**. "
             f"Quedan **{len(problemas)}** casos sin explicar, por un total de "
             f"**{en_disputa}**. El detalle está abajo."
+        )
+
+    if problemas and not sin_verificar.is_zero:
+        cuerpo += (
+            f"\n\nAparte, **{len(r.unverified)}** giro(s) sí encontraron su crédito "
+            f"pero el sistema no pudo verificar de qué están hechos, por "
+            f"**{sin_verificar}**. La plata llegó; el desglose no se pudo calcular."
         )
 
     fuera = len(r.of(FlowStatus.OUT_OF_COVERAGE))
@@ -194,6 +215,17 @@ def _nota_metodologica(r: FlowReport) -> str:
         1 for f in r.findings
         if any(a.source is EvidenceSource.INFERRED for a in f.explanation.adjustments)
     )
+    sin_calcular = sum(
+        1 for f in r.findings
+        if any(a.kind is AdjustmentKind.UNEXPLAINED for a in f.explanation.adjustments)
+    )
+    nota_sin_calcular = (
+        f" En {sin_calcular} caso(s) ni siquiera se pudo estimar, porque alguna venta "
+        f"usó un medio de pago sin tarifario conocido: ahí el desglose figura como "
+        f"**sin calcular** y el monto entero queda sin explicar."
+        if sin_calcular
+        else ""
+    )
     return (
         "---\n\n"
         "## Cómo leer esto\n\n"
@@ -203,7 +235,7 @@ def _nota_metodologica(r: FlowReport) -> str:
         f"{declarados} caso(s) el canal declaró el desglose exacto. En {inferidos} "
         "hubo que estimarlo con el tarifario vigente; esa estimación tiene un margen "
         "conocido de un centavo por venta, y por eso esos casos figuran con confianza "
-        "alta en vez de exacta.\n\n"
+        f"alta en vez de exacta.{nota_sin_calcular}\n\n"
         "**Confianza.** *Exacta* significa que cada peso está respaldado por un dato "
         "declarado por el canal. *Alta*, que el monto coincide pero parte del desglose "
         "se estimó. *Media* o *baja* significan que conviene mirar el caso.\n\n"
@@ -214,9 +246,15 @@ def _nota_metodologica(r: FlowReport) -> str:
 
 
 def _origen_ajustes(f: FlowFinding) -> str:
-    fuentes = {a.source for a in f.explanation.adjustments}
-    if not fuentes:
+    ajustes = f.explanation.adjustments
+    if not ajustes:
         return "—"
+    # Un ajuste `UNEXPLAINED` no es un descuento estimado: es un descuento que
+    # no se pudo calcular. Llamarlo "estimadas" en la tabla presenta como
+    # cuenta hecha lo que es una cuenta pendiente.
+    if any(a.kind is AdjustmentKind.UNEXPLAINED for a in ajustes):
+        return "sin calcular"
+    fuentes = {a.source for a in ajustes}
     if fuentes == {EvidenceSource.DECLARED}:
         return "declaradas"
     if EvidenceSource.DECLARED in fuentes:

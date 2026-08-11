@@ -147,6 +147,27 @@ class FlowReport:
     def problems(self) -> list[FlowFinding]:
         return [f for f in self.findings if f.status.is_problem]
 
+    @property
+    def unverified(self) -> list[FlowFinding]:
+        """Giros que cerraron por monto y cuyo desglose no se pudo verificar.
+
+        No son problemas: la plata salió del canal y entró al banco por el mismo
+        importe. Pero tampoco son conciliaciones limpias — de qué está hecho ese
+        giro es una pregunta abierta, típicamente porque alguna venta usó un
+        medio de pago sin tarifario.
+
+        Existe para que el residuo de estos casos no se sume al redondeo de la
+        inferencia: uno vale un centavo por venta y el otro puede valer todo el
+        giro, y presentarlos juntos convierte un hallazgo en una nota al pie.
+        """
+        return [
+            f
+            for f in self.findings
+            if f.status is FlowStatus.MATCHED
+            and f.confidence in (Confidence.LOW, Confidence.MEDIUM)
+            and f.explanation.unexplained
+        ]
+
     def counts(self) -> dict[str, int]:
         from collections import Counter
 

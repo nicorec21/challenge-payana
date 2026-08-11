@@ -66,8 +66,8 @@ La suite se divide en dos, y cada una responde algo distinto:
 
 ```bash
 pytest -m unit          # 106 — solo dominio, sin I/O. Milisegundos.
-pytest -m integration   # 291 — pipeline real sobre fixtures congelados.
-pytest                  # 397
+pytest -m integration   # 297 — pipeline real sobre fixtures congelados.
+pytest                  # 403
 ```
 
 **Ningún test toca la red.** No es una convención: `tests/conftest.py` bloquea la

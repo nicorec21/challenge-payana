@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 390 tests, 106/284,
+Este archivo y el README afirman cantidades concretas: 403 tests, 106/297,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -69,9 +69,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 397
+pytest                                        # 403
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 291 — pipeline sobre fixtures
+pytest -m integration                         # 297 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -319,6 +319,22 @@ que un desvío guardado en `metadata` seguiría afirmándose después de corregi
 config); y un desvío puede no tener movimiento donde colgarse —si una retención
 baja a cero la fila no emite movimiento, y esa desaparición es justo lo que hay
 que avisar—. Ver ADR-0012.
+
+**No poder calcular algo no es haber calculado que da cero.** Un `Money.zero`
+devuelto por una rama de "no sé" es indistinguible de un cero calculado, y aguas
+abajo se lee como *"cierra al centavo"*. Fue un bug real: una venta con un medio
+de pago sin tarifario hacía que `_residual` devolviera cero, y el motor conciliaba
+el giro con **confianza alta** e informaba *"todo el dinero del período está
+explicado"* sobre plata que no había podido explicar. Si una rama no puede
+calcular, tiene que devolver el faltante entero o un tipo que lo distinga —nunca
+el neutro de la suma—. Lo fija `TestMedioDePagoSinTarifario`.
+
+**Lo inferido se resuelve por transacción, no por batch.** Tomar
+`transactions[0].metadata["payment_method_type"]` como el medio de pago de todo
+el desembolso hacía que un batch mixto se explicara distinto según qué venta
+quedara primera en el orden interno —que es el `sha256` del id y no significa
+nada—. Ver `_split_by_schedule` y
+`test_el_desglose_no_depende_del_orden_de_las_ventas`.
 
 **Se ingiere todo, incluso lo que no concilia.** `DECLINED`, `ERROR`, `OTHER`.
 Explicar por qué una venta *no* llegó al banco requiere tenerla. Un movimiento
