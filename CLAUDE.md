@@ -34,7 +34,7 @@ siempre, y entonces deja de servir.
 
 ### Los números son lo primero que se desactualiza
 
-Este archivo y el README afirman cantidades concretas: 390 tests, 106/284,
+Este archivo y el README afirman cantidades concretas: 409 tests, 106/303,
 426 movimientos, 58 líneas de Wompi, 9/9 declarado, 47/55 inferido,
 −$8.822.659,76 de saldo. **Cada uno es verificable corriendo algo.**
 
@@ -69,9 +69,9 @@ el próximo lo vuelve a averiguar. Y puede llegar a otra conclusión.
 
 ```bash
 pip install -e ".[dev]"
-pytest                                        # 397
+pytest                                        # 409
 pytest -m unit                                # 106 — solo dominio, milisegundos
-pytest -m integration                         # 291 — pipeline sobre fixtures
+pytest -m integration                         # 303 — pipeline sobre fixtures
 ruff check .
 conciliacion ingest bancolombia --offline     # sin credenciales
 conciliacion ingest wompi                     # requiere .env
@@ -226,6 +226,12 @@ un crédito bancario completo el 24/03. Un matcher que busque subconjuntos sin
 restricción temporal casa el crédito del 24/03 con una transacción del 14/04, con
 monto exacto. Solo la fecha lo evita.
 
+**Windows no trae tzdata del sistema.** `zoneinfo.ZoneInfo("America/Bogota")`
+revienta con `ZoneInfoNotFoundError` en Windows puro — Linux/Mac lo resuelven
+contra el tzdata del OS, Windows no tiene equivalente. `pyproject.toml` declara
+`tzdata; sys_platform == 'win32'` para cubrirlo; si el error reaparece, es que
+alguien instaló sin ese extra o el marker se rompió.
+
 **Los números de cuenta no coinciden.** La API de Wompi declara destino
 `19300002179`; los extractos son de `19300008472`. Los extractos son sintéticos
 (Alimentos Alcázar es ficticia) sobre montos reales. **La cuenta no sirve como
@@ -319,6 +325,22 @@ que un desvío guardado en `metadata` seguiría afirmándose después de corregi
 config); y un desvío puede no tener movimiento donde colgarse —si una retención
 baja a cero la fila no emite movimiento, y esa desaparición es justo lo que hay
 que avisar—. Ver ADR-0012.
+
+**No poder calcular algo no es haber calculado que da cero.** Un `Money.zero`
+devuelto por una rama de "no sé" es indistinguible de un cero calculado, y aguas
+abajo se lee como *"cierra al centavo"*. Fue un bug real: una venta con un medio
+de pago sin tarifario hacía que `_residual` devolviera cero, y el motor conciliaba
+el giro con **confianza alta** e informaba *"todo el dinero del período está
+explicado"* sobre plata que no había podido explicar. Si una rama no puede
+calcular, tiene que devolver el faltante entero o un tipo que lo distinga —nunca
+el neutro de la suma—. Lo fija `TestMedioDePagoSinTarifario`.
+
+**Lo inferido se resuelve por transacción, no por batch.** Tomar
+`transactions[0].metadata["payment_method_type"]` como el medio de pago de todo
+el desembolso hacía que un batch mixto se explicara distinto según qué venta
+quedara primera en el orden interno —que es el `sha256` del id y no significa
+nada—. Ver `_split_by_schedule` y
+`test_el_desglose_no_depende_del_orden_de_las_ventas`.
 
 **Se ingiere todo, incluso lo que no concilia.** `DECLINED`, `ERROR`, `OTHER`.
 Explicar por qué una venta *no* llegó al banco requiere tenerla. Un movimiento
@@ -548,6 +570,15 @@ tipo dé cero coincidencias puede ser casualidad; que no exista la cuenta es un
 hecho del plan contable y afirmarlo requiere haberlo mirado. Lo fijan
 `test_la_cobertura_separa_lo_que_no_tiene_cuenta_donde_asentarse` y
 `test_no_se_excluye_un_tipo_solo_porque_dio_cero`.
+
+**Y la exclusión también ata al matcher, no solo a la cuenta de cobertura.** Si
+un tipo no puede estar en la cuenta, un match suyo contra una línea del libro es
+falso por definición. Dejarlos competir fue un bug latente: una comisión de
+monto igual a un giro (±3 días) se llevaba la línea del giro en el pase por
+monto y los dos veredictos salían invertidos. Cero casos sobre estos datos —por
+eso no se vio—. Los tipos de `ERP_UNREPRESENTABLE_KINDS` no entran a ningún pase
+y su finding usa `erp.no_account_in_chart` (ver ampliación en ADR-0011). Lo fija
+`TestLosTiposSinCuentaNoCompitenPorLineasDelLibro`.
 
 Del lado `bancolombia` no hay tipos sin cuenta: su 2,6% es cobertura real.
 

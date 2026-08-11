@@ -24,7 +24,7 @@ from conciliacion.domain import (
 )
 from conciliacion.ingest.adapters.odoo_ledger import OdooLedgerAdapter
 from conciliacion.ingest.ports import IngestionError, RawRecord
-from conciliacion.reconcile.erp.engine import reconcile_erp
+from conciliacion.reconcile.erp.engine import RULE_NO_ACCOUNT_IN_CHART, reconcile_erp
 from conciliacion.reconcile.erp.findings import ErpStatus
 
 # ── fixtures de datos ───────────────────────────────────────────────────────
@@ -250,6 +250,80 @@ class TestLaReferenciaApuntaAUnaTransaccionNoAUnMovimiento:
         """Y eso es correcto: el ERP no registra comisiones."""
         faltantes = {f.kind for f in escenario.of(ErpStatus.MISSING_IN_ERP)}
         assert faltantes == {"fee", "tax"}
+
+
+class TestLosTiposSinCuentaNoCompitenPorLineasDelLibro:
+    """`ERP_UNREPRESENTABLE_KINDS` no es solo cómo se cuenta la cobertura: es
+    un hecho del plan contable, y el matcher tiene que respetarlo.
+
+    Un FEE no puede estar en la cuenta puente. Dejarlo competir por líneas del
+    libro hacía que una comisión de monto igual a un giro se llevara la línea
+    del giro en el pase por monto —el giro real quedaba como faltante y la
+    comisión como asentada—: dos veredictos invertidos con los mismos datos.
+    """
+
+    @pytest.fixture
+    def escenario(self):
+        # La ref del libro se repite => no es llave => todo cae al pase por
+        # monto y fecha, que es donde vivía el robo.
+        led = ledger(
+            mov("T1:comisión", date(2026, 4, 14), "-50000", MovementKind.FEE,
+                ref="txAAA"),
+            mov("D1", date(2026, 4, 15), "-50000", MovementKind.SETTLEMENT,
+                ref="Acreditación Wompi"),
+        )
+        book = libro(
+            linea(1, "2026-04-15", credit=50000.0, ref="Acreditación Wompi",
+                  move="BNK8/2026/00099"),
+            linea(2, "2026-04-20", credit=77777.0, ref="Acreditación Wompi",
+                  move="BNK8/2026/00100"),
+        )
+        return reconcile_erp(led, book)
+
+    def test_el_giro_se_lleva_la_linea_no_la_comision(self, escenario):
+        (f,) = escenario.of(ErpStatus.MATCHED)
+        assert f.kind == "settlement"
+        assert f.erp_move_name == "BNK8/2026/00099"
+
+    def test_la_comision_queda_como_faltante_con_su_porque(self, escenario):
+        """Y el porqué es el de verdad: no se buscó línea, porque no puede
+        haberla. Decir «no hay línea con ese monto en una fecha cercana»
+        sería mentir — sí la hay, y es el giro."""
+        (f,) = [f for f in escenario.of(ErpStatus.MISSING_IN_ERP) if f.kind == "fee"]
+        assert f.explanation.rule_id == RULE_NO_ACCOUNT_IN_CHART
+        assert "no puede" in f.explanation.summary
+
+    def test_la_cobertura_es_coherente(self, escenario):
+        """Antes del arreglo este escenario daba `ratio 0.0` y `overall 0.5`
+        a la vez: el global contaba como match un tipo que la misma función
+        declara sin cuenta donde asentarse."""
+        cov = escenario.coverage()
+        assert cov["matched"] == 1 and cov["comparable"] == 1
+        assert cov["ratio"] == 1.0
+        assert cov["overall_ratio"] == 0.5
+        assert cov["unrepresentable"] == 1
+
+    def test_tampoco_matchea_por_referencia_unica(self):
+        """El pase por referencia también queda vedado: que la ref coincida no
+        convierte una línea de la cuenta puente en una comisión."""
+        led = ledger(mov("F1", date(2026, 4, 14), "-10", MovementKind.FEE, ref="xyz"))
+        book = libro(linea(1, "2026-04-14", credit=10.0, ref="XYZ"))
+        report = reconcile_erp(led, book)
+
+        assert not report.of(ErpStatus.MATCHED)
+        (f,) = [f for f in report.of(ErpStatus.MISSING_IN_ERP) if f.kind == "fee"]
+        assert f.explanation.rule_id == RULE_NO_ACCOUNT_IN_CHART
+
+    def test_en_un_ledger_sin_tipos_excluidos_no_cambia_nada(self):
+        """La exclusión sale de config por ledger: al banco no lo toca."""
+        led = Ledger(Account("bancolombia", "Banco", role="bank"))
+        led.add(Movement(
+            ledger_id="bancolombia", source_id="pdf", external_id="B1",
+            occurred_on=date(2026, 4, 14), amount=Money.parse("100"),
+            kind=MovementKind.BANK_CREDIT, status=MovementStatus.APPROVED,
+        ))
+        book = libro(linea(1, "2026-04-14", debit=100.0, ref="Acreditación"))
+        assert reconcile_erp(led, book).of(ErpStatus.MATCHED)
 
 
 class TestDiscrepancias:

@@ -118,6 +118,21 @@ referencia, elige el de monto correspondiente. Los 4 `AMOUNT_MISMATCH` falsos
 desaparecieron y los matches subieron de 45 a 49. Hay una clase de tests
 dedicada a que no vuelva.
 
+**Ampliación (2026-08):** la misma familia de bug tenía una segunda instancia,
+latente. `ERP_UNREPRESENTABLE_KINDS` declara que `FEE`/`TAX` no tienen cuenta en
+el plan —un hecho mirado en Odoo—, pero solo se aplicaba al **contar** la
+cobertura: el matcher los dejaba competir por líneas del libro. Una comisión de
+monto igual a un giro, dentro de la tolerancia de fecha, se llevaba la línea del
+giro en el pase por monto: el giro real quedaba `MISSING_IN_ERP` y la comisión
+como asentada — dos veredictos invertidos. Sobre los datos del challenge daba
+cero casos (los 27 sin cuenta nunca coincidieron), por eso no se vio.
+
+Ahora los tipos sin cuenta no entran a ningún pase de matching y su finding usa
+la regla `erp.no_account_in_chart`, con el porqué verdadero: *no se buscó línea,
+porque no puede haberla*. El estado sigue siendo `MISSING_IN_ERP` —es verdad que
+falta del libro—; lo que cambia es la explicación y que ya no pueden robar
+matches. Lo fija `TestLosTiposSinCuentaNoCompitenPorLineasDelLibro`.
+
 ## Decisión 6 — `draft` y `cancel` son un estado propio
 
 El libro tiene asientos que no están confirmados:

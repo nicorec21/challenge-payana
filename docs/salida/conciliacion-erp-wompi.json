@@ -1,6 +1,6 @@
 {
   "contract_version": "1.0",
-  "generated_at": "2026-08-09T01:24:03.685501+00:00",
+  "generated_at": "2026-08-11T15:05:34.293111+00:00",
   "ledger_id": "wompi",
   "book_ledger_id": "wompi_erp",
   "account_code": "1110001",
@@ -7233,7 +7233,7 @@
       }
     },
     {
-      "id": "erp_5297884b55b04e59",
+      "id": "erp_5e913041faa1e5ed",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-13",
@@ -7250,8 +7250,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$12.611,44 COP del 2026-04-13 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$12.611,44 COP del 2026-04-13 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_6f3414eb5eac3b46"
@@ -7276,7 +7276,7 @@
       }
     },
     {
-      "id": "erp_288209661d7ac515",
+      "id": "erp_3eb12ebe56ed9bc6",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-13",
@@ -7293,8 +7293,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$3.830,00 COP del 2026-04-13 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$3.830,00 COP del 2026-04-13 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_af287d6e5d113591"
@@ -7319,7 +7319,7 @@
       }
     },
     {
-      "id": "erp_7fe4a129857a0bf8",
+      "id": "erp_640fb713c68598a9",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-13",
@@ -7336,8 +7336,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$20.157,93 COP del 2026-04-13 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$20.157,93 COP del 2026-04-13 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_c6809ead87c6bd24"
@@ -7521,7 +7521,7 @@
       }
     },
     {
-      "id": "erp_96860429b310566a",
+      "id": "erp_664582270455baac",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7538,8 +7538,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$3.166,63 COP del 2026-04-14 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$3.166,63 COP del 2026-04-14 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_023b018d1cfc7b09"
@@ -7564,7 +7564,7 @@
       }
     },
     {
-      "id": "erp_f8328178f9e48b5e",
+      "id": "erp_6c1de0e2c8c2a65b",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7581,8 +7581,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$3.437,62 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$3.437,62 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_03b60ea921473e95"
@@ -7607,7 +7607,7 @@
       }
     },
     {
-      "id": "erp_109557d38fb99a66",
+      "id": "erp_a2c616a72dbeec1f",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7624,8 +7624,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$1.099,26 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$1.099,26 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_2300f6998bfe9b8c"
@@ -7650,7 +7650,7 @@
       }
     },
     {
-      "id": "erp_aada69404cac66f1",
+      "id": "erp_9806df22cd5e0277",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7667,8 +7667,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$8.373,12 COP del 2026-04-14 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$8.373,12 COP del 2026-04-14 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_26173e4d78c1a9a7"
@@ -7693,7 +7693,7 @@
       }
     },
     {
-      "id": "erp_11ddff4527f36996",
+      "id": "erp_acbaa4bb6455cc05",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7710,8 +7710,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$601,65 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$601,65 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_275b8592bd9bbde8"
@@ -7779,7 +7779,7 @@
       }
     },
     {
-      "id": "erp_dddbc6eb42828be2",
+      "id": "erp_56117510b7232c0a",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7796,8 +7796,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$1.765,93 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$1.765,93 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_4bfd10921e4ba2c4"
@@ -7865,7 +7865,7 @@
       }
     },
     {
-      "id": "erp_3407e905150de534",
+      "id": "erp_8e2a2fc3e47dff8d",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7882,8 +7882,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$1.343,01 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$1.343,01 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_6efc41e1aae7e929"
@@ -7908,7 +7908,7 @@
       }
     },
     {
-      "id": "erp_68460f6b2ac8368a",
+      "id": "erp_7d8aa52c2c098672",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7925,8 +7925,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$1.590,89 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$1.590,89 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_919b1590a28d5b7d"
@@ -7951,7 +7951,7 @@
       }
     },
     {
-      "id": "erp_e18dbc94b76b94b9",
+      "id": "erp_ee5f78a91d9b2de2",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -7968,8 +7968,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$4.256,47 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$4.256,47 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_b37a5c720a3d88df"
@@ -7994,7 +7994,7 @@
       }
     },
     {
-      "id": "erp_570db7634064e9f6",
+      "id": "erp_e5b8f84ad77074ca",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -8011,8 +8011,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$5.785,61 COP del 2026-04-14 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$5.785,61 COP del 2026-04-14 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_b4f8ec495bce5917"
@@ -8037,7 +8037,7 @@
       }
     },
     {
-      "id": "erp_f1969a968064e2af",
+      "id": "erp_321a1f39c25b9897",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -8054,8 +8054,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$7.068,47 COP del 2026-04-14 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$7.068,47 COP del 2026-04-14 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_c1006d585e38a554"
@@ -8080,7 +8080,7 @@
       }
     },
     {
-      "id": "erp_bb3b7e5630cd3b91",
+      "id": "erp_40433bb29766b414",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-14",
@@ -8097,8 +8097,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$5.089,23 COP del 2026-04-14 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$5.089,23 COP del 2026-04-14 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_cf177e51a79cbf9d"
@@ -8477,7 +8477,7 @@
       }
     },
     {
-      "id": "erp_9483e6a96543909e",
+      "id": "erp_d46ebbdfb3ef0831",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-24",
@@ -8494,8 +8494,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$6.126,90 COP del 2026-04-24 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$6.126,90 COP del 2026-04-24 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_55a9053c1f327bd6"
@@ -8520,7 +8520,7 @@
       }
     },
     {
-      "id": "erp_3fce043f5bb9c04e",
+      "id": "erp_529c9bb3b74b55dc",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-24",
@@ -8537,8 +8537,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$3.655,47 COP del 2026-04-24 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$3.655,47 COP del 2026-04-24 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_7105df3fb25b0bb1"
@@ -8563,7 +8563,7 @@
       }
     },
     {
-      "id": "erp_20f6c764e77bd923",
+      "id": "erp_f3ca08e1b3c0085b",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-24",
@@ -8580,8 +8580,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$1.164,11 COP del 2026-04-24 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$1.164,11 COP del 2026-04-24 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_dd24d451f8afa403"
@@ -8606,7 +8606,7 @@
       }
     },
     {
-      "id": "erp_7da9542caee83f0c",
+      "id": "erp_b0cf633bb2dc616f",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-25",
@@ -8623,8 +8623,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$766,32 COP del 2026-04-25 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$766,32 COP del 2026-04-25 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_1330c6db6d430f16"
@@ -8649,7 +8649,7 @@
       }
     },
     {
-      "id": "erp_9987d2e704f6e007",
+      "id": "erp_fb383d77c2661612",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-25",
@@ -8666,8 +8666,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$2.319,12 COP del 2026-04-25 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$2.319,12 COP del 2026-04-25 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_2387da973e4aca10"
@@ -8692,7 +8692,7 @@
       }
     },
     {
-      "id": "erp_8fdbab4599121bda",
+      "id": "erp_939b9c927edc95dc",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-25",
@@ -8709,8 +8709,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$4.033,28 COP del 2026-04-25 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$4.033,28 COP del 2026-04-25 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_8056df031e6c3a0e"
@@ -8778,7 +8778,7 @@
       }
     },
     {
-      "id": "erp_7e6caed695b01f0d",
+      "id": "erp_b7e6fba28f0b8dca",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-26",
@@ -8795,8 +8795,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$8.218,21 COP del 2026-04-26 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$8.218,21 COP del 2026-04-26 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_3341e50a1bdbef19"
@@ -8821,7 +8821,7 @@
       }
     },
     {
-      "id": "erp_fd226ef9b97132ab",
+      "id": "erp_5a340336a7ce1530",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-26",
@@ -8838,8 +8838,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$1.561,46 COP del 2026-04-26 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$1.561,46 COP del 2026-04-26 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_87dfcf941143bfd5"
@@ -8864,7 +8864,7 @@
       }
     },
     {
-      "id": "erp_f978dc1fd5599a81",
+      "id": "erp_2073a3f7092df168",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-26",
@@ -8881,8 +8881,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$4.990,35 COP del 2026-04-26 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$4.990,35 COP del 2026-04-26 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_9961d87fab79c4e0"
@@ -8993,7 +8993,7 @@
       }
     },
     {
-      "id": "erp_288ae91137f2995a",
+      "id": "erp_c84aeeacf88ad8e2",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-29",
@@ -9010,8 +9010,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$7.862,40 COP del 2026-04-29 (fee) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$7.862,40 COP del 2026-04-29 (fee) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_221514c493b383db"
@@ -9036,7 +9036,7 @@
       }
     },
     {
-      "id": "erp_f61811d98b243088",
+      "id": "erp_93bda1a0956a20b1",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-29",
@@ -9053,8 +9053,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$1.493,85 COP del 2026-04-29 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$1.493,85 COP del 2026-04-29 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_51eff3b52e924585"
@@ -9079,7 +9079,7 @@
       }
     },
     {
-      "id": "erp_4d24a82766c449f0",
+      "id": "erp_b203765e880374b4",
       "status": "missing_in_erp",
       "is_problem": true,
       "occurred_on": "2026-04-29",
@@ -9096,8 +9096,8 @@
       "book_amount": null,
       "difference": null,
       "explanation": {
-        "rule_id": "erp.missing_in_erp",
-        "summary": "El movimiento de -$4.763,23 COP del 2026-04-29 (tax) ocurrió pero no está registrado en el libro contable: no hay línea con esa referencia ni con ese monto en una fecha cercana.",
+        "rule_id": "erp.no_account_in_chart",
+        "summary": "El movimiento de -$4.763,23 COP del 2026-04-29 (tax) no está en el libro contable y no puede estarlo: el plan de cuentas no tiene una cuenta donde asentar este tipo. No se buscó una línea equivalente — cualquier coincidencia por monto en esta cuenta representaría otro hecho. Se resuelve rediseñando el plan de cuentas, no registrando.",
         "confidence": "high",
         "source_movement_ids": [
           "mov_73c5a3305abcf9cc"

@@ -24,6 +24,15 @@ el motor lo dice explícitamente en la explicación en vez de fingir una búsque
 **El segundo salto sí se busca**, por monto dentro de una ventana de días
 hábiles.
 
+## No poder calcular no es haber calculado cero
+
+El desglose se infiere con el tarifario del medio de pago de **cada venta**. Una
+venta cuyo medio no tiene tarifario no aporta descuentos inferidos: aporta su
+bruto entero al residuo. Codificar ese caso como cero —que es lo que hacía— le
+hacía informar al motor *"todo el dinero está explicado"* sobre un giro cuya
+composición no había podido verificar, y con confianza alta. Ver
+`_split_by_schedule`, `_residual` y `_confidence`.
+
 ## Qué NO se usa para matchear
 
 La **descripción del banco**. Cambia a mitad del período (`PAGO DE PROV WOMPI`
@@ -44,6 +53,7 @@ from datetime import date
 from ...config import (
     FLOW_AMOUNT_TOLERANCE,
     INFERENCE_TOLERANCE_PER_TRANSACTION,
+    FeeSchedule,
     SettlementPolicy,
     bank_hints_for,
     fee_schedule_for,
@@ -422,6 +432,27 @@ def _orphan_bank_credits(
 # ── explicación ─────────────────────────────────────────────────────────────
 
 
+def _split_by_schedule(
+    batch: _Batch,
+) -> tuple[list[tuple[Movement, FeeSchedule]], list[Movement]]:
+    """Separa las ventas del batch según tengamos tarifario para su medio de pago.
+
+    Por venta y no por batch. Tomar el medio de pago de la primera transacción
+    hacía que un batch mixto se explicara distinto según cuál venta quedara
+    primera en el orden interno —que es el `sha256` del id y no significa nada—:
+    el mismo desembolso salía con confianza baja o alta según el sorteo.
+    """
+    con_tarifa: list[tuple[Movement, FeeSchedule]] = []
+    sin_tarifa: list[Movement] = []
+    for t in batch.transactions:
+        medio = str(t.metadata.get("payment_method_type") or "")
+        if (schedule := fee_schedule_for(medio, t.occurred_on)) is not None:
+            con_tarifa.append((t, schedule))
+        else:
+            sin_tarifa.append(t)
+    return con_tarifa, sin_tarifa
+
+
 def _register_adjustments(builder: ExplanationBuilder, batch: _Batch) -> None:
     """Anota de dónde sale cada descuento: leído o calculado.
 
@@ -447,12 +478,9 @@ def _register_adjustments(builder: ExplanationBuilder, batch: _Batch) -> None:
             )
         return
 
-    schedule = None
-    if batch.transactions:
-        medio = batch.transactions[0].metadata.get("payment_method_type") or ""
-        schedule = fee_schedule_for(str(medio), batch.transactions[0].occurred_on)
+    con_tarifa, sin_tarifa = _split_by_schedule(batch)
 
-    if schedule is None:
+    if not con_tarifa:
         if batch.transactions:
             builder.adjust(
                 AdjustmentKind.UNEXPLAINED,
@@ -462,27 +490,49 @@ def _register_adjustments(builder: ExplanationBuilder, batch: _Batch) -> None:
             )
         return
 
-    comision = Money.sum(schedule.commission(t.amount) for t in batch.transactions)
-    iva = Money.sum(schedule.iva(t.amount) for t in batch.transactions)
-    retefuente = Money.sum(schedule.retefuente(t.amount) for t in batch.transactions)
+    moneda = batch.settlement.amount.currency
+    comision = Money.sum((s.commission(t.amount) for t, s in con_tarifa), moneda)
+    iva = Money.sum((s.iva(t.amount) for t, s in con_tarifa), moneda)
+    retefuente = Money.sum((s.retefuente(t.amount) for t, s in con_tarifa), moneda)
 
-    nota = (
-        f"inferido con el tarifario vigente ({schedule.commission_rate:.4%} "
-        f"+ {schedule.commission_fixed} fijo); el canal no declaró el desglose de "
-        f"este desembolso"
-    )
-    builder.adjust(AdjustmentKind.COMMISSION, comision, EvidenceSource.INFERRED, note=nota)
-    builder.adjust(
-        AdjustmentKind.TAX, iva, EvidenceSource.INFERRED,
-        note=(
+    schedules = {s for _, s in con_tarifa}
+    if len(schedules) == 1:
+        schedule = next(iter(schedules))
+        detalle = f"({schedule.commission_rate:.4%} + {schedule.commission_fixed} fijo)"
+        nota_iva = (
             f"{schedule.iva_rate:.0%} sobre la comisión sin truncar; calcularlo "
             f"sobre la comisión ya truncada falla en 2 de las 9 filas declaradas"
-        ),
+        )
+        nota_rete = f"retención en la fuente ({schedule.retefuente_rate:.2%} del bruto)"
+    else:
+        medios = ", ".join(sorted(s.payment_method for s in schedules))
+        detalle = f"(un tarifario por medio de pago: {medios})"
+        nota_iva = "IVA sobre la comisión sin truncar, con el tarifario de cada venta"
+        nota_rete = "retención en la fuente, con el tarifario de cada venta"
+
+    nota = (
+        f"inferido con el tarifario vigente {detalle}; el canal no declaró el "
+        f"desglose de este desembolso"
     )
+    builder.adjust(AdjustmentKind.COMMISSION, comision, EvidenceSource.INFERRED, note=nota)
+    builder.adjust(AdjustmentKind.TAX, iva, EvidenceSource.INFERRED, note=nota_iva)
     builder.adjust(
-        AdjustmentKind.WITHHOLDING, retefuente, EvidenceSource.INFERRED,
-        note=f"retención en la fuente ({schedule.retefuente_rate:.2%} del bruto)",
+        AdjustmentKind.WITHHOLDING, retefuente, EvidenceSource.INFERRED, note=nota_rete
     )
+
+    if sin_tarifa:
+        # El desglose es parcial. Lo que no se pudo desglosar se nombra, en vez
+        # de repartirse entre los descuentos inferidos: atribuirle a la comisión
+        # una plata cuya regla no conocemos es inventar evidencia.
+        builder.adjust(
+            AdjustmentKind.UNEXPLAINED,
+            _residual(batch, abs(batch.settlement.amount)),
+            EvidenceSource.INFERRED,
+            note=(
+                f"{len(sin_tarifa)} de {len(batch.transactions)} venta(s) sin tarifario "
+                f"conocido para su medio de pago: su desglose no se pudo calcular"
+            ),
+        )
 
 
 def _adjustment_kind(movement: Movement) -> AdjustmentKind:
@@ -500,17 +550,24 @@ def _residual(batch: _Batch, giro: Money) -> Money:
     Con desglose declarado esto debería ser cero. Con desglose inferido puede
     quedar un residuo de centavos, porque la fórmula del canal trunca en una
     etapa distinta a la que modelamos.
+
+    Una venta sin tarifario para su medio de pago **aporta su bruto entero**, no
+    cero: de esa venta no sabemos cuánto se descontó, así que todo lo que le
+    pasó queda sin explicar. Devolver cero equivalía a afirmar que no hubo
+    descuentos, y con eso el motor conciliaba un giro cuya composición no había
+    verificado y lo informaba como dinero explicado.
     """
     if not batch.transactions:
         return Money.zero(giro.currency)
     if batch.has_declared_deductions:
         return batch.gross - batch.declared_deductions - giro
 
-    medio = str(batch.transactions[0].metadata.get("payment_method_type") or "")
-    schedule = fee_schedule_for(medio, batch.transactions[0].occurred_on)
-    if schedule is None:
-        return Money.zero(giro.currency)
-    esperado = Money.sum(schedule.expected_net(t.amount) for t in batch.transactions)
+    con_tarifa, sin_tarifa = _split_by_schedule(batch)
+    esperado = Money.sum(
+        [s.expected_net(t.amount) for t, s in con_tarifa]
+        + [t.amount for t in sin_tarifa],
+        giro.currency,
+    )
     return esperado - giro
 
 
@@ -533,12 +590,24 @@ def _confidence(
     cierra = abs(inexplicado.amount) <= (
         0 if batch.has_declared_deductions else tolerancia
     )
-    puntual = dias_habiles == policy.settlement_lag_business_days - 1 or dias_habiles == 0
+    # Contra el lag giro→banco, no el lag venta→giro: son cadencias distintas.
+    # La versión anterior usaba `settlement_lag_business_days - 1`, que para
+    # Wompi (lag=1) da 0 por casualidad y para cualquier otra política puntúa
+    # como puntual un desfasaje sin evidencia que lo respalde.
+    puntual = 0 <= dias_habiles <= policy.credit_lag_business_days
 
     if not batch.transactions:
         # Giro sin ventas que lo compongan: el monto coincide pero no se puede
         # explicar de qué está hecho.
         return Confidence.MEDIUM
+
+    if not batch.has_declared_deductions and _split_by_schedule(batch)[1]:
+        # Alguna venta sin tarifario. El monto puede cerrar igual —si el canal
+        # giró el bruto, o por casualidad— pero no verificamos de qué está
+        # hecho el giro. Nunca "alta": alta significa que el desglose se estimó
+        # con una regla conocida, y acá no hay regla.
+        return Confidence.MEDIUM if cierra else Confidence.LOW
+
     if batch.has_declared_deductions and cierra and puntual:
         return Confidence.EXACT
     if cierra and puntual:
@@ -556,7 +625,15 @@ def _summary(batch: _Batch, elegido: Movement, giro: Money, dias_habiles: int) -
             f"compongan: el período de origen está fuera de los datos ingeridos."
         )
 
-    origen = "declaradas por el canal" if batch.has_declared_deductions else "inferidas del tarifario"
+    if batch.has_declared_deductions:
+        origen = "declaradas por el canal"
+    elif (sin_tarifa := _split_by_schedule(batch)[1]):
+        origen = (
+            f"inferidas del tarifario, salvo {len(sin_tarifa)} venta(s) cuyo medio "
+            f"de pago no tiene tarifario conocido"
+        )
+    else:
+        origen = "inferidas del tarifario"
     cuando = "el mismo día" if dias_habiles == 0 else f"{dias_habiles} día(s) hábil(es) después"
     return (
         f"El crédito de {elegido.amount} del {elegido.occurred_on} es la liquidación de "

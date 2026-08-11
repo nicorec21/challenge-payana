@@ -206,6 +206,104 @@ class TestDeclaradoVsInferido:
         assert inferido.confidence is Confidence.HIGH
 
 
+class TestMedioDePagoSinTarifario:
+    """No poder calcular un descuento no es haber calculado que no hay descuento.
+
+    Codificar ese caso como cero hacía que el motor conciliara un giro cuya
+    composición no había verificado, lo puntuara con confianza alta y el informe
+    dijera *"todo el dinero del período está explicado"*. La plata desaparecía
+    del reporte, no del banco.
+    """
+
+    def _un_giro(self, metodo: str, bruto: str, neto: str):
+        d, s = date(2026, 4, 13), date(2026, 4, 14)
+        c = canal(
+            venta("T1", d, bruto, "D1", payment_method_type=metodo),
+            giro("D1", s, neto, "D1"),
+        )
+        b = banco(credito("B1", s, neto))
+        (f,) = reconcile_flow(c, b, calendar=CAL, coverage=TODO_2026).findings
+        return f
+
+    def test_el_faltante_no_se_da_por_explicado(self):
+        f = self._un_giro("NEQUI", "1000000", "900000")
+        assert f.status is FlowStatus.MATCHED   # la plata sí llegó al banco
+        assert f.explanation.unexplained == Money.parse("100000")
+
+    def test_no_puede_tener_confianza_alta(self):
+        """Alta significa 'el desglose se estimó con una regla conocida'. Sin
+        tarifario no hay regla, así que no hay nada que respalde ese nivel."""
+        f = self._un_giro("NEQUI", "1000000", "900000")
+        assert f.confidence is Confidence.LOW
+
+    def test_ni_siquiera_cuando_el_monto_cierra_por_casualidad(self):
+        """El canal giró el bruto entero: el residuo da cero. Que cierre no
+        significa que se haya verificado de qué está hecho."""
+        f = self._un_giro("NEQUI", "1000000", "1000000")
+        assert f.confidence is Confidence.MEDIUM
+
+    def test_el_informe_no_dice_que_todo_esta_explicado(self):
+        from conciliacion.report.cfo import render_flow_report
+
+        d, s = date(2026, 4, 13), date(2026, 4, 14)
+        c = canal(
+            venta("T1", d, "1000000", "D1", payment_method_type="NEQUI"),
+            giro("D1", s, "900000", "D1"),
+        )
+        b = banco(credito("B1", s, "900000"))
+        report = reconcile_flow(c, b, calendar=CAL, coverage=TODO_2026)
+
+        assert report.unexplained_total() == Money.parse("100000")
+        assert len(report.unverified) == 1
+        texto = render_flow_report(report)
+        assert "Todo el dinero del período está explicado" not in texto
+        # Y no se disfraza de redondeo de la inferencia, que vale un centavo
+        # por venta y se lee como ruido ignorable.
+        assert "redondeo" not in texto
+
+    def test_el_desglose_no_depende_del_orden_de_las_ventas(self):
+        """El tarifario se resuelve por venta, no por `transactions[0]`.
+
+        Ese orden es el `sha256` del id y no significa nada: el mismo desembolso
+        salía con confianza baja o alta según cuál venta quedara primera.
+        """
+        d, s = date(2026, 4, 13), date(2026, 4, 14)
+
+        def corrida(metodo_t1: str, metodo_t2: str):
+            c = canal(
+                venta("T1", d, "1000000", "D1", payment_method_type=metodo_t1),
+                venta("T2", d, "1000000", "D1", payment_method_type=metodo_t2),
+                giro("D1", s, "1900000", "D1"),
+            )
+            b = banco(credito("B1", s, "1900000"))
+            (f,) = reconcile_flow(c, b, calendar=CAL, coverage=TODO_2026).findings
+            return f.confidence, f.explanation.unexplained, f.explanation.adjustments_total
+
+        assert corrida("CARD", "NEQUI") == corrida("NEQUI", "CARD")
+
+    def test_lo_que_no_se_pudo_calcular_se_nombra_aparte(self):
+        """La parte con tarifario se desglosa; la otra queda como UNEXPLAINED.
+
+        Repartir el faltante entre comisión e impuestos sería atribuirle a una
+        regla conocida una plata cuya regla no conocemos.
+        """
+        d, s = date(2026, 4, 13), date(2026, 4, 14)
+        c = canal(
+            venta("T1", d, "1000000", "D1", payment_method_type="CARD"),
+            venta("T2", d, "1000000", "D1", payment_method_type="NEQUI"),
+            giro("D1", s, "1900000", "D1"),
+        )
+        b = banco(credito("B1", s, "1900000"))
+        (f,) = reconcile_flow(c, b, calendar=CAL, coverage=TODO_2026).findings
+
+        por_tipo = {a.kind: a.amount for a in f.explanation.adjustments}
+        assert AdjustmentKind.UNEXPLAINED in por_tipo
+        # La comisión se calcula solo sobre la venta con tarifario: 2,35% + $400.
+        assert por_tipo[AdjustmentKind.COMMISSION] == Money.parse("23900")
+        # Y la escalera cierra: lo desglosado + lo no calculable == el faltante.
+        assert f.explanation.adjustments_total == Money.parse("100000")
+
+
 class TestVentanaTemporal:
     def test_acredita_dias_habiles_despues(self):
         c = canal(
@@ -245,6 +343,39 @@ class TestVentanaTemporal:
         ancha = SettlementPolicy(settlement_lag_business_days=2, max_business_days=5)
         assert not reconcile_flow(c, b, calendar=CAL, policy=angosta, coverage=TODO_2026).of(FlowStatus.MATCHED)
         assert reconcile_flow(c, b, calendar=CAL, policy=ancha, coverage=TODO_2026).of(FlowStatus.MATCHED)
+
+    def test_la_puntualidad_se_mide_contra_el_lag_giro_banco(self):
+        """Son dos cadencias: venta→giro (`settlement_lag`) y giro→crédito
+        (`credit_lag`, mismo día para Wompi, 10/10 verificado). La confianza
+        puntúa contra la segunda.
+
+        El bug: `puntual = dias == settlement_lag - 1` usaba la primera. Para
+        Wompi (lag=1) da 0 por casualidad; para un canal T+2 aceptaba como
+        puntual un crédito un día tarde, sin evidencia que lo respalde.
+        """
+        d = date(2026, 4, 13)
+        def escenario(dia_credito: date):
+            c = canal(
+                venta("T1", d, "840763", "D1"),
+                descuento("T1", "comisión", "20157.93", MovementKind.FEE),
+                descuento("T1", "iva comisión", "3830.00", MovementKind.TAX),
+                descuento("T1", "retefuente", "12611.44", MovementKind.TAX),
+                giro("D1", date(2026, 4, 15), "804163.63", "D1"),
+            )
+            b = banco(credito("B1", dia_credito, "804163.63"))
+            politica = SettlementPolicy(settlement_lag_business_days=2)
+            (f,) = reconcile_flow(
+                c, b, calendar=CAL, policy=politica, coverage=TODO_2026
+            ).of(FlowStatus.MATCHED)
+            return f.confidence
+
+        # Mismo día: puntual, y con desglose declarado que cierra → EXACT.
+        assert escenario(date(2026, 4, 15)) is Confidence.EXACT
+        # Un día hábil tarde: el monto cierra pero la puntualidad no —igual
+        # que un crédito tardío de Wompi, que ya puntuaba MEDIUM—. Antes del
+        # arreglo esto daba EXACT: el `settlement_lag - 1` del canal T+2
+        # bendecía el desfasaje como si hubiera evidencia de esa cadencia.
+        assert escenario(date(2026, 4, 16)) is Confidence.MEDIUM
 
 
 class TestAmbiguedad:

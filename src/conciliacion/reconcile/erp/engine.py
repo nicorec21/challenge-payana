@@ -31,6 +31,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from datetime import date, timedelta
 
+from ...config import erp_unrepresentable_kinds
 from ...domain.explanation import Confidence, ExplanationBuilder, TimeWindow
 from ...domain.ledger import Ledger
 from ...domain.movement import Movement, MovementStatus
@@ -40,6 +41,7 @@ RULE_BY_REFERENCE = "erp.matched_by_reference"
 RULE_BY_AMOUNT_DATE = "erp.matched_by_amount_and_date"
 RULE_AMOUNT_MISMATCH = "erp.amount_mismatch"
 RULE_MISSING_IN_ERP = "erp.missing_in_erp"
+RULE_NO_ACCOUNT_IN_CHART = "erp.no_account_in_chart"
 RULE_MISSING_IN_LEDGER = "erp.missing_in_ledger"
 RULE_NOT_POSTED = "erp.entry_not_posted"
 
@@ -65,6 +67,15 @@ def reconcile_erp(
     unposted = [m for m in book if m.status is not MovementStatus.APPROVED]
     candidatos = [m for m in ledger if m.counts_for_reconciliation]
 
+    # Los tipos sin cuenta en el plan no compiten por líneas del libro. Es un
+    # hecho verificado del plan contable (`ERP_UNREPRESENTABLE_KINDS`): un FEE
+    # no puede estar en la cuenta puente, así que cualquier línea que
+    # coincidiera por monto representaría otro hecho. Dejarlos competir fue un
+    # bug latente: una comisión de monto igual a un giro se llevaba la línea
+    # del giro en el pase por monto, y el giro real quedaba como faltante.
+    sin_cuenta = erp_unrepresentable_kinds(ledger.id)
+    representables = [m for m in candidatos if m.kind.value not in sin_cuenta]
+
     usados: set[str] = set()          # líneas del libro ya asignadas
     resueltos: dict[str, ErpFinding] = {}  # movimiento del ledger -> finding
 
@@ -75,7 +86,7 @@ def reconcile_erp(
     # movimientos (pago, comisión, IVA, retención, giro) y en el libro a una
     # sola línea. Recorriendo el ledger, la comisión llega primero y se lleva
     # la línea de la venta — que fue exactamente el bug que esto arregla.
-    por_referencia = _group_by_reference(candidatos)
+    por_referencia = _group_by_reference(representables)
     for line in _reference_index(posted):
         ref = _normalize(line.reference)
         grupo = [m for m in por_referencia.get(ref, []) if m.id not in resueltos]
@@ -93,6 +104,9 @@ def reconcile_erp(
 
     for movement in candidatos:
         if movement.id in resueltos:
+            continue
+        if movement.kind.value in sin_cuenta:
+            resueltos[movement.id] = _unrepresentable(movement)
             continue
         resueltos[movement.id] = _match_by_amount(
             movement, by_amount, usados, date_tolerance
@@ -255,6 +269,41 @@ def _compare(
         occurred_on=movement.occurred_on,
         ledger_amount=movement.amount,
         book_amount=line.amount,
+        kind=movement.kind.value,
+    )
+
+
+def _unrepresentable(movement: Movement) -> ErpFinding:
+    """Un tipo sin cuenta en el plan. Falta del libro y **no puede estar**.
+
+    No se busca coincidencia a propósito, y la explicación lo dice: afirmar que
+    una línea de la cuenta puente ES una comisión contradiría el hecho —mirado
+    en Odoo, no derivado de contar ceros— de que las comisiones no tienen
+    cuenta donde asentarse. El estado sigue siendo `MISSING_IN_ERP` porque eso
+    es verdad; la regla distinta es lo que permite separar *"falta asentar"* de
+    *"falta la cuenta"* sin inventar un estado nuevo.
+    """
+    return ErpFinding(
+        status=ErpStatus.MISSING_IN_ERP,
+        explanation=ExplanationBuilder(
+            RULE_NO_ACCOUNT_IN_CHART, movement.amount.currency
+        ).build(
+            summary=(
+                f"El movimiento de {movement.amount} del {movement.occurred_on} "
+                f"({movement.kind.value}) no está en el libro contable y no puede "
+                f"estarlo: el plan de cuentas no tiene una cuenta donde asentar "
+                f"este tipo. No se buscó una línea equivalente — cualquier "
+                f"coincidencia por monto en esta cuenta representaría otro hecho. "
+                f"Se resuelve rediseñando el plan de cuentas, no registrando."
+            ),
+            source_ids=(movement.id,),
+            gross=movement.amount,
+            confidence=Confidence.HIGH,
+            unexplained=movement.amount,
+        ),
+        ledger_movement_id=movement.id,
+        occurred_on=movement.occurred_on,
+        ledger_amount=movement.amount,
         kind=movement.kind.value,
     )
 
